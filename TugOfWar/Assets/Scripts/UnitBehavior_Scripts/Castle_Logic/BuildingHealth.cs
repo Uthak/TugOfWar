@@ -2,67 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitHealth : MonoBehaviour
-{ 
-    // classID explanation: 0 = DAMAGEDEALER; 1 = TANK; 2 = SNIPER 
-
-    int _myClassID = 0;
-    //int _enemyClassID = 0;
-
+public class BuildingHealth : MonoBehaviour
+{
+    [Header("Building Health Setup:")]
+    public int playerAffiliation = 0;
+    public int myClassID = 0;
     public float currentHealthPoints = 1f;
-    float _myArmorValue = 0f;
-    //float _enemyArmorPenetrationValue = 0f;
+    public float armorValue = 0f;
 
-    // temporary solution to controll camera:
-    public int teamAffiliation = 0;
-
-
+    /*
     public void UpdateUnitHealth()
     {
-        _myClassID = GetComponent<UnitManager>().myClassID;
+        myClassID = GetComponent<UnitManager>().myClassID;
         currentHealthPoints = GetComponent<UnitManager>().healthPoints;
-        _myArmorValue = GetComponent<UnitManager>().armorValue;
+        armorValue = GetComponent<UnitManager>().armorValue;
 
         GetComponent<UnitHealthBar>().UpdateUnitHealthBar();
-    }
+    }*/
 
+    /// <summary>
+    /// The attackers <see cref="UnitCombat"/> will call this function, delivering it's own statline.
+    /// </summary>
+    /// <param name="_rawIncomingDamage"></param>
+    /// <param name="_penetrationValueOfAttack"></param>
+    /// <param name="_enemyClassID"></param>
     public void TakeDamage(float _rawIncomingDamage, float _penetrationValueOfAttack, int _enemyClassID)
     {
-        //Debug.Log("incoming dmg " + _rawIncomingDamage);
-
         CalculateEffectiveDamage(_rawIncomingDamage, _penetrationValueOfAttack, _enemyClassID, out float _effectiveDamage);
 
         currentHealthPoints -= _effectiveDamage;
-        //Debug.Log("current healthpoints" + currentHealthPoints + " current dmg taken" + _effectiveDamage);
 
-        if ( currentHealthPoints <= 0.0f)
+        if (currentHealthPoints <= 0.0f)
         {
-            Debug.Log("I shouldve died");
             Die();
         }
     }
     void CalculateEffectiveDamage(float _rawIncomingDamage, float _penetrationValueOfAttack, int _enemyClassID, out float _effectiveDamage)
     {
-        //Debug.Log("my class: " + _myClassID + " attackers class: " + _enemyClassID);
         float _calculatedDamage = _rawIncomingDamage; // get base damage
 
         GetDamageEffectiveness(_enemyClassID, out float _damageEffectivenessMultiplier);
-        //Debug.Log("the effectiveness of this incoming attack: " + _damageEffectivenessMultiplier);
         _calculatedDamage *= _damageEffectivenessMultiplier;
 
         // armor is applied AFTER class-effectiveness:
         GetArmorEffectiveness(_penetrationValueOfAttack, out float _armorEffectivenessMultiplier);
-        //Debug.Log("the damage reduction of this attack through my armor: " + _myArmorValue + " against the attacks pen value of: "+ _penetrationValueOfAttack + " is: " + _armorEffectivenessMultiplier);
         _calculatedDamage *= _armorEffectivenessMultiplier;
 
         _effectiveDamage = _calculatedDamage;
-        //Debug.Log("I took effective damage: " + _effectiveDamage);
     }
     void GetDamageEffectiveness(int _enemyClassID, out float _effectivenessMultiplier)
     {
         _effectivenessMultiplier = 0.0f; // default value
 
-        switch (_myClassID)
+        switch (myClassID)
         {
             case 0: // I am a DD:
                 switch (_enemyClassID)
@@ -108,10 +100,6 @@ public class UnitHealth : MonoBehaviour
                         break;
                 }
                 break;
-
-            default: // for any undefined units
-                _effectivenessMultiplier = 1.0f;
-                break;
         }
     }
 
@@ -123,7 +111,7 @@ public class UnitHealth : MonoBehaviour
         _armorEffectivenessMultiplier = 1.0f; // default = armor at full effect:
 
         // subtract enemies penetration from my armor:
-        float _effectiveArmor = (_myArmorValue - _penetrationValueOfAttack) * 10;
+        float _effectiveArmor = (armorValue - _penetrationValueOfAttack) * 10;
         float _clampedEffectiveArmor = Mathf.Clamp(_effectiveArmor, 0.0f, 75.0f);
         float _effecitveArmorInPercentile = _clampedEffectiveArmor / 100;
         _armorEffectivenessMultiplier -= _effecitveArmorInPercentile;
@@ -136,39 +124,24 @@ public class UnitHealth : MonoBehaviour
         // base effectiveness (1) - modified effectiveness = damage reduced by 23% or: 0.77% damage taken
     }
 
-
-    float awardedMoney = 0.0f;
     void Die()
     {
-        // temporary solution to controll camera:
-        if (teamAffiliation == 1) // team 1 is active player:
-        {
-            FindAnyObjectByType<CameraController>().RemoveUnit(this.transform);
-        }
+        // disable all input or pause the game here!
 
-        Debug.Log("i died and my team affil was: " + teamAffiliation);
-
-        // reward the victor 1/4 of the killed units deployment cost:
-        switch (teamAffiliation)
+        /*
+        switch (playerAffiliation)
         {
             case 1:
-                FindAnyObjectByType<GoldManager>().AddGold(2, GetComponent<UnitManager>().deploymentCost / 4.0f);
-                Debug.Log("player 2 (AI) should have received: " + GetComponent<UnitManager>().deploymentCost / 4.0f + " gold.");
-
+                // EndGame(victory);
                 break;
 
             case 2:
-                FindAnyObjectByType<GoldManager>().AddGold(1, GetComponent<UnitManager>().deploymentCost / 4.0f);
-                Debug.Log("player 1 (you) should have received: " + GetComponent<UnitManager>().deploymentCost / 4.0f + " gold.");
-
+                // EndGame(defeat);
                 break;
-        }
-        
-        awardedMoney = awardedMoney + 2.5f;
+        }*/
+
+        Debug.Log("Player " + playerAffiliation + " lost the game!");
 
         Destroy(this.gameObject);
-
-        Debug.Log("awarded money = " + awardedMoney);
-        
     }
 }

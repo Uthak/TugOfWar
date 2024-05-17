@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class DragNDrop : MonoBehaviour
 {
+    [Header("Drag'n'drop Setup:")]
     [SerializeField] float _offsetOnMap = 1.0f;
-    [SerializeField] float _offsetOffMap = 2.0f; 
+    [SerializeField] float _offsetOffMap = 2.0f;
+    
+    [Space(10)]
+    [SerializeField] LayerMask _UI_layerMask;
 
+    [Header("DO NOT TOUCH:")]
     public GameObject carriedObject;
 
+    // private variables:
     private GameObject _targetedGameObject;
     Vector3 _mousePosition;
-
-    [SerializeField] LayerMask _UI_layerMask;
-    List<SpawnZone> _usedSpawnZones = new List<SpawnZone>();
 
     private void Update()
     {
@@ -23,16 +26,12 @@ public class DragNDrop : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity,_UI_layerMask))
         {
             _targetedGameObject = hit.collider.gameObject;
-
-            if (hit.collider.CompareTag("Ground"))
+            
+            if (_targetedGameObject.CompareTag("Ground")) 
             {
                 _mousePosition = new Vector3(hit.point.x, hit.point.y + _offsetOnMap, hit.point.z);
-            }/*else if (hit.collider.CompareTag("Surroundings")) // why??? is this to hover over terrain?
-            {
-                _mousePosition = new Vector3(hit.point.x, hit.point.y + _offsetOffMap, hit.point.z);
-            }*/
-
-            // snap mouse (and carried object) to deployment-grid:
+            }
+            
             if (hit.collider.gameObject.GetComponent<SpawnZone>() && !hit.collider.gameObject.GetComponent<SpawnZone>().occupied)
             {
                 _mousePosition = hit.collider.transform.position;
@@ -46,12 +45,12 @@ public class DragNDrop : MonoBehaviour
 
         else if (Input.GetMouseButtonUp(0) && carriedObject != null)
         {
-            if(LegalTargetLocation() && EnoughRessources())
+            if(LegalDeploymentLocation(_targetedGameObject) && SufficientRessources())
             {
-                PlaceUnit();
+                PlaceUnit(_targetedGameObject);
             }else
             {
-                DestroyItem();
+                DestroyUnit();
             }
         }
     }
@@ -60,7 +59,7 @@ public class DragNDrop : MonoBehaviour
     /// Check with the "GoldManager"-script if enough resources are available for this unit.
     /// </summary>
     /// <returns></returns>
-    bool EnoughRessources()
+    bool SufficientRessources()
     {
         if (GetComponent<GoldManager>().SufficientGold(1, carriedObject.GetComponent<UnitManager>().deploymentCost))
         {
@@ -70,13 +69,29 @@ public class DragNDrop : MonoBehaviour
             return false;
         }    
     }
+
     /// <summary>
     /// Check with the targeted object if it's a "SpawnZone"-tile and further if its available for occupation.
     /// </summary>
     /// <returns></returns>
-    bool LegalTargetLocation()
+    bool LegalDeploymentLocation(GameObject _targetedLocation)
     {
-        if(_targetedGameObject.GetComponent<SpawnZone>() && !_targetedGameObject.GetComponent<SpawnZone>().occupied)
+        SpawnZone _spawnZone;
+
+        // if the targeted object is not a "SpawnZone" return immediatly:
+        //if (_targetedGameObject.GetComponent<SpawnZone>())
+        if (_targetedLocation.GetComponent<SpawnZone>())
+        {
+            //_spawnZone = _targetedGameObject.GetComponent<SpawnZone>();
+            _spawnZone = _targetedLocation.GetComponent<SpawnZone>();
+        }
+        else
+        {
+            return false;
+        }
+
+        // if it is a "SpawnZone", of the correct deployment area and unoccupied, return true:
+        if(_spawnZone.player1Zone && !_spawnZone.occupied ) // currently based on the notion of player vs AI
         {
             return true;
         }else
@@ -88,37 +103,27 @@ public class DragNDrop : MonoBehaviour
     /// <summary>
     /// This gets called when a unit is placed in a deployment-area.
     /// </summary>
-    void PlaceUnit()
+    void PlaceUnit(GameObject _targetLocation)
     {
         // pay for the unit at hand:
         GetComponent<GoldManager>().SubtractGold(1, carriedObject.GetComponent<UnitManager>().deploymentCost);
 
         // tell the targeted deployment-tile that it is now occupied:
-        _targetedGameObject.GetComponent<SpawnZone>().OccupyDeploymentTile();
+        //_targetedGameObject.GetComponent<SpawnZone>().OccupyDeploymentTile();
+        _targetLocation.GetComponent<SpawnZone>().OccupyDeploymentTile();
 
         // place the carried object at the center of the chosen tile:
         carriedObject.transform.position = _mousePosition;
 
         // setup the placed unit after placing it. You can still revert this by picking it up again:
-        carriedObject.GetComponent<UnitManager>().SetupThisUnit(true, _targetedGameObject);
+        //carriedObject.GetComponent<UnitManager>().SetupThisUnit(true, _targetedGameObject);
+        carriedObject.GetComponent<UnitManager>().SetupThisUnit(true, _targetLocation);
 
         // empty the carried object (nothing is being dragged anymore):
         carriedObject = null;
     }
-    /*
-    void PlaceItem()
-    {
-        _targetedGameObject.GetComponent<SpawnZone>().ItemWasPlaced();
-        carriedObject.transform.position = _mousePosition;
-        
-        if (carriedObject.GetComponent<UnitManager>())
-        {
-            carriedObject.GetComponent<UnitManager>().UnitWasPlaced(true, _targetedGameObject);
-        }
-        carriedObject = null;
-    }*/
 
-    void DestroyItem()
+    void DestroyUnit()
     {
         Destroy(carriedObject);
     }
@@ -135,12 +140,6 @@ public class DragNDrop : MonoBehaviour
     public void CreateUnit(GameObject _unit)
     {
         carriedObject = Instantiate(_unit, _mousePosition, Quaternion.identity);
-
-        /*
-        if(GetComponent<GameManager>().usedGoldCoinsPlayer < GetComponent<GameManager>().goldCoinsMax)
-        {
-            carriedObject = Instantiate(_item, _mousePosition, Quaternion.identity);
-        }*/
     }
 
     /// <summary>
@@ -154,12 +153,5 @@ public class DragNDrop : MonoBehaviour
 
         // get refund for the picked-up unit (playerID is 1, as only player can do this):
         GetComponent<GoldManager>().AddGold(1, carriedObject.GetComponent<UnitManager>().deploymentCost);
-
-        /*
-        if (carriedObject.GetComponent<UnitManager>()) // why?
-        {
-            carriedObject.GetComponent<UnitManager>().myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
-            carriedObject.GetComponent<UnitManager>().UnitWasPickedUp();
-        }*/
     }
 }

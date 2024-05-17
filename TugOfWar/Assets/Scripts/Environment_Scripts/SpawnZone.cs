@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SpawnZone : MonoBehaviour
 {
+    [Header("Spawn Zone Setup:")]
+    public bool player1Zone = false;
+    public bool player2Zone = false;
+
+    [Space(10)]
     public bool occupied = false;
 
     [SerializeField] Material _neutralColorMat;
@@ -21,15 +26,19 @@ public class SpawnZone : MonoBehaviour
         switch(_zoneID)
         {
             case 0:
-                _meshRenderer.material = _neutralColorMat;
+                // DO NOT DELETE:
+                //_meshRenderer.material = _neutralColorMat; //enable if you want to see neutral zones:
                 return;
 
             case 1:
                 _meshRenderer.material = _team1ColorMat;
+                player1Zone = true;
                 return;
 
             case 2:
-                _meshRenderer.material = _team2ColorMat;
+                // DO NOT DELETE:
+                //_meshRenderer.material = _team2ColorMat; //enable if you want to see player 2 deployment zones:
+                player2Zone = true;
                 return;
         }
     }

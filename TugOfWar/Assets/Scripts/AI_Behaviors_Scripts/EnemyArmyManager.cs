@@ -13,9 +13,10 @@ public class EnemyArmyManager : MonoBehaviour
     float _deploymentIntervalMin = 10.0f;
     float _deploymentIntervalMax = 40.0f;
     float _minimumUnitCost;
+    bool _gameHasStarted = false; // used to automatically launch waves after the first one was launched by player 1
 
 
-    public void DeployStartingArmy()
+    public void DeployAIStartingArmy()
     {
         GetDeploymentArea();
         CalculateMinimumDeploymentCost();
@@ -49,6 +50,7 @@ public class EnemyArmyManager : MonoBehaviour
     public void StartContineousDeployment()
     {
         StartCoroutine(DeployForce());
+        _gameHasStarted = true;
     }
     IEnumerator DeployForce()
     {
@@ -68,9 +70,16 @@ public class EnemyArmyManager : MonoBehaviour
     /// </summary>
     void SpawnArmy()
     {
-        while(GetComponent<GoldManager>().team2Wallet >= _minimumUnitCost) 
+        // deploy as many troops as there is current budget:
+        while(GetComponent<GoldManager>().team2Wallet >= _minimumUnitCost && _team2DeploymentZoneTiles.Count > _usedTeam2DeploymentZoneTiles.Count) 
         {
             SpawnSoldier();
+        }
+
+        // launch all new AI units:
+        if (_gameHasStarted)
+        {
+            GetComponent<GameManager>().LaunchWave(2);
         }
     }
     void SpawnSoldier()
@@ -101,110 +110,4 @@ public class EnemyArmyManager : MonoBehaviour
             return;
         }
     }
-
-
-    /*
-    void GetRandomSpawnLocation()
-    {
-        int _rngNr = Random.Range(0, _team2DeploymentZoneTiles.Count);
-        GameObject _rngLocation = _team2DeploymentZoneTiles[_rngNr];
-    }*/
-    /*
-    bool HasEnoughGold(GameObject _soldierToBeBought)
-    {
-        if (_soldierToBeBought.GetComponent<UnitManager>().deploymentCost <= (GetComponent<GameManager>().goldCoinsMax - GetComponent<GameManager>().usedGoldCoinsAI))
-        {
-            return true;
-        }else
-        {
-            Debug.Log("Trying to Exit");
-            return false;
-        }
-    }*/
-
-
-    // safeties:
-    /*
-    public void SpawnEnemyArmy()
-    {
-        Debug.Log("1");
-        if ((GetComponent<GameManager>().goldCoinsMax - GetComponent<GameManager>().usedGoldCoinsAI) > 0)
-        {
-            SpawnSoldier();
-            Debug.Log("2");
-        }
-        else
-        {
-            Debug.Log("finished army!");
-        }
-    }*/
-
-    /*
-    void SpawnSoldier()
-    {
-        // get random soldier:
-        GameObject _randomSoldierToBeBought = _arrayOfSoldiers[Random.Range(0, _arrayOfSoldiers.Length)];
-        int _rngNr = Random.Range(0, _team2DeploymentZoneTiles.Count);
-        GameObject _rngLocation = _team2DeploymentZoneTiles[_rngNr];
-
-        if (HasEnoughGold(_randomSoldierToBeBought) && !_usedTeam2DeploymentZoneTiles.Contains(_rngLocation.transform))
-        {
-            _usedTeam2DeploymentZoneTiles.Add(_rngLocation.transform);
-            GameObject _instantiatedSoldier = Instantiate(_randomSoldierToBeBought, _rngLocation.transform.position, Quaternion.identity, _enemyArmyParentGO.transform);
-            _instantiatedSoldier.GetComponent<UnitManager>().UnitWasPlaced(false, _rngLocation);
-            _team2DeploymentZoneTiles[_rngNr].GetComponent<SpawnZone>().OccupyDeploymentTile();
-        }
-        // this beyond stuff was cancelled out when making this safety
-        else
-        {
-            SpawnSoldier();
-            //return;
-        }
-
-        // this will make SpawnSoldier loop until all money is spent. For or foreach loops are less practical here, as AI would only be able to spawn 1-gold units or bug out.
-        ///SpawnEnemyArmy();
-    }*/
-    /*void SpawnSoldier()
-    {
-        // get random soldier:
-        GameObject _randomSoldierToBeBought = _arrayOfSoldiers[Random.Range(0, _arrayOfSoldiers.Length)];
-
-        if (HasEnoughGold(_randomSoldierToBeBought))
-        {
-            //GameObject _rngLocation = _blueTeamDeploymentZoneTiles[Random.Range(0, _blueTeamDeploymentZoneTiles.Count)];
-            int _rngNr = Random.Range(0, _blueTeamDeploymentZoneTiles.Count);
-            GameObject _rngLocation = _blueTeamDeploymentZoneTiles[_rngNr];
-
-            if (!_usedblueTeamDeploymentZoneTiles.Contains(_rngLocation.transform))
-            {
-                _usedblueTeamDeploymentZoneTiles.Add(_rngLocation.transform);
-                GameObject _instantiatedSoldier = Instantiate(_randomSoldierToBeBought, _rngLocation.transform.position, Quaternion.identity, _enemyArmyParentGO.transform);
-                _instantiatedSoldier.GetComponent<UnitManager>().UnitWasPlaced(false, _rngLocation);
-                _blueTeamDeploymentZoneTiles[_rngNr].GetComponent<SpawnZone>().ItemWasPlaced();
-            }else
-            {
-                SpawnEnemyArmy();
-                return;
-            }
-        }else
-        {
-            SpawnEnemyArmy();
-            return;
-        }
-
-        // this will make SpawnSoldier loop until all money is spent. For or foreach loops are less practical here, as AI would only be able to spawn 1-gold units or bug out.
-        SpawnEnemyArmy();
-    }*/
-    /*
-    void PlaceItem()
-    {
-        _targetedGameObject.GetComponent<SpawnZone>().ItemWasPlaced();
-        carriedObject.transform.position = _mousePosition;
-
-        if (carriedObject.GetComponent<UnitManager>())
-        {
-            carriedObject.GetComponent<UnitManager>().UnitWasPlaced(true, _targetedGameObject);
-        }
-        carriedObject = null;
-    }*/
 }

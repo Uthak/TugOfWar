@@ -14,13 +14,13 @@ public class CameraController : MonoBehaviour
     public float maxZoom = 60f;
     public float panLimitLeft = 10f;
     public float panLimitRight = 50f;
-    public float followDelay = 10f; // Time to wait before starting to follow the most forward unit
+    public float followDelay = 30f; // Time to wait before starting to follow the most forward unit
     public float followSmoothSpeed = 0.125f; // Speed of the camera smooth follow
     public float followTolerance = 1f; // Tolerance to avoid jumping between units frantically
 
     private Camera _camera;
     private bool isPanning = false;
-    private bool isFollowing = false;
+    //private bool isFollowing = false;
     private float lastInputTime;
     private Transform mostForwardUnit;
     private List<Transform> units = new List<Transform>();
@@ -42,32 +42,24 @@ public class CameraController : MonoBehaviour
 
     void HandleCameraMovement()
     {
-        
+        // check if player is trying to pan the camera:
         if (Input.GetMouseButtonDown(1))
         {
             isPanning = true;
         }
-        /*
-        if (Input.GetMouseButtonUp(1))
+
+        // check if the mouse is being touched and stop following forward unit:
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(2) || Input.GetAxis("Mouse X") > 0.0f)
         {
-            isPanning = false;
-            lastInputTime = Time.time;
-            isFollowing = false;
-        }*/
-        // Check for any mouse button press
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(2))
-        {
-            //isPanning = true;
-            //lastInputTime = Time.time;
-            isFollowing = false;
+            //isFollowing = false;
         }
 
-        // Check for any mouse button release
+        // check for any mouse button release to indicate end of panning:
         if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
         {
             isPanning = false;
             lastInputTime = Time.time;
-            isFollowing = false;
+            //isFollowing = false; // why?
         }
 
 
@@ -79,7 +71,7 @@ public class CameraController : MonoBehaviour
             _camera.transform.position = newPosition;
 
             lastInputTime = Time.time;
-            isFollowing = false;
+            //isFollowing = false;
         }
 
 
@@ -89,22 +81,8 @@ public class CameraController : MonoBehaviour
         if (scroll != 0)
         {
             lastInputTime = Time.time;
-            //isFollowing = false;
-
             Debug.Log("is scrolling!");
         }
-
-        /*
-        float scroll = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
-        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - scroll, minZoom, maxZoom);
-
-        if (scroll != 0)
-        {
-            lastInputTime = Time.time;
-            //isFollowing = false;
-
-            Debug.Log("is scrolling!");
-        }*/
     }
 
     void FollowMostForwardUnit()
@@ -131,21 +109,14 @@ public class CameraController : MonoBehaviour
 
         if (mostForwardUnit != null)
         {
-            /*Vector3 targetPosition = new Vector3(
-                Mathf.Clamp(mostForwardUnit.position.x, panLimitLeft, panLimitRight),
-                _camera.transform.position.y,
-                _camera.transform.position.z
-            );*/
             Vector3 targetPosition = new Vector3(mostForwardUnit.position.x, _camera.transform.position.y, _camera.transform.position.z);
 
-            // Only jump to the most forward unit if the camera's X position is not already further than the unit's X position
+            // only jump to the most forward unit if the camera's X position is not already further than the unit's X position
             if (_camera.transform.position.x < mostForwardUnit.position.x)
             {
                 _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetPosition, followSmoothSpeed);
-                isFollowing = true;
+                //isFollowing = true;
             }
-            //_camera.transform.position = Vector3.Lerp(_camera.transform.position, targetPosition, followSmoothSpeed);
-            //isFollowing = true;
         }
     }
 

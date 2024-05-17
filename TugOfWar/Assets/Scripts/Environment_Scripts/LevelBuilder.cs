@@ -6,8 +6,9 @@ using System.Linq;
 
 public class LevelBuilder : MonoBehaviour
 {
+    [Header("Level Builder Setup:")]
     // The prefab for the grid squares
-    public GameObject[] spawnZone;
+    public GameObject[] spawnZone; // no need to be an array --> only one type of spawn zone
 
     // Define the size of the grid
     private const int _gridWidth = 60;
@@ -63,28 +64,16 @@ public class LevelBuilder : MonoBehaviour
                 // If the current position is within the red teams deployment zone, color it green
                 if (InsideNeutralZone(_position))
                 {
-                    //_instantiatedSpawnZone.GetComponent<Renderer>().enabled = true;
-                    //_instantiatedSpawnZone.GetComponent<Renderer>().material.color = Color.yellow;
-                    //_instantiatedSpawnZone.AddComponent<SpawnZone>();
-
                     _instantiatedSpawnZone.GetComponent<SpawnZone>().SetupSpawnZone(0);
                     _neutralDeploymentZoneTiles.Add(_instantiatedSpawnZone);
                 }
                 if (InsidePlayer1Zone(_position))
                 {
-                    //_instantiatedSpawnZone.GetComponent<Renderer>().enabled = true;
-                    //_instantiatedSpawnZone.GetComponent<Collider>().enabled = true; // WHY????
-                    //_instantiatedSpawnZone.AddComponent<SpawnZone>();
-
                     _instantiatedSpawnZone.GetComponent<SpawnZone>().SetupSpawnZone(1);
                     _team1DeploymentZoneTiles.Add(_instantiatedSpawnZone);
                 }
                 if (InsidePlayer2Zone(_position))
                 {
-                    //_instantiatedSpawnZone.GetComponent<Renderer>().enabled = true;
-                    //_instantiatedSpawnZone.GetComponent<Renderer>().material.color = Color.blue;
-                    //_instantiatedSpawnZone.AddComponent<SpawnZone>();
-
                     _instantiatedSpawnZone.GetComponent<SpawnZone>().SetupSpawnZone(2);
                     team2DeploymentZoneTiles.Add(_instantiatedSpawnZone);
                 }
@@ -108,12 +97,11 @@ public class LevelBuilder : MonoBehaviour
             {
                 int _levelSectorID = 0;
 
-                CreateValidObstacle(_levelSectorID);
+                InstantiateObstacle(_levelSectorID);
             }
         }
-        //_redObstaclesPlaced = true;
-        //TryToBakeNavMesh();
     }
+
     void CreateObstaclesInTeam2DeploymentArea()
     {
         if (_numberOfTerrainInplayer2Zone > 0)
@@ -122,11 +110,9 @@ public class LevelBuilder : MonoBehaviour
             {
                 int _levelSectorID = 1;
 
-                CreateValidObstacle(_levelSectorID);
+                InstantiateObstacle(_levelSectorID);
             }
         }
-        //_blueObstaclesPlaced = true;
-        //TryToBakeNavMesh();
     }
     void CreateObstaclesInNeutralZone()
     {
@@ -136,14 +122,12 @@ public class LevelBuilder : MonoBehaviour
             {
                 int _levelSectorID = 2;
 
-                CreateValidObstacle(_levelSectorID);
+                InstantiateObstacle(_levelSectorID);
             }
         }
-        //_noMansLandObstaclesPlaced = true;
-        //TryToBakeNavMesh();
     }
 
-    void CreateValidObstacle(int _locationToSpawnThisObstacle)
+    void InstantiateObstacle(int _locationToSpawnThisObstacle)
     {
         GameObject _randomObstacle = null;
         int _randomNr = 0;
@@ -181,13 +165,13 @@ public class LevelBuilder : MonoBehaviour
                             _degreeRot = 270.0f;
                             break;
                         case 3:
-                            _degreeRot = 360.0f; // redundant...
+                            _degreeRot = 360.0f; // redundant... hence 0-3 random
                             break;
                     }
                     _instantiatedObstacle.transform.Find("outerBase_Section").Rotate(_instantiatedObstacle.transform.up, _degreeRot);
                 }else
                 {
-                    CreateValidObstacle(_locationToSpawnThisObstacle);
+                    InstantiateObstacle(_locationToSpawnThisObstacle);
                 }
                 break;
 
@@ -227,7 +211,7 @@ public class LevelBuilder : MonoBehaviour
                     _instantiatedObstacle.transform.Find("outerBase_Section").Rotate(_instantiatedObstacle.transform.up, _degreeRot);
                 }else
                 {
-                    CreateValidObstacle(_locationToSpawnThisObstacle);
+                    InstantiateObstacle(_locationToSpawnThisObstacle);
                 }
                 break;
 
@@ -267,7 +251,7 @@ public class LevelBuilder : MonoBehaviour
                     _instantiatedObstacle.transform.Find("outerBase_Section").Rotate(_instantiatedObstacle.transform.up, _degreeRot);
                 }else
                 {
-                    CreateValidObstacle(_locationToSpawnThisObstacle);
+                    InstantiateObstacle(_locationToSpawnThisObstacle);
                 }
                 break;
         }

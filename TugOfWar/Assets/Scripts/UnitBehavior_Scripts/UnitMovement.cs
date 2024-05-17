@@ -8,7 +8,7 @@ public class UnitMovement : MonoBehaviour
     // variables set by itself:
     NavMeshAgent _navMeshAgent;
     NavMeshPath _navMeshPath; // currently unused
-    LayerMask _layerMask;
+    LayerMask _layerOfObjectsToDetect;
     Vector3 _targetLocation;
     bool _gameStarted = false;
 
@@ -30,8 +30,8 @@ public class UnitMovement : MonoBehaviour
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         //_navMeshPath = new NavMeshPath();
-        _layerMask = LayerMask.GetMask("Units");
-        _teamAffiliation = GetComponent<UnitManager>().teamAffiliation;
+        _layerOfObjectsToDetect = LayerMask.GetMask("Units");
+        _teamAffiliation = GetComponent<UnitManager>().playerAffiliation;
         _navMeshAgent.speed = GetComponent<UnitManager>().movementSpeed;
         _spottingRange = GetComponent<UnitManager>().spottingRange;
 
@@ -48,11 +48,11 @@ public class UnitMovement : MonoBehaviour
         switch (_teamAffiliation)
         {
             case 1: // player-team:
-                _targetLocation = FindObjectOfType<GameManager>().team1Destination.transform.position;
+                _targetLocation = FindObjectOfType<GameManager>().player1Destination.transform.position;
                 break;
 
             case 2: // AI-team:
-                _targetLocation = FindObjectOfType<GameManager>().team2Destination.transform.position;
+                _targetLocation = FindObjectOfType<GameManager>().player2Destination.transform.position;
                 break;
 
             default:
@@ -91,7 +91,7 @@ public class UnitMovement : MonoBehaviour
     bool EnemySpotted()
     {
         // Use an OverlapSphere to detect all colliders within the detection radius
-        Collider[] _detectedUnits = Physics.OverlapSphere(transform.position, _spottingRange, _layerMask);
+        Collider[] _detectedUnits = Physics.OverlapSphere(transform.position, _spottingRange, _layerOfObjectsToDetect);
         List<GameObject> _enemiesInRange = new List<GameObject>();
 
         // If at least one unit was detected check if any are actual enemies:
@@ -99,7 +99,7 @@ public class UnitMovement : MonoBehaviour
         {
             foreach (Collider _unit in _detectedUnits)
             {
-                if (_unit.GetComponent<UnitManager>().teamAffiliation != _teamAffiliation)
+                if (_unit.GetComponent<UnitManager>().playerAffiliation != _teamAffiliation)
                 {
                     _enemiesInRange.Add(_unit.gameObject);
                 }
