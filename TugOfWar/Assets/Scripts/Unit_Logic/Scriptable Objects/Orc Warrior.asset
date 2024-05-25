@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c22b574bd50f54aa2c200a0b7fc2bd, type: 3}
+  m_Name: Orc Warrior
+  m_EditorClassIdentifier: 
+  unitName: Orc Warrior
+  race: 1
+  unitType: 1
+  deploymentCost: 10
+  healthPoints: 15
+  movementSpeed: 2
+  spottingRange: 3
+  chargeSpeedMultiplier: 1.5
+  chargeImpactDamage: 0.5
+  chargeImpactSplashRadius: 0
+  chargeImpactForce: 0
+  alarmRange: 5
+  carryCapacity: 0

@@ -8,6 +8,8 @@ public class LevelBuilder : MonoBehaviour
 {
     [Header("Level Builder Setup:")]
     // The prefab for the grid squares
+    [SerializeField] Transform _spawnZoneParent;
+    [SerializeField] Transform _obstacleParent;
     public GameObject[] spawnZone; // no need to be an array --> only one type of spawn zone
 
     // Define the size of the grid
@@ -59,7 +61,7 @@ public class LevelBuilder : MonoBehaviour
             {
                 // Instantiate a new grid square prefab at the current position
                 Vector3 _position = new Vector3(x + .5f, 0, z + .5f); // adding +.5f to adjust for size of spawnzone offset:
-                GameObject _instantiatedSpawnZone = Instantiate(spawnZone[Random.Range(0, spawnZone.Length)], _position, Quaternion.identity, transform);
+                GameObject _instantiatedSpawnZone = Instantiate(spawnZone[Random.Range(0, spawnZone.Length)], _position, Quaternion.identity, _spawnZoneParent);
 
                 // If the current position is within the red teams deployment zone, color it green
                 if (InsideNeutralZone(_position))
@@ -146,7 +148,7 @@ public class LevelBuilder : MonoBehaviour
                 if (!_team1UsedDeploymentZoneTiles.Contains(_randomLocation.transform))
                 {
                     _team1UsedDeploymentZoneTiles.Add(_randomLocation.transform);
-                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, transform);
+                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, _obstacleParent);
                     _team1DeploymentZoneTiles[_randomNr].GetComponent<SpawnZone>().OccupyDeploymentTile();
 
                     // rotate the obstacles parts for more variation:
@@ -186,7 +188,7 @@ public class LevelBuilder : MonoBehaviour
                 if (!usedTeam2DeploymentZoneTiles.Contains(_randomLocation.transform))
                 {
                     usedTeam2DeploymentZoneTiles.Add(_randomLocation.transform);
-                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, transform);
+                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, _obstacleParent);
                     team2DeploymentZoneTiles[_randomNr].GetComponent<SpawnZone>().OccupyDeploymentTile();
 
                     // rotate the obstacles parts for more variation:
@@ -226,7 +228,7 @@ public class LevelBuilder : MonoBehaviour
                 if (!_usedNeutralDeploymentZoneTiles.Contains(_randomLocation.transform))
                 {
                     _usedNeutralDeploymentZoneTiles.Add(_randomLocation.transform);
-                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, transform);
+                    GameObject _instantiatedObstacle = Instantiate(_randomObstacle, _randomLocation.transform.position, Quaternion.identity, _obstacleParent);
                     _neutralDeploymentZoneTiles[_randomNr].GetComponent<SpawnZone>().OccupyDeploymentTile();
 
                     // rotate the obstacles parts for more variation:

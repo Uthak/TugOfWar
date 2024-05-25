@@ -15,13 +15,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool _playAgainstAI = true;
 
     // private variables:
-    List<UnitManager> _unlaunchedUnits = new List<UnitManager>(); // used for filtering unlaunched units from those launched already
+    EnemyArmyManager _NPCArmyManager;
+    GoldManager _goldManager;
+    LevelBuilder _levelBuilder;
 
+    List<UnitManager> _allUnlaunchedUnits = new List<UnitManager>(); // used for filtering unlaunched units from those launched already
     List<UnitManager> _unlaunchedPlayer1Units = new List<UnitManager>(); // used for launching units of player 1
     List<UnitManager> _unlaunchedPlayer2Units = new List<UnitManager>(); // used for launching units of player 2
 
     private bool _firstWave = true; // this is used to distinguish the commence of the game, after deployment of the first wave is done
 
+
+    private void Awake()
+    {
+        // cache components:
+        _NPCArmyManager = GetComponent<EnemyArmyManager>();
+        _goldManager = GetComponent<GoldManager>();
+        _levelBuilder = GetComponent<LevelBuilder>();
+    }
 
     /// <summary>
     /// This function is called by <see cref="LevelBuilder"/> when the map is setup. 
@@ -31,7 +42,28 @@ public class GameManager : MonoBehaviour
     {
         if (_playAgainstAI)
         {
-            GetComponent<EnemyArmyManager>().DeployAIStartingArmy();
+            _NPCArmyManager.DeployAIStartingArmy();
+        }
+    }
+
+    /// <summary>
+    /// The <see cref="UnitManager"/> requests this location, so the <see cref="UnitMovement"/> may take this as their ultimate target.
+    /// </summary>
+    /// <param name="_playerID"></param>
+    /// <param name="_destinationTransform"></param>
+    public Transform GetDestination(int _playerID)
+    {
+        switch (_playerID)
+        {
+            case 1:
+                return player1Destination.transform;
+
+            case 2:
+                return player2Destination.transform;
+
+            default:
+                Debug.LogError("ERROR: A unit-destination was requested, but invalid player-ID given!", this);
+                return null;
         }
     }
 
@@ -47,12 +79,12 @@ public class GameManager : MonoBehaviour
             _firstWave = false;
 
             // both players will now start receiving gold:
-            GetComponent<GoldManager>().StartGoldFlow();
+            _goldManager.StartGoldFlow();
 
             // AI will start periodically deploying all its available money into new troops:
-            GetComponent<EnemyArmyManager>().StartContineousDeployment();
+            _NPCArmyManager.StartContineousDeployment();
 
-            // Launch the first AI-wave on the first press of button:
+            // launch the first AI-wave on the first press of button:
             LaunchWave(2);
         }
 
@@ -63,20 +95,20 @@ public class GameManager : MonoBehaviour
         switch (_playerID)
         {
             case 1: // player 1:
-                // reset the deployment zone:
-                GetComponent<LevelBuilder>().ResetDeploymentZone();
+                // reset player 1 deployment zone: (the only human player at this time)
+                _levelBuilder.ResetDeploymentZone();
 
                 // loop through the unlaunched units of player 1 and launch them:
                 foreach (UnitManager _unit in _unlaunchedPlayer1Units)
                 {
                     // tell this unit it has been launched:
-                    _unit.wasLaunched = true;
+                    //_unit.wasLaunched = true; // this happens in the unitManager
 
                     // beginn movement of all new units:
-                    _unit.GetComponent<UnitMovement>().GameStarted();
+                    _unit.GetComponent<UnitManager>().LaunchUnit();
 
                     // add all friendly units to the cameras follow-list:
-                    GetComponent<CameraController>().AddUnit(_unit.transform);
+                    //_cameraController.AddUnit(_unit.transform);
                 }
                 return;
 
@@ -85,10 +117,10 @@ public class GameManager : MonoBehaviour
                 foreach (UnitManager _unit in _unlaunchedPlayer2Units)
                 {
                     // tell this unit it has been launched:
-                    _unit.wasLaunched = true;
+                    //_unit.wasLaunched = true; // this happens in the unitManager
 
                     // beginn movement of all new units:
-                    _unit.GetComponent<UnitMovement>().GameStarted();
+                    _unit.GetComponent<UnitManager>().LaunchUnit();
                 }
                 return;
         }
@@ -110,14 +142,14 @@ public class GameManager : MonoBehaviour
         // loop through all units and filter out those who have not yet been launched:
         foreach (UnitManager _unit in _allUnits)
         {
-            if (!_unit.wasLaunched)
+            if (!_unit.isActive)
             {
-                _unlaunchedUnits.Add(_unit);
+                _allUnlaunchedUnits.Add(_unit);
             }
         }
 
         // loop through all new, unlaunched units and filter them by player-ownership:
-        foreach (UnitManager _unit in _unlaunchedUnits)
+        foreach (UnitManager _unit in _allUnlaunchedUnits)
         {
             if (_unit.playerAffiliation == 1)
             {
@@ -142,6 +174,6 @@ public class GameManager : MonoBehaviour
     {
         _unlaunchedPlayer1Units.Clear();
         _unlaunchedPlayer2Units.Clear();
-        _unlaunchedUnits.Clear();
+        _allUnlaunchedUnits.Clear();
     }
 }

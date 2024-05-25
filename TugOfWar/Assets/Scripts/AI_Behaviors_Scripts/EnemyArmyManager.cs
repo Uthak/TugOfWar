@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyArmyManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] _arrayOfSoldiers;
+    [SerializeField] GameObject[] _arrayOfAvailableUnits;
     [SerializeField] GameObject _enemyArmyParentGO;
     
     List<GameObject> _team2DeploymentZoneTiles = new List<GameObject>(); // public so the AI can access this to get its deployment zone
@@ -22,20 +22,26 @@ public class EnemyArmyManager : MonoBehaviour
         CalculateMinimumDeploymentCost();
         SpawnArmy();
     }
+
+    /// <summary>
+    /// NOTE: currently the cost of a unit are derived ONLY from its unitData, not considering pot. gear cost!
+    /// </summary>
     void CalculateMinimumDeploymentCost()
     {
         // add up all the unit costs of the units in the array to get a value thats guaranteed higher than the lowest cost therein:
-        foreach(GameObject _unitType in _arrayOfSoldiers)
+        foreach(GameObject _unitType in _arrayOfAvailableUnits)
         {
-            _minimumUnitCost += _unitType.GetComponent<UnitManager>().deploymentCost;
+            _minimumUnitCost += _unitType.GetComponent<UnitManager>().unitData.deploymentCost;
         }
 
         // loop through the array again and find the cheapest unit therein:
-        foreach (GameObject _unitType in _arrayOfSoldiers)
+        foreach (GameObject _unitType in _arrayOfAvailableUnits)
         {
-            if(_unitType.GetComponent<UnitManager>().deploymentCost < _minimumUnitCost)
+            //if(_unitType.GetComponent<UnitManager>().baseDeploymentCost < _minimumUnitCost)
+            if (_unitType.GetComponent<UnitManager>().unitData.deploymentCost < _minimumUnitCost)
             {
-                _minimumUnitCost = _unitType.GetComponent<UnitManager>().deploymentCost;
+                //_minimumUnitCost = _unitType.GetComponent<UnitManager>().baseDeploymentCost;
+                _minimumUnitCost = _unitType.GetComponent<UnitManager>().unitData.deploymentCost;
             }
         }
 
@@ -85,7 +91,7 @@ public class EnemyArmyManager : MonoBehaviour
     void SpawnSoldier()
     {
         // get random soldier:
-        GameObject _randomSoldierToBeBought = _arrayOfSoldiers[Random.Range(0, _arrayOfSoldiers.Length)];
+        GameObject _randomSoldierToBeBought = _arrayOfAvailableUnits[Random.Range(0, _arrayOfAvailableUnits.Length)];
         
         // get random spawn loctation:
         int _rngNr = Random.Range(0, _team2DeploymentZoneTiles.Count);
@@ -98,10 +104,11 @@ public class EnemyArmyManager : MonoBehaviour
 
             // create and setup the unit:
             GameObject _instantiatedUnit = Instantiate(_randomSoldierToBeBought, _rngLocation.transform.position, Quaternion.identity, _enemyArmyParentGO.transform);
-            _instantiatedUnit.GetComponent<UnitManager>().SetupThisUnit(false, _rngLocation);
+            _instantiatedUnit.GetComponent<UnitManager>().InitializeUnit(2);
+            _instantiatedUnit.GetComponent<UnitManager>().DeployThisUnit(2, _rngLocation);
 
             // pay for the unit:
-            GetComponent<GoldManager>().SubtractGold(2, _instantiatedUnit.GetComponent<UnitManager>().deploymentCost);
+            GetComponent<GoldManager>().SubtractGold(2, _instantiatedUnit.GetComponent<UnitManager>().baseDeploymentCost);
         }
         else
         {

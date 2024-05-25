@@ -71,6 +71,7 @@ public class GoldManager : MonoBehaviour
     /// <param name="_goldCost"></param>
     public void SubtractGold(int _playerID, float _goldCost)
     {
+        Debug.Log("player " + _playerID + " is paying to a unit with: " + _goldCost);   
         switch (_playerID)
         {
             case 1:
@@ -79,6 +80,7 @@ public class GoldManager : MonoBehaviour
                     team1Wallet -= _goldCost;
                 }else
                 {
+                    Debug.Log("ERROR: Not enough gold for this unit!");
                     // error feedback to player; e.g. alarm sound and flaring up of money tab....
                 }
                 return;
