@@ -56,10 +56,10 @@ public class GameManager : MonoBehaviour
         switch (_playerID)
         {
             case 1:
-                return player1Destination.transform;
+                return player1Destination.transform; // this throws error when HQ is destroyed
 
             case 2:
-                return player2Destination.transform;
+                return player2Destination.transform; // this throws error when HQ is destroyed
 
             default:
                 Debug.LogError("ERROR: A unit-destination was requested, but invalid player-ID given!", this);
