@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62c22b574bd50f54aa2c200a0b7fc2bd, type: 3}
-  m_Name: Human_Soldier_Sword_DataSheet
+  m_Name: Orc_Soldier_Sword_DataSheet 1
   m_EditorClassIdentifier: 
-  unitName: Guard
-  race: 0
+  unitName: Grunt
+  race: 1
   unitType: 1
   canBeManuallyPlaced: 1
   size: 1
   chargeImmunity: 0
-  deploymentCost: 10
-  healthPoints: 10
-  walkingSpeed: 1
-  runningSpeed: 3
-  spottingRange: 8
+  deploymentCost: 12
+  healthPoints: 12
+  walkingSpeed: 1.2
+  runningSpeed: 4
+  spottingRange: 6
   alarmRange: 0
   toHitSkill: 0
   toCritSkill: 0
