@@ -168,6 +168,8 @@ MonoBehaviour:
   armorData: {fileID: 11400000, guid: ceff7003102106b459ff0bb4dafaff5e, type: 2}
   weaponData: {fileID: 11400000, guid: 87cba5f507723e543afcab169fd21b43, type: 2}
   _reportThisUnitsStatline: 0
+  unitAnimator: {fileID: 0}
+  unitAnimationOverrideController: {fileID: 0}
   race: 0
   unitType: 1
   armorType: 0
@@ -177,7 +179,8 @@ MonoBehaviour:
   baseHealthPoints: 0
   baseArmorValue: 0
   unitDestination: {fileID: 0}
-  baseMovementSpeed: 0
+  walkingSpeed: 0
+  runningSpeed: 0
   baseSize: 0
   baseChargeSpeedMultiplier: 0
   baseChargeImpactDamage: 0

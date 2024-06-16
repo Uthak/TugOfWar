@@ -3,6 +3,8 @@ using UnityEngine.AI;
 
 public class UnitManager : MonoBehaviour
 {
+    // tutorial on anim controller, blend treed and animation layers: https://www.youtube.com/watch?v=qc0xU2Ph86Q
+
     [Header("Unit Setup:")]
     public string unitName;
     public int playerAffiliation = 0;
@@ -24,11 +26,15 @@ public class UnitManager : MonoBehaviour
     private CameraController _cameraController;
     private GameManager _gameManager;
     private LevelBuilder _levelBuilder;
+    //public Animator unitAnimator;
+
 
     // this statline is used by all other component to get relevant profile information
-    #region Statline:
+    #region Public Unit Information and Components:
     [SerializeField] bool _reportThisUnitsStatline = false;
 
+    public Animator unitAnimator;
+    public AnimatorOverrideController unitAnimationOverrideController; // this is required to speed up certain anim-speeds in runtime:
     public UnitDataSO.Race race;
     public UnitDataSO.UnitType unitType;
     public ArmorDataSO.ArmorType armorType;
@@ -45,7 +51,8 @@ public class UnitManager : MonoBehaviour
 
     // movement:
     public Transform unitDestination;
-    public float baseMovementSpeed = 0.0f;
+    public float walkingSpeed = 0.0f;
+    public float runningSpeed = 0.0f;
     public float baseSize = 0.0f;
 
     // charge:
@@ -184,6 +191,12 @@ public class UnitManager : MonoBehaviour
             }
 
             // cache components and initialize them:
+            // check first if there is an animator to begin with:
+            if (GetComponent<Animator>()) // this has to happen before other scripts are initializing!
+            {
+                unitAnimator = GetComponent<Animator>();
+                //Debug.Log("animator assigned: " + unitAnimator.name, unitAnimator);
+            }
             if (GetComponent<UnitHealth>())
             {
                 _unitHealth = GetComponent<UnitHealth>();
@@ -315,7 +328,8 @@ public class UnitManager : MonoBehaviour
         baseArmorValue = armorData.armorValue + weaponData.armorValue;
 
         // movement:
-        baseMovementSpeed = unitData.movementSpeed;
+        walkingSpeed = unitData.walkingSpeed;
+        runningSpeed = unitData.runningSpeed;
 
         // spotting::
         baseSpottingRange = unitData.spottingRange;
@@ -323,7 +337,7 @@ public class UnitManager : MonoBehaviour
 
         // charge:
         baseSize = unitData.size;
-        baseChargeSpeedMultiplier = unitData.chargeSpeedMultiplier; 
+        //baseChargeSpeedMultiplier = unitData.chargeSpeed; // now part of movement (see above):
         baseChargeImpactDamage = unitData.chargeImpactDamage;
         baseChargeImpactSplashRadius = unitData.chargeImpactSplashRadius; 
         baseChargeImpactForce = unitData.chargeImpactForce; 

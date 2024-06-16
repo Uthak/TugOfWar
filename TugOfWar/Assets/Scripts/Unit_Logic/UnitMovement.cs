@@ -7,6 +7,7 @@ public class UnitMovement : MonoBehaviour
 {
     UnitManager _unitManager;
     NavMeshAgent _navMeshAgent;
+    Animator _unitAnimator;
 
     LayerMask _unitSpottingLayer;
     Vector3 _destinationLocation; 
@@ -18,6 +19,10 @@ public class UnitMovement : MonoBehaviour
     float _attackRange = 0.0f;
     float _myColliderRadius = 0.0f;
 
+    // movement speeds:
+    float _walkingSpeed = 0.0f;
+    float _runningSpeed = 0.0f;
+
     Transform _enemyTransform;
 
     public void InitializeUnitMovement()
@@ -26,10 +31,23 @@ public class UnitMovement : MonoBehaviour
         _unitManager = GetComponent<UnitManager>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
+
+        // check first if there is an animator to begin with:
+        if (GetComponent<Animator>())
+        {
+            //_unitAnimator = _unitManager.unitAnimator;
+            _unitAnimator = GetComponent<Animator>();
+            Debug.Log("movement found animatro");
+        }
+
         // set variables:
         _unitSpottingLayer = LayerMask.GetMask("Units");
         _thisUnitsPlayerAffiliation = _unitManager.playerAffiliation;
-        _navMeshAgent.speed = _unitManager.baseMovementSpeed;
+
+        //_navMeshAgent.speed = _unitManager.walkingSpeed; // old but working
+        _walkingSpeed = _unitManager.walkingSpeed;
+        _runningSpeed = _unitManager.runningSpeed;
+        
         _spottingRange = _unitManager.baseSpottingRange;
         _attackRange = _unitManager.baseAttackRange;
         _destinationLocation = _unitManager.unitDestination.position;
@@ -58,6 +76,9 @@ public class UnitMovement : MonoBehaviour
     /// </summary>
     public void MoveTowardEnemyBase()
     {
+        _unitAnimator.SetBool("isCombatIdle", false);
+
+        _navMeshAgent.speed = _walkingSpeed;
         _enemyTransform = null; // allows to search for next enemy close by after previous one died.
         _navMeshAgent.SetDestination(_destinationLocation);
     }
@@ -65,14 +86,48 @@ public class UnitMovement : MonoBehaviour
 
     void Update()
     {
+        Vector3 _unitVelocity = _navMeshAgent.velocity;
+        float _unitSpeed = _unitVelocity.magnitude;
+        float _animationSpeed = 0.0f;
+
         if (_wasLaunched)
         {
             if (EnemySpotted())
             {
                 Engage();
-            }else
+
+                if (_unitAnimator != null)
+                {
+                    _animationSpeed = Mathf.Clamp01(_unitSpeed / _runningSpeed);
+                    MoveCharacter(_animationSpeed);
+
+                    //testing navmehs velocity:
+                    /*if (_thisUnitsPlayerAffiliation == 1)
+                    {
+                        Debug.Log("my current speed: " + _unitSpeed);
+
+                        Debug.Log("which translates to a blend value of: " + _animationSpeed);
+                    }*/
+                }
+            }
+            else
             {
                 MoveTowardEnemyBase();
+                if (_unitAnimator != null)
+                {
+                    _animationSpeed = Mathf.Clamp01(_unitSpeed / _walkingSpeed) * 0.5f;
+
+                    MoveCharacter(_animationSpeed);
+
+                    /*
+                    //testing navmehs velocity:
+                    if (_thisUnitsPlayerAffiliation == 1)
+                    {
+                        Debug.Log("my current speed: " + _unitSpeed);
+
+                        Debug.Log("which translates to a blend value of: " + _animationSpeed);
+                    }*/
+                }
             }
         }
     }
@@ -136,6 +191,8 @@ public class UnitMovement : MonoBehaviour
 
     void Engage()
     {
+        _navMeshAgent.speed = _runningSpeed;
+
         if (!EnemyInRange()) // enemy is spotted but NOT in range:
         {
             _navMeshAgent.SetDestination(_enemyTransform.position);
@@ -192,6 +249,10 @@ public class UnitMovement : MonoBehaviour
 
         // default case if none of the above colliders apply:
         return 0f;
+    }
+    void MoveCharacter(float _animationSpeed)
+    {
+        _unitAnimator.SetFloat("MovementSpeed", _animationSpeed, 0.15f, Time.deltaTime);
     }
 }
 

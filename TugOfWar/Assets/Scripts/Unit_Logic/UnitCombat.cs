@@ -11,6 +11,10 @@ public class UnitCombat : MonoBehaviour
     // basic:
     WeaponDataSO.WeaponGrip _myWeaponGrip;
     WeaponDataSO.WeaponType _myWeaponType;
+    Animator _unitAnimator;
+    AnimatorOverrideController _unitAnimatorOverrideController;
+
+    float _attackAnimationDuration = 2.0f; // NOT a solution!
 
     float _penetrationValue = 0f;
     float _attackRange = 0.0f;
@@ -33,6 +37,18 @@ public class UnitCombat : MonoBehaviour
         // cache components:
         _unitManager = GetComponent<UnitManager>();
 
+        // check first if there is an animator to begin with:
+        if (GetComponent<Animator>())
+        {
+            _unitAnimator = _unitManager.unitAnimator;
+            _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
+            //_unitAnimator = GetComponent<Animator>();
+            //_unitAnimatorOverrideController = GetComponent<AnimatorOverrideController>();
+            
+            //_attackAnimationDuration = GetAnimationClipLength("Orc_wolfrider_08_attack_B"); // temporary this dont work with other named anims
+            //Debug.Log("attack animation length: " + _attackAnimationDuration);
+        }
+
         // setup variables:
         _myUnitType = _unitManager.unitType;
 
@@ -41,6 +57,20 @@ public class UnitCombat : MonoBehaviour
 
         _attackSpeed = _unitManager.baseAttackSpeed;
         _weaponDamageValue = _unitManager.baseDamage;
+    }
+    private float GetAnimationClipLength(string clipName)
+    {
+        RuntimeAnimatorController ac = _unitAnimator.runtimeAnimatorController;
+        //RuntimeAnimatorController ac = _unitAnimator.controll;
+        foreach (var clip in ac.animationClips)
+        {
+            if (clip.name == clipName)
+            {
+                return clip.length;
+            }
+        }
+        Debug.LogError("Animation clip not found: " + clipName);
+        return 0f;
     }
 
     /*
@@ -68,7 +98,9 @@ public class UnitCombat : MonoBehaviour
     /// <param name="_targetEnemyUnit"></param>
     public void Attack(GameObject _targetEnemyUnit)
     {
-        Debug.Log("I am attacking: " + this.gameObject);
+        _unitAnimator.SetBool("isCombatIdle", true);
+
+        //Debug.Log("I am attacking: " + this.gameObject);
 
         //_targetEnemy = _enemyUnit;
 
@@ -95,6 +127,10 @@ public class UnitCombat : MonoBehaviour
         }
         else
         {
+            // this never gets called, call from movement!
+            //_unitAnimator.SetBool("isCombatIdle", false);
+            //Debug.Log("combat over, stop combat idle now!");
+
             GetComponent<UnitMovement>().MoveTowardEnemyBase(); // redundant?
         }
     }
@@ -121,17 +157,61 @@ public class UnitCombat : MonoBehaviour
 
     IEnumerator Strike(GameObject _targetEnemyUnit)
     {
-        Debug.Log("I, " + this.gameObject.name + " strike at " + _targetEnemyUnit.name);
+        /*if(_unitManager.playerAffiliation == 1)
+        {
+            Debug.Log("1");
+        }*/
 
         _inCoroutine = true;
 
-        float _calculatedDamage = CalculateEffectiveDamage(_targetEnemyUnit);
+        // check if there is an animator component:
+        if (_unitAnimator)
+        {
+            // if the attackspeed is faster than the animation speed up the animation to match
+            //if(_attackSpeed < _unitAnimator.speed)
+            //if (_attackSpeed < _unitAnimator.GetFloat("attackSpeedModifier"))
+            if (_attackSpeed < _attackAnimationDuration)
+            {
+                _unitAnimator.SetFloat("attackSpeedModifier", 1.0f / _attackSpeed);
+                Debug.Log("attackSpeedModifier was changed to: " + _unitAnimator.GetFloat("attackSpeedModifier"));
 
+            }
+
+            //Debug.Log("attackSpeedModifier is currently: " + _unitAnimator.GetFloat(("attackSpeedModifier")));
+
+            _unitAnimator.SetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer"), 1.0f);
+            _unitAnimator.SetTrigger("isAttackingTrigger");
+            Debug.Log("2");
+
+            //Debug.Log("attack layer weight now: " + _unitAnimator.GetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer")));
+        }
+        if (_unitManager.playerAffiliation == 1)
+        {
+            Debug.Log("3");
+        }
+
+        // administer damage:
+        float _calculatedDamage = CalculateEffectiveDamage(_targetEnemyUnit);
         _targetEnemyUnit.GetComponent<UnitHealth>().TakeDamage(_calculatedDamage, _penetrationValue);
 
+        // wait the length of attack-speed before being able to strike again:
         yield return new WaitForSeconds(_attackSpeed);
+        if (_unitManager.playerAffiliation == 1)
+        {
+            Debug.Log("4");
+        }
+
+        // reset the attack-layer weight so the movement layer has full controll again:
+        /*if (GetComponent<Animator>())
+        {
+            _unitAnimator.SetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer"), 0.0f);
+        }*/
 
         _inCoroutine = false;
+        if (_unitManager.playerAffiliation == 1)
+        {
+            Debug.Log("5");
+        }
     }
 
     float CalculateEffectiveDamage(GameObject _targetEnemyUnit)

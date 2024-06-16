@@ -223,6 +223,8 @@ MonoBehaviour:
   armorData: {fileID: 0}
   weaponData: {fileID: 0}
   _reportThisUnitsStatline: 0
+  unitAnimator: {fileID: 0}
+  unitAnimationOverrideController: {fileID: 0}
   race: 0
   unitType: 0
   armorType: 0
@@ -232,8 +234,9 @@ MonoBehaviour:
   baseHealthPoints: 0
   baseArmorValue: 0
   unitDestination: {fileID: 0}
-  baseMovementSpeed: 0
-  baseWeigthClass: 0
+  walkingSpeed: 0
+  runningSpeed: 0
+  baseSize: 0
   baseChargeSpeedMultiplier: 0
   baseChargeImpactDamage: 0
   baseChargeImpactSplashRadius: 0
@@ -250,6 +253,7 @@ MonoBehaviour:
   baseSplashDamage: 0
   baseBashChance: 0
   baseBashForce: 0
+  manualPlayerID: 0
 --- !u!114 &4591919811121767301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +266,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c55225dbf8582cc40b948255103a16f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _baseHealthPoints: 0
+  currentHealthPoints: 0
+  _mySize: 0
 --- !u!114 &2255451153667185561
 MonoBehaviour:
   m_ObjectHideFlags: 0

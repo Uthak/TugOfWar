@@ -18,15 +18,15 @@ MonoBehaviour:
   canBeManuallyPlaced: 1
   size: 1
   chargeImmunity: 0
-  deploymentCost: 10
+  deploymentCost: 50
   healthPoints: 10
-  movementSpeed: 1
-  spottingRange: 5
+  walkingSpeed: 1
+  runningSpeed: 3
+  spottingRange: 8
   alarmRange: 0
   toHitSkill: 0
   toCritSkill: 0
   carryCapacity: 0
-  chargeSpeedMultiplier: 0
   chargeImpactDamage: 0
   chargeImpactSplashRadius: 0
   chargeImpactForce: 0

@@ -3,19 +3,19 @@ using UnityEngine.UI;
 
 public class SkillButton : MonoBehaviour
 {
-    public SkillSO skill;
-    private Button button;
-    private SkillManager skillManager;
+    public SkillSO _skill;
+    private Button _button;
+    private SkillManager _skillManager;
 
     void Start()
     {
-        button = GetComponent<Button>();
-        skillManager = FindAnyObjectByType<SkillManager>();
-        button.onClick.AddListener(OnButtonClick);
+        _button = GetComponent<Button>();
+        _skillManager = FindAnyObjectByType<SkillManager>();
+        _button.onClick.AddListener(OnButtonClick);
     }
 
     void OnButtonClick()
     {
-        skillManager.SelectSkill(skill);
+        _skillManager.SelectSkill(_skill);
     }
 }

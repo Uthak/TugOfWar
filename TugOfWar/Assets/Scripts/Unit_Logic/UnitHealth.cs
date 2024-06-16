@@ -91,7 +91,7 @@ public class UnitHealth : MonoBehaviour
         // update health bar:
         //_healthBar.UpdateUnitHealthBar(currentHealthPoints);
 
-        Debug.Log("I, " + this.gameObject.name + " took damage and have this much: " + currentHealthPoints + " left");
+        //Debug.Log("I, " + this.gameObject.name + " took damage and have this much: " + currentHealthPoints + " left");
 
         if (currentHealthPoints <= 0.0f)
         {

@@ -21,7 +21,8 @@ public class UnitDataSO : ScriptableObject
     // base unit stats:
     public float deploymentCost = 5.0f;
     public float healthPoints = 5.0f;
-    public float movementSpeed = 1.0f;
+    public float walkingSpeed = 1.0f;
+    public float runningSpeed = 0.0f; // should usually be around 200% of walking:
     public float spottingRange = 5.0f;
     public float alarmRange = 0.0f; // unused...// how far will this unit relay a spotted enemy
 
@@ -34,7 +35,7 @@ public class UnitDataSO : ScriptableObject
 
     [Space(10)]
     // advanced unit stats:
-    public float chargeSpeedMultiplier = 0.0f; // unused...
+    //public float runningSpeed = 0.0f; // should usually be around 200% of walking:
     public float chargeImpactDamage = 0.0f; // unused...
     public float chargeImpactSplashRadius = 0.0f; // unused...
     public float chargeImpactForce = 0.0f; // unused...
