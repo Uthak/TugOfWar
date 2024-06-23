@@ -22,6 +22,7 @@ public class UnitManager : MonoBehaviour
     private UnitHealth _unitHealth;
     private UnitMovement _unitMovement;
     private UnitCombat _unitCombat;
+    private UnitAnimationController _unitAnimationController;
     private DragNDrop _dragNDrop;
     private CameraController _cameraController;
     private GameManager _gameManager;
@@ -53,6 +54,7 @@ public class UnitManager : MonoBehaviour
     public Transform unitDestination;
     public float walkingSpeed = 0.0f;
     public float runningSpeed = 0.0f;
+    public float chargingSpeed = 0.0f;
     public float baseSize = 0.0f;
 
     // charge:
@@ -139,6 +141,12 @@ public class UnitManager : MonoBehaviour
                 _unitCombat = GetComponent<UnitCombat>();
                 _unitCombat.InitializeUnitCombat();
             }
+            
+            if (GetComponent<UnitAnimationController>())
+            {
+                _unitAnimationController = GetComponent<UnitAnimationController>();
+                _unitAnimationController.InitializeUnitAnimatonController();
+            }
 
             LaunchUnit();
         }
@@ -212,8 +220,19 @@ public class UnitManager : MonoBehaviour
                 _unitCombat = GetComponent<UnitCombat>();
                 _unitCombat.InitializeUnitCombat();
             }
-        }
-        else
+            if (GetComponent<UnitAnimationController>())
+            {
+                _unitAnimationController = GetComponent<UnitAnimationController>();
+                _unitAnimationController.InitializeUnitAnimatonController();
+
+                // if this is a ranged unit, also initialize projectile-animation:
+                if(weaponType == WeaponDataSO.WeaponType.Bow && GetComponent<AnimateProjectile>())
+                {
+                    // does not need to be referenced, as it's only ever accessed by the Animation Controller:
+                    GetComponent<AnimateProjectile>().InitializeProjectileAnimator();
+                }
+            }
+        }else
         {
             Debug.LogError("ERROR: Unit without UnitDataSO detected!", this);
             return;
@@ -330,6 +349,7 @@ public class UnitManager : MonoBehaviour
         // movement:
         walkingSpeed = unitData.walkingSpeed;
         runningSpeed = unitData.runningSpeed;
+        chargingSpeed = unitData.chargingSpeed;
 
         // spotting::
         baseSpottingRange = unitData.spottingRange;
@@ -541,13 +561,18 @@ public class UnitManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by UnitHealth. This function rewards gold for the kill, updates the camera-follow and 
-    /// destroyes this unit.
+    /// Called by UnitHealth. This function rewards gold for the kill, updates the camera-follow.
+    /// NOTE: This does NOT destroy the unit (as we want the animation to finish playing).
     /// </summary>
-    public void KillThisUnit()
+    public void SignOffThisUnit()
     {
         // mark this unit as deactivated:
         isActive = false;
+
+        _unitMovement.DeactivateMovement();
+        _unitCombat.DeactivateCombat();
+        //_unitHealth.DeactivateHealth();
+
 
         // reward the victor 1/4 of the killed units deployment cost:
         switch (playerAffiliation)
@@ -569,9 +594,14 @@ public class UnitManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log("destroying: " + this.gameObject.name);
 
         // destroy this unit:
+        //Debug.Log("destroying: " + this.gameObject.name);
+        //Destroy(this.gameObject);
+    }
+
+    public void KillUnit()
+    {
         Destroy(this.gameObject);
     }
 }

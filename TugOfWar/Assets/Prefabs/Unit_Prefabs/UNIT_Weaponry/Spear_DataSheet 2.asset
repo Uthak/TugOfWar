@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 335e231af3d05ce4690625adf494c71e, type: 3}
+  m_Name: Spear_DataSheet 2
+  m_EditorClassIdentifier: 
+  weaponName: Tier 1 Spear
+  weaponGrip: 0
+  weaponType: 5
+  shieldOffhand: 0
+  damage: 0.5
+  attackSpeed: 3
+  attackRange: 1
+  armorPenetrationValue: 0
+  toHitFactor: 0
+  criticalHitFactor: 0
+  splashRadius: 0
+  splashDamage: 0
+  bashChance: 0
+  bashForceFactor: 0
+  armorValue: 0
+  deploymentCost: 0

@@ -7103,6 +7103,7 @@ GameObject:
   - component: {fileID: 1517335312}
   - component: {fileID: 1517335313}
   - component: {fileID: 1517335314}
+  - component: {fileID: 1517335315}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -7196,7 +7197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _arrayOfAvailableUnits:
-  - {fileID: 1732547557541199410, guid: f31b9a7b168a4ff4e8dddb5f9fd786a5, type: 3}
+  - {fileID: 1732547557541199410, guid: bfd1eccd0488905449b9a65ab447a230, type: 3}
   _enemyArmyParentGO: {fileID: 1428981591}
 --- !u!114 &1517335310
 MonoBehaviour:
@@ -7293,6 +7294,20 @@ MonoBehaviour:
   _savePath: C:/Users/fmund/AppData/LocalLow/Silly Duck Entertainment/TugOfWar
   _currentRunSkilltreeSafeFile: currentRunSkillSelection
   _fileType: .json
+--- !u!114 &1517335315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517335303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17dda1ddc4898134cb2c7edc862b722e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _arrow: {fileID: 6717181908106317047, guid: 6a290d4c104a54048bcc66ec2aa2fb93, type: 3}
+  initialPoolSize: 10
 --- !u!1 &1548682877
 GameObject:
   m_ObjectHideFlags: 0
@@ -8486,7 +8501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10ad25a63c06d1d41b980447d7402dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemToPickUpHere: {fileID: 1732547557541199410, guid: 265a9c89d0fcfb448aba57af1c53f269,
+  itemToPickUpHere: {fileID: 1732547557541199410, guid: bfd1eccd0488905449b9a65ab447a230,
     type: 3}
 --- !u!114 &1875737519
 MonoBehaviour:

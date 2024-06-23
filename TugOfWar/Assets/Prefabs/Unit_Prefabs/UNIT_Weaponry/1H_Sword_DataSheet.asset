@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 335e231af3d05ce4690625adf494c71e, type: 3}
   m_Name: 1H_Sword_DataSheet
   m_EditorClassIdentifier: 
-  weaponName: Sword (1 H)
+  weaponName: Tier 1 Sword
   weaponGrip: 0
   weaponType: 2
   shieldOffhand: 0
   damage: 0.5
-  attackSpeed: 3
+  attackSpeed: 2.5
   attackRange: 0.5
   armorPenetrationValue: 0
   toHitFactor: 0

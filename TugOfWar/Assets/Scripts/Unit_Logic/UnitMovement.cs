@@ -7,11 +7,12 @@ public class UnitMovement : MonoBehaviour
 {
     UnitManager _unitManager;
     NavMeshAgent _navMeshAgent;
-    Animator _unitAnimator;
+    //Animator _unitAnimator;
+    UnitAnimationController _unitAnimationController;
 
     LayerMask _unitSpottingLayer;
     Vector3 _destinationLocation; 
-    bool _wasLaunched = false;
+    bool _isActive = false;
 
     // variables set by the UnitManager:
     int _thisUnitsPlayerAffiliation = 0;
@@ -22,6 +23,7 @@ public class UnitMovement : MonoBehaviour
     // movement speeds:
     float _walkingSpeed = 0.0f;
     float _runningSpeed = 0.0f;
+    float _chargingSpeed = 0.0f;
 
     Transform _enemyTransform;
 
@@ -31,14 +33,15 @@ public class UnitMovement : MonoBehaviour
         _unitManager = GetComponent<UnitManager>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
-
+        /*
         // check first if there is an animator to begin with:
         if (GetComponent<Animator>())
         {
             //_unitAnimator = _unitManager.unitAnimator;
             _unitAnimator = GetComponent<Animator>();
-            Debug.Log("movement found animatro");
-        }
+            //Debug.Log("movement found animatro");
+        }*/
+        _unitAnimationController = GetComponent<UnitAnimationController>();
 
         // set variables:
         _unitSpottingLayer = LayerMask.GetMask("Units");
@@ -47,6 +50,7 @@ public class UnitMovement : MonoBehaviour
         //_navMeshAgent.speed = _unitManager.walkingSpeed; // old but working
         _walkingSpeed = _unitManager.walkingSpeed;
         _runningSpeed = _unitManager.runningSpeed;
+        _chargingSpeed = _unitManager.chargingSpeed;
         
         _spottingRange = _unitManager.baseSpottingRange;
         _attackRange = _unitManager.baseAttackRange;
@@ -62,7 +66,7 @@ public class UnitMovement : MonoBehaviour
     /// </summary>
     public void StartMovement()
     {
-        _wasLaunched = true;
+        _isActive = true;
 
         // enable NavMesh (if it's done earlier, units tend to get stuck on interveening terrain):
         GetComponent<NavMeshAgent>().enabled = true;
@@ -76,8 +80,17 @@ public class UnitMovement : MonoBehaviour
     /// </summary>
     public void MoveTowardEnemyBase()
     {
-        _unitAnimator.SetBool("isCombatIdle", false);
+        //_unitAnimator.SetBool("isCombatIdle", false);
+        //_unitAnimationController.ExitCombat();
 
+        // movement animation: CURRENTLY MISSING WALKING VS RUNNING (always walk)
+        Vector3 unitVelocity = _navMeshAgent.velocity;
+        float unitSpeed = unitVelocity.magnitude;
+        float movementAnimationSpeed = 0.0f;
+        movementAnimationSpeed = Mathf.Clamp01(unitSpeed / _walkingSpeed) * 0.5f;
+        _unitAnimationController.MoveUnit(movementAnimationSpeed);
+
+        // this will need to check if all troops are supposed to halt, advance or run down the line!
         _navMeshAgent.speed = _walkingSpeed;
         _enemyTransform = null; // allows to search for next enemy close by after previous one died.
         _navMeshAgent.SetDestination(_destinationLocation);
@@ -86,48 +99,36 @@ public class UnitMovement : MonoBehaviour
 
     void Update()
     {
+        /*
         Vector3 _unitVelocity = _navMeshAgent.velocity;
         float _unitSpeed = _unitVelocity.magnitude;
         float _animationSpeed = 0.0f;
-
-        if (_wasLaunched)
+        */
+        if (_isActive)
         {
             if (EnemySpotted())
             {
-                Engage();
+                _unitAnimationController.EnterCombat();
 
+                Engage();
+                /*
                 if (_unitAnimator != null)
                 {
                     _animationSpeed = Mathf.Clamp01(_unitSpeed / _runningSpeed);
                     MoveCharacter(_animationSpeed);
-
-                    //testing navmehs velocity:
-                    /*if (_thisUnitsPlayerAffiliation == 1)
-                    {
-                        Debug.Log("my current speed: " + _unitSpeed);
-
-                        Debug.Log("which translates to a blend value of: " + _animationSpeed);
-                    }*/
-                }
+                }*/
             }
             else
             {
+                _unitAnimationController.ExitCombat();
+
                 MoveTowardEnemyBase();
+                /*
                 if (_unitAnimator != null)
                 {
-                    _animationSpeed = Mathf.Clamp01(_unitSpeed / _walkingSpeed) * 0.5f;
-
+                    _animationSpeed = Mathf.Clamp01(_unitSpeed / _walkingSpeed) * 0.5;
                     MoveCharacter(_animationSpeed);
-
-                    /*
-                    //testing navmehs velocity:
-                    if (_thisUnitsPlayerAffiliation == 1)
-                    {
-                        Debug.Log("my current speed: " + _unitSpeed);
-
-                        Debug.Log("which translates to a blend value of: " + _animationSpeed);
-                    }*/
-                }
+                }*/
             }
         }
     }
@@ -191,18 +192,35 @@ public class UnitMovement : MonoBehaviour
 
     void Engage()
     {
-        _navMeshAgent.speed = _runningSpeed;
+        //_unitAnimationController.EnterCombat();
+
+        Vector3 unitVelocity = _navMeshAgent.velocity;
+        float unitSpeed = unitVelocity.magnitude;
+        float movementAnimationSpeed = 0.0f;
+
+        _navMeshAgent.speed = _chargingSpeed;
 
         if (!EnemyInRange()) // enemy is spotted but NOT in range:
         {
             _navMeshAgent.SetDestination(_enemyTransform.position);
-        } else if(EnemyInRange()) // enemy is in range and NOT dead:
+
+            //movementAnimationSpeed = Mathf.Clamp01(unitSpeed / _chargingSpeed);
+            _unitAnimationController.MoveUnit(1.0f); // charge
+        } 
+        else if(EnemyInRange()) // enemy is in range and NOT dead:
         {
             _navMeshAgent.SetDestination(transform.position); // when in range, stop moving:
             
             GetComponent<UnitCombat>().Attack(_enemyTransform.gameObject);
-        } else // all enemies spotted AND in range are dead:
+
+            movementAnimationSpeed = Mathf.Clamp01(unitSpeed / _walkingSpeed) * 0.5f;
+            _unitAnimationController.MoveUnit(movementAnimationSpeed); // charge
+        } 
+        else // all enemies spotted AND in range are dead:
         {
+            //_unitAnimationController.ExitCombat();
+            Debug.Log("combat was exited, should start moving normally again", this);
+
             MoveTowardEnemyBase();
         }
     }
@@ -250,10 +268,19 @@ public class UnitMovement : MonoBehaviour
         // default case if none of the above colliders apply:
         return 0f;
     }
+
+    /// <summary>
+    /// This gets called by the UnitManager, when this unit is killed.
+    /// </summary>
+    public void DeactivateMovement()
+    {
+        _isActive = false;
+    }
+    /*
     void MoveCharacter(float _animationSpeed)
     {
         _unitAnimator.SetFloat("MovementSpeed", _animationSpeed, 0.15f, Time.deltaTime);
-    }
+    }*/
 }
 
 //***

@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class UnitCombat : MonoBehaviour
 {
-    UnitManager _unitManager;
-
     bool _inCoroutine = false;
-
-    // basic:
-    WeaponDataSO.WeaponGrip _myWeaponGrip;
+    bool _isActive = false;
+    UnitManager _unitManager;
+    //WeaponDataSO.WeaponGrip _myWeaponGrip;
     WeaponDataSO.WeaponType _myWeaponType;
+    UnitDataSO.UnitType _myUnitType;
+    //GameObject _targetEnemy;
+
+    // animation stuff:
+    UnitAnimationController _myAnimationController;
+
+    // old anim stuff:
+    AnimateProjectile _myAnimateProjectile; // in case this is a ranged unit
     Animator _unitAnimator;
     AnimatorOverrideController _unitAnimatorOverrideController;
-
     float _attackAnimationDuration = 2.0f; // NOT a solution!
 
     float _penetrationValue = 0f;
@@ -29,27 +34,31 @@ public class UnitCombat : MonoBehaviour
     float _splashRadius = 0.0f;
     float _splashDamage = 0.0f;
 
-    UnitDataSO.UnitType _myUnitType;
-    GameObject _targetEnemy;
-
     public void InitializeUnitCombat()
     {
         // cache components:
         _unitManager = GetComponent<UnitManager>();
 
         // check first if there is an animator to begin with:
-        if (GetComponent<Animator>())
+        /*if (GetComponent<Animator>())
         {
             _unitAnimator = _unitManager.unitAnimator;
             _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
-            //_unitAnimator = GetComponent<Animator>();
-            //_unitAnimatorOverrideController = GetComponent<AnimatorOverrideController>();
-            
-            //_attackAnimationDuration = GetAnimationClipLength("Orc_wolfrider_08_attack_B"); // temporary this dont work with other named anims
-            //Debug.Log("attack animation length: " + _attackAnimationDuration);
+        }*/
+
+        if (GetComponent<UnitAnimationController>())
+        {
+            _myAnimationController = GetComponent<UnitAnimationController>();
         }
 
         // setup variables:
+        // if ranged, initialize projectile animations:
+        /*if(_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
+        {
+            _myAnimateProjectile = GetComponent<AnimateProjectile>();
+            _myAnimateProjectile.InitializeProjectileAnimator();
+        }*/
+
         _myUnitType = _unitManager.unitType;
 
         _penetrationValue = _unitManager.baseArmorPenetrationValue;
@@ -57,6 +66,8 @@ public class UnitCombat : MonoBehaviour
 
         _attackSpeed = _unitManager.baseAttackSpeed;
         _weaponDamageValue = _unitManager.baseDamage;
+
+        _isActive = true;
     }
     private float GetAnimationClipLength(string clipName)
     {
@@ -98,40 +109,47 @@ public class UnitCombat : MonoBehaviour
     /// <param name="_targetEnemyUnit"></param>
     public void Attack(GameObject _targetEnemyUnit)
     {
-        _unitAnimator.SetBool("isCombatIdle", true);
-
-        //Debug.Log("I am attacking: " + this.gameObject);
-
-        //_targetEnemy = _enemyUnit;
-
-        if (TargetIsAlive(_targetEnemyUnit))
+        if (_isActive)
         {
-            if (!_inCoroutine)
+            _myAnimationController.EnterCombat();
+            //_unitAnimator.SetBool("isCombatIdle", true);
+
+            //Debug.Log("I am attacking: " + this.gameObject);
+
+            //_targetEnemy = _enemyUnit;
+
+            if (TargetIsAlive(_targetEnemyUnit))
             {
-                StartCoroutine(Strike(_targetEnemyUnit));
+                transform.LookAt(_targetEnemyUnit.transform);
+
+                if (!_inCoroutine)
+                {
+                    StartCoroutine(Strike(_targetEnemyUnit));
+                }
+                //StartCoroutine(Strike(_targetEnemyUnit));
+
+                /*
+                if (!_inCoroutine)
+                {
+                    if (RangedAttackPossible())
+                    {
+                        StartCoroutine(Shoot());
+                    }
+                    else
+                    {
+                        StartCoroutine(Strike());
+                    }
+                }*/
             }
-            //StartCoroutine(Strike(_targetEnemyUnit));
-
-            /*
-            if (!_inCoroutine)
+            else
             {
-                if (RangedAttackPossible())
-                {
-                    StartCoroutine(Shoot());
-                }
-                else
-                {
-                    StartCoroutine(Strike());
-                }
-            }*/
-        }
-        else
-        {
-            // this never gets called, call from movement!
-            //_unitAnimator.SetBool("isCombatIdle", false);
-            //Debug.Log("combat over, stop combat idle now!");
+                // this never gets called, call from movement!
+                //_unitAnimator.SetBool("isCombatIdle", false);
+                //Debug.Log("combat over, stop combat idle now!");
+                _myAnimationController.ExitCombat();
 
-            GetComponent<UnitMovement>().MoveTowardEnemyBase(); // redundant?
+                GetComponent<UnitMovement>().MoveTowardEnemyBase(); // redundant?
+            }
         }
     }
     bool TargetIsAlive(GameObject _enemyUnit)
@@ -164,12 +182,12 @@ public class UnitCombat : MonoBehaviour
 
         _inCoroutine = true;
 
+        _myAnimationController.AttackAnimation(_targetEnemyUnit ,_attackSpeed, _unitManager.weaponType);
+
         // check if there is an animator component:
-        if (_unitAnimator)
+        /*if (_unitAnimator)
         {
-            // if the attackspeed is faster than the animation speed up the animation to match
-            //if(_attackSpeed < _unitAnimator.speed)
-            //if (_attackSpeed < _unitAnimator.GetFloat("attackSpeedModifier"))
+            // if the attackspeed is faster than the animation speed up the animation to match:
             if (_attackSpeed < _attackAnimationDuration)
             {
                 _unitAnimator.SetFloat("attackSpeedModifier", 1.0f / _attackSpeed);
@@ -177,29 +195,33 @@ public class UnitCombat : MonoBehaviour
 
             }
 
-            //Debug.Log("attackSpeedModifier is currently: " + _unitAnimator.GetFloat(("attackSpeedModifier")));
-
             _unitAnimator.SetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer"), 1.0f);
             _unitAnimator.SetTrigger("isAttackingTrigger");
-            Debug.Log("2");
-
-            //Debug.Log("attack layer weight now: " + _unitAnimator.GetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer")));
         }
+
+        // if this unit has a ranged attack, animate the projectile:
+        if (_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
+        {
+            _myAnimateProjectile.AnimateArrow(_targetEnemyUnit.transform.position);
+        }*/
+
+        /*
         if (_unitManager.playerAffiliation == 1)
         {
             Debug.Log("3");
-        }
+        }*/
 
-        // administer damage:
+        // administer damage: // there should be a distinction for ranged attacks, causing dmg on impact
         float _calculatedDamage = CalculateEffectiveDamage(_targetEnemyUnit);
         _targetEnemyUnit.GetComponent<UnitHealth>().TakeDamage(_calculatedDamage, _penetrationValue);
 
         // wait the length of attack-speed before being able to strike again:
         yield return new WaitForSeconds(_attackSpeed);
-        if (_unitManager.playerAffiliation == 1)
+        
+        /*if (_unitManager.playerAffiliation == 1)
         {
             Debug.Log("4");
-        }
+        }*/
 
         // reset the attack-layer weight so the movement layer has full controll again:
         /*if (GetComponent<Animator>())
@@ -208,10 +230,11 @@ public class UnitCombat : MonoBehaviour
         }*/
 
         _inCoroutine = false;
-        if (_unitManager.playerAffiliation == 1)
+        
+        /*if (_unitManager.playerAffiliation == 1)
         {
             Debug.Log("5");
-        }
+        }*/
     }
 
     float CalculateEffectiveDamage(GameObject _targetEnemyUnit)
@@ -231,6 +254,15 @@ public class UnitCombat : MonoBehaviour
         _effectiveDamage = _weaponDamageValue + _weaponTypeInfluence + _unitTypeInfluence;
 
         return _effectiveDamage;
+    }
+
+
+    /// <summary>
+    /// This gets called by the UnitManager, when this unit is killed.
+    /// </summary>
+    public void DeactivateCombat()
+    {
+        _isActive = false;
     }
 
     /*

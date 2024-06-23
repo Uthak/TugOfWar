@@ -117,7 +117,7 @@ public class HealthBarManager : MonoBehaviour
         float _healthBarHeight = 0.0f;
 
         // adjust each health bars floating height to it's respective unit:
-        switch (_unitHealth._mySize)
+        switch (_unitHealth.mySize)
         {
             case 0:
                 _healthBarHeight = _smallUnitHeight;

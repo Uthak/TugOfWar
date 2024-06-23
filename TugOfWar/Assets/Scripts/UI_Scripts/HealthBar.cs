@@ -17,8 +17,8 @@ public class HealthBar : MonoBehaviour
         //new:
         if (slider != null)
         {
-            slider.maxValue = unitHealthReference._baseHealthPoints; //_startingHealth;
-            slider.value = unitHealthReference._baseHealthPoints; //_startingHealth;
+            slider.maxValue = unitHealthReference.baseHealthPoints; //_startingHealth;
+            slider.value = unitHealthReference.baseHealthPoints; //_startingHealth;
         }
         else
         {

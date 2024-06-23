@@ -7,15 +7,19 @@ using UnityEngine;
 /// </summary>
 public class UnitHealth : MonoBehaviour
 {
-    public float _baseHealthPoints = 0.0f; // public to communicate with health bar
+    public float baseHealthPoints = 0.0f; // public to communicate with health bar
     public float currentHealthPoints = 0.0f; // public to communicate with health bar
-    public float _mySize = 0.0f; // public to update the health bar height to acoount for large creatures/buildings:
+    public float mySize = 0.0f; // public to update the health bar height to acoount for large creatures/buildings:
+
+    //bool _isActive = false;
 
     float _armorValue = 0.0f;
 
     ArmorDataSO.ArmorType _armorType;
 
     UnitManager _unitManager;
+    UnitAnimationController _myUnitAnimationController;
+
     //UnitHealthBar _healthBar;
 
     // to manage this units health bar:
@@ -35,17 +39,19 @@ public class UnitHealth : MonoBehaviour
         _healthBarManager = FindAnyObjectByType<HealthBarManager>();
 
         // asign & populate variables:
-        _baseHealthPoints = _unitManager.baseHealthPoints;
-        currentHealthPoints = _baseHealthPoints;
+        baseHealthPoints = _unitManager.baseHealthPoints;
+        currentHealthPoints = baseHealthPoints;
         _armorValue = _unitManager.baseArmorValue;
-        _mySize = _unitManager.baseSize;
+        mySize = _unitManager.baseSize;
         _armorType = _unitManager.armorType; // currently not used...
 
         // NOTE: the unit health bar is initialized and managed by hte HealthBarManager,
         // a managing component of the Game Manager.
-        
-        
-        
+
+        _myUnitAnimationController = GetComponent<UnitAnimationController>();
+
+        //_isActive = true;
+
         //initialize health-bar:
         //_healthBar.InitializeHealthBar(_baseHealthPoints);
         //_healthBar.InitializeUnitHealthBar();
@@ -93,9 +99,14 @@ public class UnitHealth : MonoBehaviour
 
         //Debug.Log("I, " + this.gameObject.name + " took damage and have this much: " + currentHealthPoints + " left");
 
+        // animate damage taken:
+        _myUnitAnimationController.TakeDamageAnimation();
+
         if (currentHealthPoints <= 0.0f)
         {
-            Die();
+            //Die();
+            //RemoveUnit();
+            StartCoroutine(DeathSequence());
         }
     }
 
@@ -124,13 +135,66 @@ public class UnitHealth : MonoBehaviour
 
         return _blockedDamageFraction;
     }*/
-
+    
     void Die()
+    {
+        // the death-coroutine is handled by the Unit AnimationController
+        
+        //_myUnitAnimationController.DeathAnimation();
+    }
+    /*
+    IEnumerator Die()
+    {
+        // animate death:
+        _myUnitAnimationController.DieAnimation();
+
+        yield return new WaitForSeconds(_attackSpeed);
+
+    }*/
+
+
+    public void RemoveUnit()
     {
         _healthBarManager.UnregisterUnit(this);
 
-        _unitManager.KillThisUnit();
+        _unitManager.SignOffThisUnit();
     }
+
+    public IEnumerator DeathSequence()
+    {
+        _healthBarManager.UnregisterUnit(this);
+        _unitManager.SignOffThisUnit();
+
+        // Use a callback to handle the animation length
+        bool isLengthRetrieved = false;
+        float lengthOfDeathAnimation = 0f;
+
+        _myUnitAnimationController.DeathAnimation(length =>
+        {
+            lengthOfDeathAnimation = length;
+            isLengthRetrieved = true;
+        });
+
+        // Wait until the length is retrieved
+        yield return new WaitUntil(() => isLengthRetrieved);
+
+        // Wait for the length of the death animation
+        yield return new WaitForSeconds(lengthOfDeathAnimation);
+
+        _unitManager.KillUnit();
+    }
+
+    /*
+    IEnumerator DeathSequence()
+    {
+        _healthBarManager.UnregisterUnit(this);
+        _unitManager.SignOffThisUnit();
+        _myUnitAnimationController.DeathAnimation(out float lengthOfDeathAnimation);
+
+        yield return new WaitForSeconds(lengthOfDeathAnimation);
+
+        _unitManager.KillUnit();
+    }*/
 } 
 
 

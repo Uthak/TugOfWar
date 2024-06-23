@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3728326764799825372}
   - component: {fileID: 7998167055682902747}
   m_Layer: 3
-  m_Name: NewUnit_Prefab
+  m_Name: NewUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
   unitAnimationOverrideController: {fileID: 22100000, guid: 288a9fe6e74913e4c919a54cf360a330,
     type: 2}
   race: 0
-  unitType: 1
+  unitType: 0
   armorType: 0
   weaponType: 0
   baseDeploymentCost: 0
@@ -272,10 +272,60 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021501, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021503, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021763, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021773, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021779, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021789, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7918981313826021795, guid: a56dfc257ad60804fa9870fefe4c41b8,
         type: 3}
       propertyPath: m_Name
       value: WK_Light_Infantry_A
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021801, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021803, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021805, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021807, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
