@@ -14,10 +14,10 @@ GameObject:
   - component: {fileID: 4763042782068356028}
   - component: {fileID: 8167784671345597084}
   - component: {fileID: 5667850807363185661}
-  - component: {fileID: 2543085020101926677}
   - component: {fileID: 3728326764799825372}
   - component: {fileID: 7998167055682902747}
   - component: {fileID: 7618520431423265578}
+  - component: {fileID: 2164911396521105059}
   m_Layer: 3
   m_Name: Human_Archer_Prefab_Tier_1
   m_TagString: Untagged
@@ -76,8 +76,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: default unit
-  playerAffiliation: 0
+  myPlayerAffiliation: 0
   isActive: 0
+  isDead: 0
   unitData: {fileID: 11400000, guid: cbecf393a20a1484cbcc6130f7253be7, type: 2}
   armorData: {fileID: 11400000, guid: ceff7003102106b459ff0bb4dafaff5e, type: 2}
   weaponData: {fileID: 11400000, guid: 4822688fe0ec3ec488d3e84e2df7a71e, type: 2}
@@ -96,6 +97,7 @@ MonoBehaviour:
   unitDestination: {fileID: 0}
   walkingSpeed: 0
   runningSpeed: 0
+  chargingSpeed: 0
   baseSize: 0
   baseChargeSpeedMultiplier: 0
   baseChargeImpactDamage: 0
@@ -150,21 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c55225dbf8582cc40b948255103a16f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseHealthPoints: 0
+  baseHealthPoints: 0
   currentHealthPoints: 0
-  _mySize: 0
---- !u!114 &2543085020101926677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732547557541199410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37f057d256e672742900c6d1ca615674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  mySize: 0
 --- !u!136 &3728326764799825372
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -224,8 +214,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectileID: 0
   _firingPoint: {fileID: 3677454210415187451}
-  _projectileSpeed: 8
-  _maxArcHeight: 2.5
+  _projectileSpeed: 9
+  _maxArcHeight: 1.25
+--- !u!114 &2164911396521105059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732547557541199410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded9a5986a206894388b55453f53499e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nrOfAttackAnimations: 1
+  _nrOfDeathAnimations: 1
 --- !u!1 &2696420521648759599
 GameObject:
   m_ObjectHideFlags: 0

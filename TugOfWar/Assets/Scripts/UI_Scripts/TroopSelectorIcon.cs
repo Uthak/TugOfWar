@@ -16,7 +16,7 @@ public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerEx
     /// </summary>
     void OnEnable()
     {
-        _dragNDrop = FindObjectOfType<DragNDrop>();
+        _dragNDrop = FindAnyObjectByType<DragNDrop>();
     }
     void Update()
     {
@@ -44,9 +44,5 @@ public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerEx
         {
             _dragNDrop.CreateUnit(itemToPickUpHere);
         }
-        //carriedObject = Instantiate(itemToPickUpHere, _mousePosition, Quaternion.identity);
-        //_dragNDrop.carriedObject = itemToPickUpHere;
-        //_dragNDrop.carryingSomething = true;
-        //Debug.Log(this.gameObject.name + " Was Clicked.");
     }
 }

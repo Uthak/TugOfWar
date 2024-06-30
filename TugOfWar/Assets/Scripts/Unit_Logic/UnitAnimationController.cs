@@ -34,7 +34,7 @@ public class UnitAnimationController : MonoBehaviour
             _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
         }else
         {
-            Debug.LogWarning("ERROR: Trying to access Animator-component that doesn't exist", this);
+            Debug.LogError("ERROR: Trying to access Animator-component that doesn't exist", this);
         }
 
         // if applicable, assign the projectile animator:
@@ -77,16 +77,33 @@ public class UnitAnimationController : MonoBehaviour
         _unitAnimator.SetInteger("attackAnimIndex", Random.Range(0, _nrOfAttackAnimations)); // get random attack animation
         _unitAnimator.SetTrigger("attackTrigger");
 
+        //System.Action<float> callback;
+        //StartCoroutine(GetCurrentAnimationLength(callback));
+        StartCoroutine(AttackAnimationLength());
+
         // if ranged, fire a projectile:
         if (weaponType == WeaponDataSO.WeaponType.Bow)
         {
             _myProjectileAnimator.AnimateArrow(enemyUnit.transform.position);
         }
     }
+    IEnumerator AttackAnimationLength()
+    {
+        _unitAnimator.SetBool("inAttackAnimation", true);
+
+        yield return new WaitForEndOfFrame();
+
+        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
+        float animationLength = stateInfo.length;
+
+        yield return new WaitForSeconds(animationLength);
+
+        _unitAnimator.SetBool("inAttackAnimation", false);
+    }
 
     public void TakeDamageAnimation()
     {
-        _unitAnimator.SetTrigger("takeDamageTrigger");
+        _unitAnimator.SetTrigger("takeDamageTrigger"); // unsure why, but this animation plays way after the fact?
     }
 
     public void DeathAnimation(System.Action<float> callback)
@@ -109,77 +126,9 @@ public class UnitAnimationController : MonoBehaviour
         AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
 
         // Get the length of the current animation
-        float lengthOfDeathAnimation = stateInfo.length;
+        float lengthOfCurrentAnimation = stateInfo.length;
 
         // Invoke the callback with the length of the animation
-        callback?.Invoke(lengthOfDeathAnimation);
+        callback?.Invoke(lengthOfCurrentAnimation);
     }
-
-
-    /*
-    public void DeathAnimation(out float lengthOfDeathAnimation)
-    {
-        // get random death animation:
-        int randomIndex = Random.Range(0, _nrOfDeathAnimations);
-        _unitAnimator.SetInteger("deathAnimIndex", randomIndex);
-        _unitAnimator.SetTrigger("deathTrigger");
-        //_unitAnimator.SetInteger("deathAnimIndex", Random.Range(0, _nrOfDeathAnimations));
-        //_unitAnimator.SetTrigger("deathTrigger");
-
-        //lengthOfDeathAnimation = 0;
-        // fetch and return the length of the chosen death animation:
-        //lengthOfDeathAnimation = GetAnimationClipLength("DeathAnimation" + randomIndex);
-
-        //lengthOfDeathAnimation = 0.0f;
-
-        lengthOfDeathAnimation = GetCurrentAnimationLength(out float lengthOfDeathAnimation);
-        
-        //StartCoroutine(GetCurrentAnimationLength(out lengthOfDeathAnimation));
-        //StartCoroutine(GetCurrentAnimationLength(callback));
-
-    }
-
-    void GetCurrentAnimationLength(out float lengthOfDeathAnimation)
-    {
-        lengthOfDeathAnimation = 0f;
-
-        // Wait until the animation state has been updated
-        //yield return null; // This waits for the next frame
-
-        // Get the current animator state info
-        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
-
-        // Get the length of the current animation
-        lengthOfDeathAnimation = stateInfo.length;
-    }*/
-    /*
-    private IEnumerator GetCurrentAnimationLength(System.Action<float> callback)
-    {
-        // Wait until the end of the frame to ensure the animation has started
-        yield return new WaitForEndOfFrame();
-
-        // Get the current animator state info
-        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
-
-        // Get the length of the current animation
-        float lengthOfDeathAnimation = stateInfo.length;
-
-        // Invoke the callback with the length of the animation
-        callback?.Invoke(lengthOfDeathAnimation);
-    }*/
-
-    /*
-    private IEnumerator GetCurrentAnimationLength(out float lengthOfDeathAnimation)
-    {
-        lengthOfDeathAnimation = 0f;
-
-        // Wait until the animation state has been updated
-        yield return null; // This waits for the next frame
-
-        // Get the current animator state info
-        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
-
-        // Get the length of the current animation
-        lengthOfDeathAnimation = stateInfo.length;
-    }*/
 }

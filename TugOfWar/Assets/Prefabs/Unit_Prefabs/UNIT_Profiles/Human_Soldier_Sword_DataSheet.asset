@@ -15,10 +15,10 @@ MonoBehaviour:
   unitName: Guard
   race: 0
   unitType: 1
-  canBeManuallyPlaced: 0
+  canBeManuallyPlaced: 1
   size: 1
   chargeImmunity: 0
-  deploymentCost: 50
+  deploymentCost: 5
   healthPoints: 10
   walkingSpeed: 1
   runningSpeed: 2

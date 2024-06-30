@@ -7,8 +7,9 @@ public class UnitManager : MonoBehaviour
 
     [Header("Unit Setup:")]
     public string unitName;
-    public int playerAffiliation = 0;
+    public int myPlayerAffiliation = 0;
     public bool isActive = false; // this gets set true when the unit was launched in a wave:
+    public bool isDead = false;
 
     private GameObject _myLocation;
 
@@ -23,6 +24,8 @@ public class UnitManager : MonoBehaviour
     private UnitMovement _unitMovement;
     private UnitCombat _unitCombat;
     private UnitAnimationController _unitAnimationController;
+    private UnitDetection _unitDetection;
+
     private DragNDrop _dragNDrop;
     private CameraController _cameraController;
     private GameManager _gameManager;
@@ -95,21 +98,20 @@ public class UnitManager : MonoBehaviour
             switch (manualPlayerID)
             {
                 case 0: // this is a piece of environment, either player can farm it:
-                    playerAffiliation = 0;
+                    myPlayerAffiliation = 0;
                     break;
 
                 case 1: // placed by player 1:
-                    playerAffiliation = manualPlayerID;
-
-                    //_dragNDrop = FindAnyObjectByType<DragNDrop>();
+                    myPlayerAffiliation = manualPlayerID;
 
                     _cameraController = FindAnyObjectByType<CameraController>();
 
-                    //_levelBuilder = FindAnyObjectByType<LevelBuilder>();
+                    // when all units are dead, fly to the most foward building instead!
+                    _cameraController.AddUnitToFollow(this.transform);
                     break;
 
                 case 2: // placed by player 2:
-                    playerAffiliation = manualPlayerID;
+                    myPlayerAffiliation = manualPlayerID;
                     break;
 
                 default: // error!
@@ -126,6 +128,10 @@ public class UnitManager : MonoBehaviour
             }
 
             // cache components and initialize them:
+            if (GetComponent<Animator>()) // this has to happen before other scripts are initializing!
+            {
+                unitAnimator = GetComponent<Animator>();
+            }
             if (GetComponent<UnitHealth>())
             {
                 _unitHealth = GetComponent<UnitHealth>();
@@ -140,6 +146,11 @@ public class UnitManager : MonoBehaviour
             {
                 _unitCombat = GetComponent<UnitCombat>();
                 _unitCombat.InitializeUnitCombat();
+            }
+            if (GetComponent<UnitDetection>())
+            {
+                _unitDetection = GetComponent<UnitDetection>();
+                _unitDetection.InitializeUnitDetection();
             }
             
             if (GetComponent<UnitAnimationController>())
@@ -167,11 +178,11 @@ public class UnitManager : MonoBehaviour
             switch (_playerID)
             {
                 case 0: // this is a piece of environment, either player can farm it:
-                    playerAffiliation = 0;
+                    myPlayerAffiliation = 0;
                     break;
 
                 case 1: // placed by player 1:
-                    playerAffiliation = _playerID;
+                    myPlayerAffiliation = _playerID;
 
                     _dragNDrop = FindAnyObjectByType<DragNDrop>();
 
@@ -181,7 +192,7 @@ public class UnitManager : MonoBehaviour
                     break;
 
                 case 2: // placed by player 2:
-                    playerAffiliation = _playerID;
+                    myPlayerAffiliation = _playerID;
                     break;
 
                 default: // error!
@@ -232,7 +243,13 @@ public class UnitManager : MonoBehaviour
                     GetComponent<AnimateProjectile>().InitializeProjectileAnimator();
                 }
             }
-        }else
+            if (GetComponent<UnitDetection>())
+            {
+                _unitDetection = GetComponent<UnitDetection>();
+                _unitDetection.InitializeUnitDetection();
+            }
+        }
+        else
         {
             Debug.LogError("ERROR: Unit without UnitDataSO detected!", this);
             return;
@@ -385,8 +402,8 @@ public class UnitManager : MonoBehaviour
     /*
     public void ResetThisUnit()
     {
-        myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
-        myLocation = null;
+        _myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
+        _myLocation = null;
     }*/
 
     void OnMouseDown() // doesn't this need to be public?
@@ -396,6 +413,8 @@ public class UnitManager : MonoBehaviour
         {
             if (_dragNDrop != null && _dragNDrop.carriedObject == null)
             {
+                Debug.Log("trying to pick up");    
+
                 // add this unit back to the players cursor to be dragged:
                 _dragNDrop.PickUpAgain(this.gameObject);
 
@@ -426,11 +445,11 @@ public class UnitManager : MonoBehaviour
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -448,11 +467,11 @@ public class UnitManager : MonoBehaviour
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -470,11 +489,11 @@ public class UnitManager : MonoBehaviour
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -492,11 +511,11 @@ public class UnitManager : MonoBehaviour
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -514,11 +533,11 @@ public class UnitManager : MonoBehaviour
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -535,11 +554,11 @@ public class UnitManager : MonoBehaviour
 
                 _unitHealth.LaunchHealthBar();
 
-                switch (playerAffiliation)
+                switch (myPlayerAffiliation)
                 {
                     case 1:
                         // add friendly units to the cameras follow-list:
-                        _cameraController.AddUnit(this.transform);
+                        _cameraController.AddUnitToFollow(this.transform);
                         break;
 
                     case 2:
@@ -568,21 +587,28 @@ public class UnitManager : MonoBehaviour
     {
         // mark this unit as deactivated:
         isActive = false;
+        isDead = true;
 
-        _unitMovement.DeactivateMovement();
-        _unitCombat.DeactivateCombat();
-        //_unitHealth.DeactivateHealth();
-
+        if (GetComponent<UnitMovement>())
+        {
+            _unitMovement.DeactivateMovement();
+        }
+        if (GetComponent<UnitCombat>())
+        {
+            _unitCombat.DeactivateCombat();
+        }
 
         // reward the victor 1/4 of the killed units deployment cost:
-        switch (playerAffiliation)
+        switch (myPlayerAffiliation)
         {
             case 1:
                 FindAnyObjectByType<GoldManager>().AddGold(2, GetComponent<UnitManager>().baseDeploymentCost / 4.0f);
-                //Debug.Log("player 2 (AI) should have received: " + GetComponent<UnitManager>().baseDeploymentCost / 4.0f + " gold.");
-                
+
                 // tell camera not to consider this unit for following anymore:
-                _cameraController.RemoveUnit(this.transform);
+                //if (!CompareTag("HQ")) // we should probably rather have the cam jump here...
+                //{
+                    _cameraController.RemoveUnitToFollow(this.transform);
+                //}
                 break;
 
             case 2:
@@ -594,13 +620,51 @@ public class UnitManager : MonoBehaviour
                 break;
         }
 
+        // end the game, if this was an HQ:
+        if (CompareTag("HQ"))
+        {
+            FindAnyObjectByType<EndOfGame>().RoundFinished(manualPlayerID);
+        }
 
         // destroy this unit:
         //Debug.Log("destroying: " + this.gameObject.name);
         //Destroy(this.gameObject);
     }
 
-    public void KillUnit()
+    /// <summary>
+    /// Called by <see cref="UnitHealth"/> when a unit gets killed, so the corpse can remain on the 
+    /// battlefield until turnt off.
+    /// </summary>
+    public void DeactivateAllComponents()
+    {
+        if(GetComponent<Collider>() != null && GetComponent<Collider>().enabled)
+        {
+            Destroy(GetComponent<Collider>());
+        }
+
+        if(GetComponent<NavMeshAgent>() != null && GetComponent<NavMeshAgent>().enabled)
+        {
+            Destroy(GetComponent<NavMeshAgent>());
+        }
+
+        if (GetComponent<UnitMovement>() != null && GetComponent<UnitMovement>().enabled)
+        {
+            Destroy(GetComponent<UnitMovement>());
+        }
+
+        if (GetComponent<UnitCombat>() != null && GetComponent<UnitCombat>().enabled)
+        {
+            Destroy(GetComponent<UnitCombat>());
+        }
+
+        /* // this one actually torpedos the death sequence mid execution:
+        if (GetComponent<UnitHealth>() != null && GetComponent<UnitHealth>().enabled)
+        {
+            Destroy(GetComponent<UnitHealth>());
+        }*/
+    }
+
+    public void DestroyUnit()
     {
         Destroy(this.gameObject);
     }

@@ -86,6 +86,9 @@ public class UnitHealth : MonoBehaviour
     /// <param name="_penetrationValueOfAttack"></param>
     public void TakeDamage(float _rawIncomingDamage, float _penetrationValueOfAttack)
     {
+        // animate damage taken:
+        _myUnitAnimationController.TakeDamageAnimation();
+
         // calculate the armor efficiency to get the effective damage of this attack:
         float _armorEfficiency = CombatCalculator.CalculateArmorEfficiency(_armorValue, _penetrationValueOfAttack);
         //float _effectiveDamage = _rawIncomingDamage * (1 - CalculateArmorEfficiency(_penetrationValueOfAttack));
@@ -99,13 +102,13 @@ public class UnitHealth : MonoBehaviour
 
         //Debug.Log("I, " + this.gameObject.name + " took damage and have this much: " + currentHealthPoints + " left");
 
-        // animate damage taken:
-        _myUnitAnimationController.TakeDamageAnimation();
 
         if (currentHealthPoints <= 0.0f)
         {
             //Die();
             //RemoveUnit();
+            Debug.Log("1");
+
             StartCoroutine(DeathSequence());
         }
     }
@@ -162,9 +165,18 @@ public class UnitHealth : MonoBehaviour
 
     public IEnumerator DeathSequence()
     {
-        _healthBarManager.UnregisterUnit(this);
-        _unitManager.SignOffThisUnit();
+        Debug.Log("2");
 
+        _healthBarManager.UnregisterUnit(this);
+        Debug.Log("3");
+
+        _unitManager.SignOffThisUnit();
+        Debug.Log("4");
+
+        _unitManager.DeactivateAllComponents();
+        Debug.Log("5");
+
+        #region Destroy Unit immediatly after Death Animation:
         // Use a callback to handle the animation length
         bool isLengthRetrieved = false;
         float lengthOfDeathAnimation = 0f;
@@ -179,9 +191,15 @@ public class UnitHealth : MonoBehaviour
         yield return new WaitUntil(() => isLengthRetrieved);
 
         // Wait for the length of the death animation
+        Debug.Log("death anim length: " + lengthOfDeathAnimation);
         yield return new WaitForSeconds(lengthOfDeathAnimation);
+        #endregion
 
-        _unitManager.KillUnit();
+        yield return new WaitForSeconds(60.0f);
+        Debug.Log("6");
+
+        // get rid of the body:
+        _unitManager.DestroyUnit();
     }
 
     /*

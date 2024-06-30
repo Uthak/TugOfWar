@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &319276455192150078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7090617341699190013}
+  m_Layer: 0
+  m_Name: FiringPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7090617341699190013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319276455192150078}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.1, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7626949315740634400}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1049767665232732455
 GameObject:
   m_ObjectHideFlags: 0
@@ -462,12 +493,16 @@ GameObject:
   - component: {fileID: 7626949315740634400}
   - component: {fileID: 2296121683045583930}
   - component: {fileID: 8367016895275161127}
-  - component: {fileID: 4903373029678769069}
   - component: {fileID: 815949325712005813}
   - component: {fileID: 4075625672713539937}
+  - component: {fileID: 3083830389348265622}
+  - component: {fileID: 1758761891030669999}
+  - component: {fileID: 7046653978403529882}
+  - component: {fileID: 5204301969066710601}
+  - component: {fileID: 8635210450590739277}
   m_Layer: 3
   m_Name: Castle_Prefab
-  m_TagString: Untagged
+  m_TagString: HQ
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -486,6 +521,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4708953503545977874}
+  - {fileID: 7090617341699190013}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2296121683045583930
@@ -501,12 +537,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Castle
-  playerAffiliation: 0
+  myPlayerAffiliation: 0
   isActive: 1
+  isDead: 0
   unitData: {fileID: 11400000, guid: c4ef901a400ea114f91f2cd9a2d40915, type: 2}
   armorData: {fileID: 11400000, guid: 6e29cb1b420697f428c11ede29e13d92, type: 2}
   weaponData: {fileID: 11400000, guid: 321f64c32b43cda43b40159605144148, type: 2}
   _reportThisUnitsStatline: 0
+  unitAnimator: {fileID: 0}
+  unitAnimationOverrideController: {fileID: 0}
   race: 0
   unitType: 5
   armorType: 0
@@ -516,7 +555,9 @@ MonoBehaviour:
   baseHealthPoints: 0
   baseArmorValue: 0
   unitDestination: {fileID: 0}
-  baseMovementSpeed: 0
+  walkingSpeed: 0
+  runningSpeed: 0
+  chargingSpeed: 0
   baseSize: 0
   baseChargeSpeedMultiplier: 0
   baseChargeImpactDamage: 0
@@ -547,21 +588,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c55225dbf8582cc40b948255103a16f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseHealthPoints: 0
+  baseHealthPoints: 0
   currentHealthPoints: 0
-  _mySize: 0
---- !u!114 &4903373029678769069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8341824745782758821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37f057d256e672742900c6d1ca615674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  mySize: 0
 --- !u!65 &815949325712005813
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581,7 +610,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 4, z: 4}
+  m_Size: {x: 4.5, y: 4, z: 4.5}
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!208 &4075625672713539937
 NavMeshObstacle:
@@ -599,3 +628,79 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0
+--- !u!114 &3083830389348265622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded9a5986a206894388b55453f53499e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nrOfAttackAnimations: 0
+  _nrOfDeathAnimations: 0
+--- !u!95 &1758761891030669999
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7046653978403529882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bf7ce5666ec9f4c85654651327bcad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _projectileID: 0
+  _firingPoint: {fileID: 7090617341699190013}
+  _projectileSpeed: 2
+  _maxArcHeight: 9
+--- !u!114 &5204301969066710601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e4d4af7e0fd6384480e7a7baac79a4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8635210450590739277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73545a9ffd62ada458f3ec6b2256f45d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

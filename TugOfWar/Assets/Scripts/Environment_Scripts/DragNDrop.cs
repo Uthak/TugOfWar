@@ -142,7 +142,11 @@ public class DragNDrop : MonoBehaviour
     /// <param name="_unit"></param>
     public void CreateUnit(GameObject _unit)
     {
-        carriedObject = Instantiate(_unit, _mousePosition, Quaternion.identity, _player1UnitParent);
+        // define the rotation to face the right side of the screen (positive x direction):
+        Quaternion rightFacingRotation = Quaternion.Euler(0, 90, 0); // Assuming the unit's forward is along the z-axis
+
+        carriedObject = Instantiate(_unit, _mousePosition, rightFacingRotation, _player1UnitParent);
+        //carriedObject = Instantiate(_unit, _mousePosition, Quaternion.identity, _player1UnitParent);
 
         // setup the picked up units profile:
         carriedObject.GetComponent<UnitManager>().InitializeUnit(1);

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+
 
 /// <summary>
 /// This script manages all health bars in the level.
@@ -29,14 +31,33 @@ public class HealthBarManager : MonoBehaviour
     private List<UnitHealth> _listOfUnitHealthComponents = new List<UnitHealth>();
     private List<GameObject> _activeUnitHealthbars = new List<GameObject>();
 
+    void OnEnable()
+    {
+        StartCoroutine(InitializeCamera());
+    }
+
+    IEnumerator InitializeCamera()
+    {
+        yield return null; // Wait one frame to ensure all objects are initialized
+        _mainCamera = Camera.main;
+
+        if (_mainCamera == null)
+        {
+            Debug.LogError("Camera not found. Make sure there is a Main Camera in the scene.", this);
+        }
+    }
+
+    /*
     void Start()
     {
         _mainCamera = Camera.main;
-    }
+    }*/
 
     // keep all health bars facing the camera:
     void Update()
     {
+        if (_mainCamera == null) return;
+
         foreach (UnitHealth _unitHealth in _listOfUnitHealthComponents)
         {
             if (_unitHealth != null && _unitHealth.gameObject.activeInHierarchy)

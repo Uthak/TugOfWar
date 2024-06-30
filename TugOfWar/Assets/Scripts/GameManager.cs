@@ -142,7 +142,7 @@ public class GameManager : MonoBehaviour
         // loop through all units and filter out those who have not yet been launched:
         foreach (UnitManager _unit in _allUnits)
         {
-            if (!_unit.isActive)
+            if (!_unit.isActive && !_unit.isDead)
             {
                 _allUnlaunchedUnits.Add(_unit);
             }
@@ -151,11 +151,11 @@ public class GameManager : MonoBehaviour
         // loop through all new, unlaunched units and filter them by player-ownership:
         foreach (UnitManager _unit in _allUnlaunchedUnits)
         {
-            if (_unit.playerAffiliation == 1)
+            if (_unit.myPlayerAffiliation == 1)
             {
                 _unlaunchedPlayer1Units.Add(_unit);
             }
-            else if (_unit.playerAffiliation == 2)
+            else if (_unit.myPlayerAffiliation == 2)
             {
                 _unlaunchedPlayer2Units.Add(_unit);
             }
