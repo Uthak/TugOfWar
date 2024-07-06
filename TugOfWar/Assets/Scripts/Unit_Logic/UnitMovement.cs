@@ -12,6 +12,7 @@ public class UnitMovement : MonoBehaviour
     //LayerMask _unitSpottingLayer;
     Vector3 _destinationLocation;
     bool _isActive = false;
+    bool _isBuilding = false;
 
     // variables set by the UnitManager:
     int _thisUnitsPlayerAffiliation = 0;
@@ -26,24 +27,35 @@ public class UnitMovement : MonoBehaviour
 
     Transform _closestEnemyTransform;
 
+    bool _enemySpotted = false;
+
     public void InitializeUnitMovement()
     {
         // cache components and references:
         _unitManager = GetComponent<UnitManager>();
-        _navMeshAgent = GetComponent<NavMeshAgent>();
         _unitAnimationController = GetComponent<UnitAnimationController>();
+
+        if (_unitManager.unitType != UnitDataSO.UnitType.Building)
+        {
+            // buildings do not have a NavMeshAgent:
+            _navMeshAgent = GetComponent<NavMeshAgent>();
+
+            _walkingSpeed = _unitManager.walkingSpeed;
+            _runningSpeed = _unitManager.runningSpeed;
+            _chargingSpeed = _unitManager.chargingSpeed;
+            _destinationLocation = _unitManager.unitDestination.position;
+        }
+        else
+        {
+            _isBuilding = true;
+        }
 
         // set variables:
         //_unitSpottingLayer = LayerMask.GetMask("Units"); // detection!
         _thisUnitsPlayerAffiliation = _unitManager.myPlayerAffiliation;  // detection!
 
-        _walkingSpeed = _unitManager.walkingSpeed;
-        _runningSpeed = _unitManager.runningSpeed;
-        _chargingSpeed = _unitManager.chargingSpeed;
-
         //_spottingRange = _unitManager.baseSpottingRange; // detection!
         _attackRange = _unitManager.baseAttackRange;
-        _destinationLocation = _unitManager.unitDestination.position;
         _myColliderRadius = GetRadius(GetComponent<Collider>());
 
         // TESTING:
@@ -57,20 +69,85 @@ public class UnitMovement : MonoBehaviour
     {
         _isActive = true;
 
-        // enable NavMesh (if it's done earlier, units tend to get stuck on interveening terrain):
-        GetComponent<NavMeshAgent>().enabled = true;
+        if (!_isBuilding)
+        {
+            // enable NavMesh (if it's done earlier, units tend to get stuck on interveening terrain):
+            _navMeshAgent.enabled = true;
 
-        // launch unit towards enemy base:
-        MoveTowardEnemyBase();
+            // launch unit towards enemy base:
+            MoveTowardEnemyBase();
+        }
+    }
 
-        //StartCoroutine(Advance());
+    /// <summary>
+    /// Called by <see cref="UnitDetection"/> to inform about a viable target in the area. 
+    /// </summary>
+    /// <param name="_closestEnemy"></param>
+    public void EnemySpotted(GameObject _spottedEnemy)
+    {
+        _closestEnemyTransform = _spottedEnemy.transform;
+        _enemySpotted = true;
+    }
+    public void ResetSpottedEnemy()
+    {
+        _closestEnemyTransform = null;
+        _enemySpotted = false;
     }
 
     private void Update()
     {
         if (_isActive)
         {
+            if (!_isBuilding)
+            {
+                if (_enemySpotted)
+                {
+                    if (!_unitAnimationController.inCombat)
+                    {
+                        _unitAnimationController.EnterCombat();
+                    }
+                    Engage();
+                }else
+                {
+                    if (_unitAnimationController.inCombat)
+                    {
+                        _unitAnimationController.ExitCombat();
+                    }
+                    MoveTowardEnemyBase();
+                }
+            }
+
+            else
+            {
+                if (_enemySpotted) // enemy is in range and NOT dead:
+                {
+                    if (!_unitAnimationController.inCombat)
+                    {
+                        _unitAnimationController.EnterCombat();
+                    }
+
+                    if (EnemyInRange())
+                    {
+                        GetComponent<UnitCombat>().Attack(_closestEnemyTransform.gameObject);
+                    }
+
+                    //_unitAnimationController.EnterCombat();
+                    //GetComponent<UnitCombat>().Attack(_closestEnemyTransform.gameObject);
+
+                }else if(_unitAnimationController.inCombat)
+                {
+                    _unitAnimationController.ExitCombat();
+                }
+            }
+        }
+    }
+    /* // trying to have detectEnemyies work independently from unit movement!
+    private void Update()
+    {
+        if (_isActive)
+        {
             if (GetComponent<UnitDetection>().CheckForEnemies(out Transform _closestEnemy))
+            if (_enemySpotted)
             {
                 if(_closestEnemy != null)
                 {
@@ -90,7 +167,7 @@ public class UnitMovement : MonoBehaviour
                 MoveTowardEnemyBase();
             }
         }
-    }
+    }*/
     /*
     IEnumerator Advance()
     {

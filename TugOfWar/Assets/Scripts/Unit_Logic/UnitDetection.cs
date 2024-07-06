@@ -1,26 +1,24 @@
-/*using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitDetection : MonoBehaviour
 {
     UnitManager _unitManager;
-
+    UnitMovement _unitMovement;
     LayerMask _unitSpottingLayer;
 
     // variables set by the UnitManager:
     int _thisUnitsPlayerAffiliation = 0;
     float _spottingRange = 0.0f;
     float _myColliderRadius = 0.0f;
-
-    Transform _closestEnemyTransform;
-    float _closestDistance = Mathf.Infinity;
-    public float _proximityTolerance = 0.05f;
+    GameObject _closestEnemy;
 
     public void InitializeUnitDetection()
     {
         // cache components and references:
         _unitManager = GetComponent<UnitManager>();
+        _unitMovement = GetComponent<UnitMovement>(); 
         _unitSpottingLayer = LayerMask.GetMask("Units");
 
         // set variables:
@@ -28,27 +26,39 @@ public class UnitDetection : MonoBehaviour
         _spottingRange = _unitManager.baseSpottingRange;
         _myColliderRadius = GetMyBoundaryRadius(GetComponent<Collider>());
     }
+    public void StartScanningForEnemies()
+    {
+        StartCoroutine(ScanInterval());
+    }
+
+    IEnumerator ScanInterval()
+    {
+        CheckForEnemies();
+
+        yield return new WaitForSeconds(0.1f);
+
+        StartCoroutine(ScanInterval());
+    }
 
     /// <summary>
-    /// Check for enemies in the vicinity. Return the closest found enemy.
+    /// Check for enemies in the viscinity. Return the closest found enemy. 
     /// </summary>
     /// <param name="_enemyTransform"></param>
-    public bool CheckForEnemies(out Transform _enemyTransform)
+    public void CheckForEnemies()
     {
         // use an OverlapSphere to detect all colliders within the detection radius and on the unit layer:
-        Collider[] _detectedUnitObjects = Physics.OverlapSphere(transform.position, _spottingRange + _myColliderRadius, _unitSpottingLayer);
+        Collider[] _detectedUnitObjects = Physics.OverlapSphere(transform.position, _spottingRange + _myColliderRadius, _unitSpottingLayer); // spotting Range should be combined with collider Radius!
         List<GameObject> _spottedEnemyUnits = new List<GameObject>();
-        _enemyTransform = null;
 
-        // if at least one potential unit was detected, check if any are actual units and more so - enemies:
+        // if at least one potential unit was detected check if any are actual units and moreso - enemies:
         if (_detectedUnitObjects.Length > 0)
         {
             foreach (Collider _unitObject in _detectedUnitObjects)
             {
-                // check if this object has a UnitManager-script attached:
-                if (_unitObject.GetComponent<UnitManager>())
+                // is the spotted unit active (has it been launched yet?):
+                if (_unitObject.GetComponent<UnitManager>() && _unitObject.GetComponent<UnitManager>().isActive)
                 {
-                    if ((_unitObject.GetComponent<UnitManager>().myPlayerAffiliation == 1 || _unitObject.GetComponent<UnitManager>().myPlayerAffiliation == 2) && _unitObject.GetComponent<UnitManager>().myPlayerAffiliation != _thisUnitsPlayerAffiliation)
+                    if (IsOpponent(_unitObject))
                     {
                         _spottedEnemyUnits.Add(_unitObject.gameObject);
                     }
@@ -57,44 +67,49 @@ public class UnitDetection : MonoBehaviour
                 {
                     Debug.LogError("ERROR: This object is on the UNIT-layer, but has no UnitManager attached. Check why!", _unitObject);
                 }
+
             }
         }
 
-        // of the detected enemies, find the closest:
+        // of the detected enemies, return the closests:
         if (_spottedEnemyUnits.Count > 0)
         {
-            Transform potentialClosestEnemy = null;
-            float closestDistanceFound = Mathf.Infinity;
+            float _closestDistance = Mathf.Infinity;
 
             foreach (GameObject _enemy in _spottedEnemyUnits)
             {
                 float distanceToSpecificTestedUnit = Vector3.Distance(transform.position, _enemy.transform.position);
 
-                if (distanceToSpecificTestedUnit < closestDistanceFound)
+                if (distanceToSpecificTestedUnit < _closestDistance)
                 {
-                    closestDistanceFound = distanceToSpecificTestedUnit;
-                    potentialClosestEnemy = _enemy.transform;
+                    _closestEnemy = _enemy.gameObject;
+                    _unitMovement.EnemySpotted(_closestEnemy);
+
+                    _closestDistance = distanceToSpecificTestedUnit;
                 }
             }
+        }
+        else
+        {
+            _closestEnemy = null;
+            _unitMovement.ResetSpottedEnemy();
+        }
+    }
 
-            // switch target only if the new closest enemy is significantly closer than the current one
-            if (_closestEnemyTransform == null || closestDistanceFound < _closestDistance - _proximityTolerance)
-            {
-                _closestEnemyTransform = potentialClosestEnemy;
-                _closestDistance = closestDistanceFound;
-            }
-
-            _enemyTransform = _closestEnemyTransform;
+    /// <summary>
+    /// Check if the unit actually has a team affiliation. Also check if this affiliation is not the same
+    /// as the checking units affiliation.
+    /// </summary>
+    /// <param name="_spottedUnit"></param>
+    /// <returns></returns>
+    bool IsOpponent(Collider _spottedUnit)
+    {
+        if ((_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation == 1 || _spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation == 2) && _spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != _thisUnitsPlayerAffiliation)
+        {
             return true;
         }
         else
         {
-            // no more enemies detected, reset all:
-            _closestDistance = Mathf.Infinity;
-            _closestEnemyTransform = null;
-
-            // return nothing:
-            _enemyTransform = null;
             return false;
         }
     }
@@ -126,8 +141,13 @@ public class UnitDetection : MonoBehaviour
         // default case if none of the above colliders apply:
         return 0f;
     }
-}*/
+}
 
+
+
+
+
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -251,4 +271,4 @@ public class UnitDetection : MonoBehaviour
         // default case if none of the above colliders apply:
         return 0f;
     }
-}
+}*/

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 7998167055682902747}
   - component: {fileID: 7618520431423265578}
   - component: {fileID: 2164911396521105059}
+  - component: {fileID: 6589508898565363605}
   m_Layer: 3
   m_Name: Human_Archer_Prefab_Tier_1
   m_TagString: Untagged
@@ -188,7 +189,7 @@ Animator:
   m_GameObject: {fileID: 1732547557541199410}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 24264fd5ed4c19e428f4ae7c1ad17f5c, type: 3}
-  m_Controller: {fileID: 9100000, guid: 91a09e19b63b5f94f8866ad49a36effd, type: 2}
+  m_Controller: {fileID: 9100000, guid: 0332e5a15b7356741903bef177c423dd, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -229,7 +230,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _nrOfAttackAnimations: 1
-  _nrOfDeathAnimations: 1
+  _nrOfDeathAnimations: 2
+--- !u!114 &6589508898565363605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732547557541199410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73545a9ffd62ada458f3ec6b2256f45d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2696420521648759599
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,6 +287,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2075765276755200612, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2456695120886607556, guid: a56dfc257ad60804fa9870fefe4c41b8,
         type: 3}
       propertyPath: m_IsActive
@@ -283,6 +301,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4921148022576781435, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7918981313818726933, guid: a56dfc257ad60804fa9870fefe4c41b8,
         type: 3}

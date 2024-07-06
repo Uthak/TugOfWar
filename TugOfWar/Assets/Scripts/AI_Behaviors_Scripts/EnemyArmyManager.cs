@@ -102,8 +102,11 @@ public class EnemyArmyManager : MonoBehaviour
             _usedTeam2DeploymentZoneTiles.Add(_rngLocation.transform);
             _team2DeploymentZoneTiles[_rngNr].GetComponent<SpawnZone>().OccupyDeploymentTile();
 
+            // define the rotation to face the right side of the screen (positive x direction):
+            Quaternion leftFacingRotation = Quaternion.Euler(0, -90, 0); // Assuming the unit's forward is along the z-axis
+
             // create and setup the unit:
-            GameObject _instantiatedUnit = Instantiate(_randomSoldierToBeBought, _rngLocation.transform.position, Quaternion.identity, _enemyArmyParentGO.transform);
+            GameObject _instantiatedUnit = Instantiate(_randomSoldierToBeBought, _rngLocation.transform.position, leftFacingRotation, _enemyArmyParentGO.transform);
             _instantiatedUnit.GetComponent<UnitManager>().InitializeUnit(2);
             _instantiatedUnit.GetComponent<UnitManager>().DeployThisUnit(2, _rngLocation);
 

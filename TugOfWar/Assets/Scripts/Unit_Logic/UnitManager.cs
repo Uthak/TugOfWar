@@ -93,6 +93,8 @@ public class UnitManager : MonoBehaviour
         // temporary solution to spawning castles:
         if (unitType == UnitDataSO.UnitType.Building)
         {
+            InitializeUnit(manualPlayerID);
+            /*
             _gameManager = FindAnyObjectByType<GameManager>();
 
             switch (manualPlayerID)
@@ -159,7 +161,7 @@ public class UnitManager : MonoBehaviour
                 _unitAnimationController.InitializeUnitAnimatonController();
             }
 
-            LaunchUnit();
+            LaunchUnit();*/
         }
     }
 
@@ -214,7 +216,6 @@ public class UnitManager : MonoBehaviour
             if (GetComponent<Animator>()) // this has to happen before other scripts are initializing!
             {
                 unitAnimator = GetComponent<Animator>();
-                //Debug.Log("animator assigned: " + unitAnimator.name, unitAnimator);
             }
             if (GetComponent<UnitHealth>())
             {
@@ -263,81 +264,6 @@ public class UnitManager : MonoBehaviour
     /// <param name="_playerID"></param>
     public void DeployThisUnit(int _playerID, GameObject _spawnZoneOfPlacement)
     {
-        /*
-        if (unitData != null)
-        {
-            // cache references:
-            _gameManager = FindAnyObjectByType<GameManager>();
-            unitDestination = _gameManager.GetDestination(_playerID);
-
-            // asign playerAffiliation: 
-            switch (_playerID)
-            {
-                case 0: // this is a piece of environment, either player can farm it:
-                    playerAffiliation = 0;
-                    break;
-
-                case 1: // placed by player 1:
-                    playerAffiliation = _playerID;
-
-                    _dragNDrop = FindAnyObjectByType<DragNDrop>();
-
-                    _cameraController = FindAnyObjectByType<CameraController>();
-
-                    _levelBuilder = FindAnyObjectByType<LevelBuilder>();
-                    break;
-
-                case 2: // placed by player 2:
-                    playerAffiliation = _playerID;
-                    break;
-
-                default: // error!
-                    Debug.LogError("ERROR: This object does not have a legal ID assigned!", this);
-                    break;
-            }
-
-            // set up and update this units profile:
-            CompileUnitProfile();
-
-            // assign unit-name if none is given:
-            if (unitName == "")
-            {
-                unitName = unitData.unitName;
-            }
-
-            // cache components and initialize them:
-            if (GetComponent<UnitHealth>())
-            {
-                _unitHealth = GetComponent<UnitHealth>();
-                _unitHealth.InitializeUnitHealth();
-            }
-            if (GetComponent<UnitMovement>())
-            {
-                _unitMovement = GetComponent<UnitMovement>();
-                _unitMovement.InitializeUnitMovement();
-            }
-            if (GetComponent<UnitCombat>())
-            {
-                _unitCombat = GetComponent<UnitCombat>();
-                _unitCombat.InitializeUnitCombat();
-            }
-        }else
-        {
-            Debug.LogError("ERROR: Unit without UnitDataSO detected!", this);
-            return;
-        }*/
-
-        // only set up drag'n'drop for player-units:
-        // NOTE: this is currently based on having only player 1 be a human player *************************
-        /*if (_playerID == 1)
-        {
-            _dragNDrop =  FindAnyObjectByType<DragNDrop>();
-
-            _cameraController = FindAnyObjectByType<CameraController>();
-
-            _levelBuilder = FindAnyObjectByType<LevelBuilder>();
-        }*/
-
         // if this is an actual unit, update the current location of this unit: 
         if (unitData.canBeManuallyPlaced && !isActive)
         {
@@ -399,12 +325,15 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    /*
-    public void ResetThisUnit()
+    
+    void ResetThisUnit()
     {
+        // tell the occupied SpawnZone that the placed unit got picked up again:
         _myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
+
+        // tell this unit that it has no longer an assigned location/SpawnZone:
         _myLocation = null;
-    }*/
+    }
 
     void OnMouseDown() // doesn't this need to be public?
     {
@@ -413,18 +342,8 @@ public class UnitManager : MonoBehaviour
         {
             if (_dragNDrop != null && _dragNDrop.carriedObject == null)
             {
-                Debug.Log("trying to pick up");    
-
-                // add this unit back to the players cursor to be dragged:
                 _dragNDrop.PickUpAgain(this.gameObject);
-
-                // tell the occupied SpawnZone that the placed unit got picked up again:
-                _myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
-
-                // tell this unit that it has no longer an assigned location/SpawnZone:
-                _myLocation = null;
-
-                //ResetThisUnit();
+                ResetThisUnit();
             }
         }
     }
@@ -444,6 +363,7 @@ public class UnitManager : MonoBehaviour
                 
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
@@ -466,6 +386,7 @@ public class UnitManager : MonoBehaviour
                 
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
@@ -488,6 +409,7 @@ public class UnitManager : MonoBehaviour
                 
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
@@ -510,6 +432,7 @@ public class UnitManager : MonoBehaviour
                 
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
@@ -532,6 +455,7 @@ public class UnitManager : MonoBehaviour
                 
                 _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
@@ -551,8 +475,10 @@ public class UnitManager : MonoBehaviour
                 break;
 
             case UnitDataSO.UnitType.Building:
-
+                
+                _unitMovement.StartMovement();
                 _unitHealth.LaunchHealthBar();
+                _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {

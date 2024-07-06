@@ -10,6 +10,7 @@ public class UnitCombat : MonoBehaviour
     //WeaponDataSO.WeaponGrip _myWeaponGrip;
     WeaponDataSO.WeaponType _myWeaponType;
     UnitDataSO.UnitType _myUnitType;
+    bool _isBuilding = false;
     //GameObject _targetEnemy;
 
     // animation stuff:
@@ -40,11 +41,11 @@ public class UnitCombat : MonoBehaviour
         _unitManager = GetComponent<UnitManager>();
 
         // check first if there is an animator to begin with:
-        /*if (GetComponent<Animator>())
-        {
-            _unitAnimator = _unitManager.unitAnimator;
-            _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
-        }*/
+            /*if (GetComponent<Animator>())
+            {
+                _unitAnimator = _unitManager.unitAnimator;
+                _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
+            }*/
 
         if (GetComponent<UnitAnimationController>())
         {
@@ -53,13 +54,17 @@ public class UnitCombat : MonoBehaviour
 
         // setup variables:
         // if ranged, initialize projectile animations:
-        /*if(_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
+        if(_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
         {
             _myAnimateProjectile = GetComponent<AnimateProjectile>();
             _myAnimateProjectile.InitializeProjectileAnimator();
-        }*/
+        }
 
         _myUnitType = _unitManager.unitType;
+        if (_myUnitType == UnitDataSO.UnitType.Building)
+        {
+            _isBuilding = true;
+        }
 
         _penetrationValue = _unitManager.baseArmorPenetrationValue;
         _attackRange = _unitManager.baseAttackRange; // is this actually needed here, or just in movement?
@@ -84,25 +89,6 @@ public class UnitCombat : MonoBehaviour
         return 0f;
     }
 
-    /*
-    /// <summary>
-    /// Call this function when a unit gets placed on the battlefield. This function will set the unit up with all required information.
-    /// </summary>
-    public void UpdateUnitCombat()
-    {
-        _myUnitType = GetComponent<UnitManager>().myClassID;
-
-        _penetrationValue = GetComponent<UnitManager>().meleeArmorPenetrationRating;
-        _attackRange = GetComponent<UnitManager>().meleeAttackRange;
-        _attackSpeed = GetComponent<UnitManager>().meleeAttackSpeed;
-        _damageAmount = GetComponent<UnitManager>().meleeDamage;
-
-        _rangedPenetrationValue = GetComponent<UnitManager>().rangedArmorPenetrationRating;
-        _rangedAttackRange = GetComponent<UnitManager>().rangedAttackRange;
-        _rangedAttackSpeed = GetComponent<UnitManager>().rangedAttackSpeed;
-        _rangedDamageAmount = GetComponent<UnitManager>().rangedDamage;
-    }*/
-
     /// <summary>
     /// Called by EngageTarget from the UnitMovement Script once an enemy is in range.
     /// </summary>
@@ -111,44 +97,24 @@ public class UnitCombat : MonoBehaviour
     {
         if (_isActive)
         {
-            _myAnimationController.EnterCombat();
-            //_unitAnimator.SetBool("isCombatIdle", true);
-
-            //Debug.Log("I am attacking: " + this.gameObject);
-
-            //_targetEnemy = _enemyUnit;
+            // if this is a building (no movement), call attack-animation here:
+            //_myAnimationController.EnterCombat();
 
             if (TargetIsAlive(_targetEnemyUnit))
             {
-                transform.LookAt(_targetEnemyUnit.transform);
+                if(!_isBuilding)
+                {
+                    transform.LookAt(_targetEnemyUnit.transform);
+                }
 
                 if (!_inCoroutine)
                 {
                     StartCoroutine(Strike(_targetEnemyUnit));
                 }
-                //StartCoroutine(Strike(_targetEnemyUnit));
-
-                /*
-                if (!_inCoroutine)
-                {
-                    if (RangedAttackPossible())
-                    {
-                        StartCoroutine(Shoot());
-                    }
-                    else
-                    {
-                        StartCoroutine(Strike());
-                    }
-                }*/
-            }
-            else
+            }else
             {
-                // this never gets called, call from movement!
-                //_unitAnimator.SetBool("isCombatIdle", false);
-                //Debug.Log("combat over, stop combat idle now!");
-                _myAnimationController.ExitCombat();
-
-                GetComponent<UnitMovement>().MoveTowardEnemyBase(); // redundant?
+                // if this is a building (no movement), exit attack-animations here:
+                //_myAnimationController.ExitCombat();
             }
         }
     }
@@ -163,53 +129,11 @@ public class UnitCombat : MonoBehaviour
         }
     }
 
-    /*
-    bool RangedAttackPossible()
-    {
-        if (Vector3.Distance(transform.position, _targetEnemy.transform.position) > _attackRange)
-        {
-            return true;
-        }
-        return false;
-    }*/
-
     IEnumerator Strike(GameObject _targetEnemyUnit)
     {
-        /*if(_unitManager.playerAffiliation == 1)
-        {
-            Debug.Log("1");
-        }*/
-
         _inCoroutine = true;
 
         _myAnimationController.AttackAnimation(_targetEnemyUnit ,_attackSpeed, _unitManager.weaponType);
-
-        // check if there is an animator component:
-        /*if (_unitAnimator)
-        {
-            // if the attackspeed is faster than the animation speed up the animation to match:
-            if (_attackSpeed < _attackAnimationDuration)
-            {
-                _unitAnimator.SetFloat("attackSpeedModifier", 1.0f / _attackSpeed);
-                Debug.Log("attackSpeedModifier was changed to: " + _unitAnimator.GetFloat("attackSpeedModifier"));
-
-            }
-
-            _unitAnimator.SetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer"), 1.0f);
-            _unitAnimator.SetTrigger("isAttackingTrigger");
-        }
-
-        // if this unit has a ranged attack, animate the projectile:
-        if (_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
-        {
-            _myAnimateProjectile.AnimateArrow(_targetEnemyUnit.transform.position);
-        }*/
-
-        /*
-        if (_unitManager.playerAffiliation == 1)
-        {
-            Debug.Log("3");
-        }*/
 
         // administer damage: // there should be a distinction for ranged attacks, causing dmg on impact
         float _calculatedDamage = CalculateEffectiveDamage(_targetEnemyUnit);
@@ -217,24 +141,8 @@ public class UnitCombat : MonoBehaviour
 
         // wait the length of attack-speed before being able to strike again:
         yield return new WaitForSeconds(_attackSpeed);
-        
-        /*if (_unitManager.playerAffiliation == 1)
-        {
-            Debug.Log("4");
-        }*/
-
-        // reset the attack-layer weight so the movement layer has full controll again:
-        /*if (GetComponent<Animator>())
-        {
-            _unitAnimator.SetLayerWeight(_unitAnimator.GetLayerIndex("Attack Layer"), 0.0f);
-        }*/
 
         _inCoroutine = false;
-        
-        /*if (_unitManager.playerAffiliation == 1)
-        {
-            Debug.Log("5");
-        }*/
     }
 
     float CalculateEffectiveDamage(GameObject _targetEnemyUnit)

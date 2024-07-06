@@ -42,6 +42,8 @@ public class LevelBuilder : MonoBehaviour
     [Space(10)]
     [SerializeField] GameObject[] _arrayOfObstacles;
 
+
+    // all of this should be handled over a getter method! -F
     List<GameObject> _team1DeploymentZoneTiles = new List<GameObject>();
     public List<GameObject> team2DeploymentZoneTiles = new List<GameObject>(); // public so the AI can access this to get its deployment zone
     List<GameObject> _neutralDeploymentZoneTiles = new List<GameObject>();
@@ -304,6 +306,7 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
+    // this function should handle the reset for both players! -F
     public void ResetDeploymentZone()
     {
         foreach(GameObject _deploymentZone in _team1DeploymentZoneTiles)
@@ -311,29 +314,4 @@ public class LevelBuilder : MonoBehaviour
             _deploymentZone.GetComponent<SpawnZone>().VacateDeploymentTile();
         }
     }
-
-    /* // since the new core loop is to keep deploying and launching waves this has become redundant:
-    public void TurnOffAllZoneMarkers()
-    {
-        foreach(GameObject _spawnZone in _team1DeploymentZoneTiles)
-        {
-            //_spawnZone.GetComponent<Renderer>().enabled = false;
-            //_spawnZone.GetComponent<Collider>().enabled = false;
-            _spawnZone.GetComponent<SpawnZone>().OccupyDeploymentTile();
-        }
-        foreach (GameObject _spawnZone in team2DeploymentZoneTiles)
-        {
-            //_spawnZone.GetComponent<Renderer>().enabled = false;
-            //_spawnZone.GetComponent<Collider>().enabled = false;
-            _spawnZone.GetComponent<SpawnZone>().OccupyDeploymentTile();
-
-        }
-        foreach (GameObject _spawnZone in _neutralDeploymentZoneTiles)
-        {
-            //_spawnZone.GetComponent<Renderer>().enabled = false;
-            //_spawnZone.GetComponent<Collider>().enabled = false;
-            _spawnZone.GetComponent<SpawnZone>().OccupyDeploymentTile();
-
-        }
-    }*/
 }

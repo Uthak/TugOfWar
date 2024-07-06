@@ -19,6 +19,8 @@ public class UnitAnimationController : MonoBehaviour
     Animator _unitAnimator;
     AnimatorOverrideController _unitAnimatorOverrideController;
 
+    public bool inCombat = false;
+
     /// <summary>
     /// Set up a units animations upon spawning it. This is called by the UnitManager-script.
     /// </summary>
@@ -59,6 +61,9 @@ public class UnitAnimationController : MonoBehaviour
     public void EnterCombat()
     {
         _unitAnimator.SetBool("inCombat", true);
+
+        // this is so UnitMovement can check if the animator-bool is currently "inCombat":
+        inCombat = true;
     }
     public void ExitCombat()
     {
@@ -84,7 +89,8 @@ public class UnitAnimationController : MonoBehaviour
         // if ranged, fire a projectile:
         if (weaponType == WeaponDataSO.WeaponType.Bow)
         {
-            _myProjectileAnimator.AnimateArrow(enemyUnit.transform.position);
+            _myProjectileAnimator.AnimateArrow(enemyUnit);
+            //_myProjectileAnimator.AnimateArrow(enemyUnit.transform.position); // this will fire an object at the floor underneath a unit at a specific time:
         }
     }
     IEnumerator AttackAnimationLength()

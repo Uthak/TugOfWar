@@ -500,6 +500,7 @@ GameObject:
   - component: {fileID: 7046653978403529882}
   - component: {fileID: 5204301969066710601}
   - component: {fileID: 8635210450590739277}
+  - component: {fileID: 367348546793651417}
   m_Layer: 3
   m_Name: Castle_Prefab
   m_TagString: HQ
@@ -542,7 +543,7 @@ MonoBehaviour:
   isDead: 0
   unitData: {fileID: 11400000, guid: c4ef901a400ea114f91f2cd9a2d40915, type: 2}
   armorData: {fileID: 11400000, guid: 6e29cb1b420697f428c11ede29e13d92, type: 2}
-  weaponData: {fileID: 11400000, guid: 321f64c32b43cda43b40159605144148, type: 2}
+  weaponData: {fileID: 11400000, guid: 89389fa7962004d48b93ca5a72319958, type: 2}
   _reportThisUnitsStatline: 0
   unitAnimator: {fileID: 0}
   unitAnimationOverrideController: {fileID: 0}
@@ -678,8 +679,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectileID: 0
   _firingPoint: {fileID: 7090617341699190013}
-  _projectileSpeed: 2
-  _maxArcHeight: 9
+  _projectileSpeed: 9
+  _maxArcHeight: 2
 --- !u!114 &5204301969066710601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -702,5 +703,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73545a9ffd62ada458f3ec6b2256f45d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &367348546793651417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341824745782758821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71592b63ade0eb34281e87fa24933d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

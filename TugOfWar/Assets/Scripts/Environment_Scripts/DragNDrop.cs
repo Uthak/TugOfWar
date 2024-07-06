@@ -7,7 +7,6 @@ public class DragNDrop : MonoBehaviour
     [Header("Drag'n'drop Setup:")]
     [SerializeField] Transform _player1UnitParent;
     [SerializeField] float _offsetOnMap = 1.0f;
-    //[SerializeField] float _offsetOffMap = 2.0f;
     
     [Space(10)]
     [SerializeField] LayerMask _UI_layerMask;
@@ -58,7 +57,7 @@ public class DragNDrop : MonoBehaviour
         }
     }
 
-    // this should probably be moved to the GoldManager!
+    // this should probably be moved to the GoldManager! -F
     /// <summary>
     /// Check with the "GoldManager"-script if enough resources are available for this unit.
     /// </summary>
@@ -106,9 +105,6 @@ public class DragNDrop : MonoBehaviour
     /// </summary>
     void PlaceUnit(GameObject _targetLocation)
     {
-        // enable NavMesh (if it's done earlier, units tend to get stuck on interveening terrain):
-        //carriedObject.GetComponent<NavMeshAgent>(); // moved to UnitMovement!!!
-
         // tell the targeted deployment-tile that it is now occupied:
         _targetLocation.GetComponent<SpawnZone>().OccupyDeploymentTile();
 
@@ -120,6 +116,15 @@ public class DragNDrop : MonoBehaviour
 
         // pay for the unit at hand:
         GetComponent<GoldManager>().SubtractGold(1, carriedObject.GetComponent<UnitManager>().baseDeploymentCost);
+
+        #region experiment: Auto Launch
+        if (FindAnyObjectByType<GameManager>().autoLaunchEnabled)
+        {
+            carriedObject.GetComponent<UnitManager>().LaunchUnit();
+
+            Debug.Log("shoulda autolaunched now");
+        }
+        #endregion
 
         // empty the carried object (nothing is being dragged anymore):
         carriedObject = null;

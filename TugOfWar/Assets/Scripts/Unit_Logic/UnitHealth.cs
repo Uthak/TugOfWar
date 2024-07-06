@@ -165,16 +165,16 @@ public class UnitHealth : MonoBehaviour
 
     public IEnumerator DeathSequence()
     {
-        Debug.Log("2");
+        //Debug.Log("2");
 
         _healthBarManager.UnregisterUnit(this);
-        Debug.Log("3");
+        //Debug.Log("3");
 
         _unitManager.SignOffThisUnit();
-        Debug.Log("4");
+        //Debug.Log("4");
 
         _unitManager.DeactivateAllComponents();
-        Debug.Log("5");
+        //Debug.Log("5");
 
         #region Destroy Unit immediatly after Death Animation:
         // Use a callback to handle the animation length
@@ -191,12 +191,12 @@ public class UnitHealth : MonoBehaviour
         yield return new WaitUntil(() => isLengthRetrieved);
 
         // Wait for the length of the death animation
-        Debug.Log("death anim length: " + lengthOfDeathAnimation);
+        //Debug.Log("death anim length: " + lengthOfDeathAnimation);
         yield return new WaitForSeconds(lengthOfDeathAnimation);
         #endregion
 
         yield return new WaitForSeconds(60.0f);
-        Debug.Log("6");
+        //Debug.Log("6");
 
         // get rid of the body:
         _unitManager.DestroyUnit();

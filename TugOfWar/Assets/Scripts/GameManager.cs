@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This script manages all the overlaying logic of the game in runtime.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     [Header("Game Manager Setup:")]
@@ -25,6 +28,13 @@ public class GameManager : MonoBehaviour
 
     private bool _firstWave = true; // this is used to distinguish the commence of the game, after deployment of the first wave is done
 
+    // for experimentation: Auto Launch!
+    public bool autoLaunchEnabled = false;
+    public void EnableAutoLaunch()
+    {
+        autoLaunchEnabled = true;
+    }
+    public bool autoDeployEnabled = false;
 
     private void Awake()
     {
@@ -101,14 +111,8 @@ public class GameManager : MonoBehaviour
                 // loop through the unlaunched units of player 1 and launch them:
                 foreach (UnitManager _unit in _unlaunchedPlayer1Units)
                 {
-                    // tell this unit it has been launched:
-                    //_unit.wasLaunched = true; // this happens in the unitManager
-
                     // beginn movement of all new units:
                     _unit.GetComponent<UnitManager>().LaunchUnit();
-
-                    // add all friendly units to the cameras follow-list:
-                    //_cameraController.AddUnit(_unit.transform);
                 }
                 return;
 
@@ -116,9 +120,6 @@ public class GameManager : MonoBehaviour
                 // loop through the unlaunched units of player 2 and launch them:
                 foreach (UnitManager _unit in _unlaunchedPlayer2Units)
                 {
-                    // tell this unit it has been launched:
-                    //_unit.wasLaunched = true; // this happens in the unitManager
-
                     // beginn movement of all new units:
                     _unit.GetComponent<UnitManager>().LaunchUnit();
                 }
