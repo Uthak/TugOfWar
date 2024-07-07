@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    // Singleton instance
+    //public static GameManager gameManager { get; private set; }
+
     [Header("Game Manager Setup:")]
     [Tooltip("This is the target objective player 1's units run towards.")]
     public GameObject player1Destination;
@@ -22,26 +25,53 @@ public class GameManager : MonoBehaviour
     GoldManager _goldManager;
     LevelBuilder _levelBuilder;
 
+    float _player1DeploymentBacklineX;
+    float _player2DeploymentBacklineX;
+
     List<UnitManager> _allUnlaunchedUnits = new List<UnitManager>(); // used for filtering unlaunched units from those launched already
     List<UnitManager> _unlaunchedPlayer1Units = new List<UnitManager>(); // used for launching units of player 1
     List<UnitManager> _unlaunchedPlayer2Units = new List<UnitManager>(); // used for launching units of player 2
 
     private bool _firstWave = true; // this is used to distinguish the commence of the game, after deployment of the first wave is done
 
-    // for experimentation: Auto Launch!
+    // for experimentation: Auto Launch & auto deploy!
     public bool autoLaunchEnabled = false;
+    public bool autoDeployEnabled = false;
+
     public void EnableAutoLaunch()
     {
         autoLaunchEnabled = true;
     }
-    public bool autoDeployEnabled = false;
 
     private void Awake()
     {
+        // currently not being used singleton implementation:
+        #region Singleton pattern:
+        /*
+        if (gameManager == null)
+        {
+            gameManager = this;
+
+            // optional: Makes this instance persist across scenes
+            //DontDestroyOnLoad(gameObject);
+        }else
+        {
+            Destroy(gameObject);
+            return;
+        }*/
+        #endregion
+
         // cache components:
-        _NPCArmyManager = GetComponent<EnemyArmyManager>();
+        if (GetComponent<EnemyArmyManager>()) // only present in Single Player
+        {
+            _NPCArmyManager = GetComponent<EnemyArmyManager>();
+        }
         _goldManager = GetComponent<GoldManager>();
         _levelBuilder = GetComponent<LevelBuilder>();
+
+        // adaptively cache target x-lie for both players:
+        _player1DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(1);
+        _player2DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(2);
     }
 
     /// <summary>
@@ -56,12 +86,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public float GetEnemyBaseLine(int _playerID)
+    {
+        switch (_playerID)
+        {
+            case 1:
+                return _player2DeploymentBacklineX; // this throws error when HQ is destroyed
+
+            case 2:
+                return _player1DeploymentBacklineX; // this throws error when HQ is destroyed
+
+            default:
+                Debug.LogError("ERROR: A unit-destination was requested, but invalid player-ID given!", this);
+                return 0.0f;
+        }
+    }
+
     /// <summary>
-    /// The <see cref="UnitManager"/> requests this location, so the <see cref="UnitMovement"/> may take this as their ultimate target.
+    /// The <see cref="UnitManager"/> requests this location when entering the enemy deployment zone.
+    /// This is to redirect units possibly to far away from it to spot it towards it.
+    /// The <see cref="UnitMovement"/> uses this as their ultimate target.
     /// </summary>
     /// <param name="_playerID"></param>
     /// <param name="_destinationTransform"></param>
-    public Transform GetDestination(int _playerID)
+    public Transform GetEnemyCastleLocation(int _playerID)
     {
         switch (_playerID)
         {
@@ -101,6 +149,7 @@ public class GameManager : MonoBehaviour
         // Get the required lists of active units:
         CreateListsOfNewUnits();
 
+        // ALL OF THIS SHOULD BE OPTIMIZED BY FILLING LISTS AUTOMATICALLY with placed units!
         // depending on who called this function launch the corresponding wave:
         switch (_playerID)
         {

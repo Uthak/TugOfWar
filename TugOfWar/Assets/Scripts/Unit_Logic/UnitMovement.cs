@@ -43,7 +43,8 @@ public class UnitMovement : MonoBehaviour
             _walkingSpeed = _unitManager.walkingSpeed;
             _runningSpeed = _unitManager.runningSpeed;
             _chargingSpeed = _unitManager.chargingSpeed;
-            _destinationLocation = _unitManager.unitDestination.position;
+            _destinationLocation = _unitManager.unitDestination;
+            //_destinationLocation = _unitManager.unitDestination.position; // old - no longer using a transform
         }
         else
         {

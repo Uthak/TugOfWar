@@ -314,4 +314,24 @@ public class LevelBuilder : MonoBehaviour
             _deploymentZone.GetComponent<SpawnZone>().VacateDeploymentTile();
         }
     }
+
+    /// <summary>
+    /// Gets called by <see cref="GameManager"/> to deliver units with the correct, respective deployment zones. 
+    /// This method assumes that the map-grid always starts at 0,0,0 and extends in width towards x+.
+    /// </summary>
+    public float GetDeploymentBacklineX(int _playerID)
+    {
+        switch (_playerID)
+        {
+            case 1: // Player 1 targets the far edge of Player 2's deployment zone
+                return _gridWidth - _gridWidth; // here: 60 - 60 = 0
+
+            case 2: // Player 2 targets the far edge of Player 1's deployment zone
+                return _gridWidth; // here: 60
+
+            default:
+                Debug.LogError("ERROR: A unit-destination was requested, but invalid player-ID given!", this);
+                return 0.0f; // Return the original position in case of error
+        }
+    }
 }

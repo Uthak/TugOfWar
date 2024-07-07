@@ -54,7 +54,8 @@ public class UnitManager : MonoBehaviour
     public float baseArmorValue = 0.0f;
 
     // movement:
-    public Transform unitDestination;
+    public Vector3 unitDestination; // new
+    //public Transform unitDestination; // old
     public float walkingSpeed = 0.0f;
     public float runningSpeed = 0.0f;
     public float chargingSpeed = 0.0f;
@@ -174,7 +175,8 @@ public class UnitManager : MonoBehaviour
         {
             // cache references:
             _gameManager = FindAnyObjectByType<GameManager>();
-            unitDestination = _gameManager.GetDestination(_playerID);
+            unitDestination = new Vector3(_gameManager.GetEnemyBaseLine(_playerID), transform.position.y, transform.position.z); // new
+            //unitDestination = _gameManager.GetEnemyCastleLocation(_playerID); // old // call this later, if need be (when entering enemy deployment)
 
             // asign playerAffiliation: 
             switch (_playerID)
@@ -238,7 +240,7 @@ public class UnitManager : MonoBehaviour
                 _unitAnimationController.InitializeUnitAnimatonController();
 
                 // if this is a ranged unit, also initialize projectile-animation:
-                if(weaponType == WeaponDataSO.WeaponType.Bow && GetComponent<AnimateProjectile>())
+                if (weaponType == WeaponDataSO.WeaponType.Bow && GetComponent<AnimateProjectile>())
                 {
                     // does not need to be referenced, as it's only ever accessed by the Animation Controller:
                     GetComponent<AnimateProjectile>().InitializeProjectileAnimator();
@@ -248,6 +250,11 @@ public class UnitManager : MonoBehaviour
             {
                 _unitDetection = GetComponent<UnitDetection>();
                 _unitDetection.InitializeUnitDetection();
+            }
+
+            if (CompareTag("HQ"))
+            {
+                LaunchUnit();
             }
         }
         else

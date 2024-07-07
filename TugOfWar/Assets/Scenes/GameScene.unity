@@ -10831,7 +10831,7 @@ MonoBehaviour:
   - {fileID: 2723931364712448250, guid: c8bde0517ebc8ba4c9f78e12a1fb6df0, type: 3}
   _numberOfTerrainInplayer1Zone: 0
   _numberOfTerrainInplayer2Zone: 0
-  _numberOfTerrainInNeutralZone: 40
+  _numberOfTerrainInNeutralZone: 20
   _arrayOfObstacles:
   - {fileID: 7005139070846796138, guid: 7418cd6ff2c7f854b96e1f897af7055e, type: 3}
   - {fileID: 7005139070846796138, guid: 2cd25e2ea55eac04d92a2db31e1cbdd6, type: 3}
@@ -15446,6 +15446,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2030302546}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2034163576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2034163577}
+  m_Layer: 0
+  m_Name: x
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2034163577
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034163576}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2049552444
 GameObject:
   m_ObjectHideFlags: 0
@@ -16646,3 +16677,4 @@ SceneRoots:
   - {fileID: 2071286426}
   - {fileID: 290731121}
   - {fileID: 1718136653}
+  - {fileID: 2034163577}

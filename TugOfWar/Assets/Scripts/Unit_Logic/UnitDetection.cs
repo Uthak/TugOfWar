@@ -56,18 +56,22 @@ public class UnitDetection : MonoBehaviour
             foreach (Collider _unitObject in _detectedUnitObjects)
             {
                 // is the spotted unit active (has it been launched yet?):
-                if (_unitObject.GetComponent<UnitManager>() && _unitObject.GetComponent<UnitManager>().isActive)
+                //if (_unitObject.GetComponent<UnitManager>() && _unitObject.GetComponent<UnitManager>().isActive)
+                if (_unitObject.GetComponent<UnitManager>())
                 {
-                    if (IsOpponent(_unitObject))
+                    if (_unitObject.GetComponent<UnitManager>().isActive && IsOpponent(_unitObject))
                     {
                         _spottedEnemyUnits.Add(_unitObject.gameObject);
                     }
+                    /*if (IsOpponent(_unitObject))
+                    {
+                        _spottedEnemyUnits.Add(_unitObject.gameObject);
+                    }*/
                 }
                 else
                 {
-                    Debug.LogError("ERROR: This object is on the UNIT-layer, but has no UnitManager attached. Check why!", _unitObject);
+                    Debug.LogError("ERROR: This object is on the UNIT-layer, but has no UnitManager attached. Check why!", this.gameObject);
                 }
-
             }
         }
 
