@@ -12,8 +12,10 @@ public class SkillManager : MonoBehaviour
     private List<SkillSO> _availableSkills;
     private List<SkillSO> _selectedSkills = new List<SkillSO>();
 
+
+    #region Skill Management:
     // temporarily until calling it in a more sophisticated way:
-    void Awake()
+    void Awake() // should be a controlled initializsation
     {
         LoadCurrentSkilltree();
     }
@@ -97,4 +99,5 @@ public class SkillManager : MonoBehaviour
             this.skillNames = skillNames;
         }
     }
+#endregion
 }

@@ -57,7 +57,7 @@ NavMeshAgent:
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
   baseCarryCapacity: 0
   baseHealthPoints: 0
   baseArmorValue: 0
-  unitDestination: {fileID: 0}
+  unitDestination: {x: 0, y: 0, z: 0}
   walkingSpeed: 0
   runningSpeed: 0
   chargingSpeed: 0
@@ -105,7 +105,7 @@ MonoBehaviour:
   baseChargeImpactForce: 0
   baseSpottingRange: 0
   baseAlarmRange: 0
-  baseDamage: 0
+  baseWeaponDamage: 0
   baseAttackSpeed: 0
   baseAttackRange: 0
   baseArmorPenetrationValue: 0
@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _nrOfAttackAnimations: 3
   _nrOfDeathAnimations: 2
+  inCombat: 0
 --- !u!136 &3728326764799825372
 CapsuleCollider:
   m_ObjectHideFlags: 0

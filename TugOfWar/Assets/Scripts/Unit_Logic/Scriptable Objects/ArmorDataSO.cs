@@ -5,17 +5,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "[Armor]_DataSheet", menuName = "Armor Data Card", order = 51)]
 public class ArmorDataSO : ScriptableObject
 {
-    public enum ArmorType { Unarmored, LightArmor, MediumArmor, HeavyArmor, PlateArmor, Building, Magic }
+    public enum ArmorType { Unarmored, LeatherArmor, LightArmor, HeavyArmor, PlateArmor, Building, Magic }
 
     [Header("Armor Profile:")]
-    public string armorName = "[Armor Name]"; // unused...
+    //public string armorName = "[Armor Name]"; // unused...
     public ArmorType armorType;
 
     // base item stats:
-    [Tooltip("cost: 4 per point")]
-    public float armorValue = 0.0f;
+    public float armorValue = 0.0f; // unused
     //public float armorWeight = 0.0f; // unused...
 
     // deployment cost:
-    public float deploymentCost = 0.0f;
+    [Tooltip("avg. cost: 4 per point")]
+    public float deploymentCost = 0.0f; // unused
 }

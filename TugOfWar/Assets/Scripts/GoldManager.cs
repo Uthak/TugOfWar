@@ -10,14 +10,23 @@ public class GoldManager : MonoBehaviour
     // these are kept public for now to be able to read them from anywhere and modify them in runtime as needed:
     public float team1Wallet = 100.0f;
     public float team1GoldPerInterval = 1.0f;
-    public float team1GoldInterval = 1.0f;
+    public float team1Interval = 1.0f;
     public TextMeshProUGUI team1GoldDisplay;
+    public TextMeshProUGUI team1GPIDisplay; // GPI = gold per interval
 
+
+    [Space(10)]
     public float team2Wallet = 100.0f;
     public float team2GoldPerInterval = 1.0f;
-    public float team2GoldInterval = 1.0f;
+    public float team2Interval = 1.0f;
     public TextMeshProUGUI team2GoldDisplay; // this is only for testing if AI working correctly
 
+    // currently NOT using initialization:
+    public void InitializeGoldManager()
+    {
+        // setup the gold manager here...
+        // e.g. perhaps skills allow one player more starting capital, higher interval rate or more income etc...
+    }
 
     /// <summary>
     /// Call this when the 1. wave launches. Gold will now be automatically generated at the provided rate.
@@ -32,15 +41,15 @@ public class GoldManager : MonoBehaviour
     {
         AddGold(1, team1GoldPerInterval);
 
-        yield return new WaitForSeconds(team1GoldPerInterval);
+        yield return new WaitForSeconds(team1Interval);
 
         StartCoroutine(GenerateTeam1Gold());
     }
     IEnumerator GenerateTeam2Gold()
     {
-        AddGold(2, team2GoldInterval);
+        AddGold(2, team2Interval);
 
-        yield return new WaitForSeconds(team2GoldPerInterval);
+        yield return new WaitForSeconds(team2Interval);
 
         StartCoroutine(GenerateTeam2Gold());
     }
@@ -49,19 +58,21 @@ public class GoldManager : MonoBehaviour
     /// This allows to gain various gold amounts at certain points / interactions in the game. 
     /// This is called from within the "DragNDrop"-script when a player refunds a previously placed unit.
     /// </summary>
-    /// <param name="_gold"></param>
-    public void AddGold(int _playerID, float _gold)
+    /// <param name="amtOfGold"></param>
+    public void AddGold(int recipientPlayerID, float amtOfGold)
     {
-        switch (_playerID)
+        switch (recipientPlayerID)
         {
             case 1:
-                team1Wallet += _gold;
-                return;
+                team1Wallet += amtOfGold;
+                break;
         
             case 2:
-                team2Wallet += _gold;
-                return;
+                team2Wallet += amtOfGold;
+                break;
         }
+
+        UpdateGoldDisplay();
     }
 
     /// <summary>
@@ -71,7 +82,7 @@ public class GoldManager : MonoBehaviour
     /// <param name="_goldCost"></param>
     public void SubtractGold(int _playerID, float _goldCost)
     {
-        Debug.Log("player " + _playerID + " is paying to a unit with: " + _goldCost);   
+        //Debug.Log("player " + _playerID + " is paying to a unit with: " + _goldCost);   
         switch (_playerID)
         {
             case 1:
@@ -83,7 +94,7 @@ public class GoldManager : MonoBehaviour
                     Debug.Log("ERROR: Not enough gold for this unit!");
                     // error feedback to player; e.g. alarm sound and flaring up of money tab....
                 }
-                return;
+                break;
 
             case 2:
                 if (SufficientGold(_playerID, _goldCost)) // the check for sufficient funds is redundant here, as this is done when trying to deploy a unit.
@@ -94,8 +105,10 @@ public class GoldManager : MonoBehaviour
                 {
                     // error feedback to player; e.g. alarm sound and flaring up of money tab....
                 }
-                return;
+                break;
         }
+
+        UpdateGoldDisplay();
     }
 
     /// <summary>
@@ -118,9 +131,19 @@ public class GoldManager : MonoBehaviour
         }
     }
 
+    /*
     private void LateUpdate()
     {
         team1GoldDisplay.text = "Team 1 Gold: " + team1Wallet.ToString();
+        team2GoldDisplay.text = "Team 2 Gold: " + team2Wallet.ToString();
+    }*/
+
+    void UpdateGoldDisplay()
+    {
+        //team1GoldDisplay.text = "Team 1 Gold: " + team1Wallet.ToString();
+        team1GoldDisplay.text = team1Wallet.ToString();
+        team1GPIDisplay.text = "+" + team1GoldPerInterval.ToString();
+
         team2GoldDisplay.text = "Team 2 Gold: " + team2Wallet.ToString();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,8 +31,6 @@ public class UnitManager : MonoBehaviour
     private CameraController _cameraController;
     private GameManager _gameManager;
     private LevelBuilder _levelBuilder;
-    //public Animator unitAnimator;
-
 
     // this statline is used by all other component to get relevant profile information
     #region Public Unit Information and Components:
@@ -47,6 +46,7 @@ public class UnitManager : MonoBehaviour
 
     // general:
     public float baseDeploymentCost = 0.0f;
+    public float baseRewardValue = 0.0f;
     public float baseCarryCapacity = 0.0f;
 
     // health:
@@ -73,7 +73,7 @@ public class UnitManager : MonoBehaviour
     public float baseAlarmRange = 0.0f;
     
     // damage:
-    public float baseDamage = 0.0f;
+    public float baseWeaponDamage = 0.0f;
     public float baseAttackSpeed = 0.0f;
     public float baseAttackRange = 0.0f;
     //public float baseWeaponWeight = 0.0f; // currently unused
@@ -86,86 +86,6 @@ public class UnitManager : MonoBehaviour
     public float baseBashForce = 0.0f; // currently unused
     #endregion
 
-    [Header("Temp. Castle Fix:")]
-    [SerializeField] int manualPlayerID = 0; 
-
-    private void Start()
-    {
-        // temporary solution to spawning castles:
-        if (unitType == UnitDataSO.UnitType.Building)
-        {
-            InitializeUnit(manualPlayerID);
-            /*
-            _gameManager = FindAnyObjectByType<GameManager>();
-
-            switch (manualPlayerID)
-            {
-                case 0: // this is a piece of environment, either player can farm it:
-                    myPlayerAffiliation = 0;
-                    break;
-
-                case 1: // placed by player 1:
-                    myPlayerAffiliation = manualPlayerID;
-
-                    _cameraController = FindAnyObjectByType<CameraController>();
-
-                    // when all units are dead, fly to the most foward building instead!
-                    _cameraController.AddUnitToFollow(this.transform);
-                    break;
-
-                case 2: // placed by player 2:
-                    myPlayerAffiliation = manualPlayerID;
-                    break;
-
-                default: // error!
-                    Debug.LogError("ERROR: This object does not have a legal ID assigned!", this);
-                    break;
-            }
-            // set up and update this units profile:
-            CompileUnitProfile();
-
-            // assign unit-name if none is given:
-            if (unitName == "")
-            {
-                unitName = unitData.unitName;
-            }
-
-            // cache components and initialize them:
-            if (GetComponent<Animator>()) // this has to happen before other scripts are initializing!
-            {
-                unitAnimator = GetComponent<Animator>();
-            }
-            if (GetComponent<UnitHealth>())
-            {
-                _unitHealth = GetComponent<UnitHealth>();
-                _unitHealth.InitializeUnitHealth();
-            }
-            if (GetComponent<UnitMovement>())
-            {
-                _unitMovement = GetComponent<UnitMovement>();
-                _unitMovement.InitializeUnitMovement();
-            }
-            if (GetComponent<UnitCombat>())
-            {
-                _unitCombat = GetComponent<UnitCombat>();
-                _unitCombat.InitializeUnitCombat();
-            }
-            if (GetComponent<UnitDetection>())
-            {
-                _unitDetection = GetComponent<UnitDetection>();
-                _unitDetection.InitializeUnitDetection();
-            }
-            
-            if (GetComponent<UnitAnimationController>())
-            {
-                _unitAnimationController = GetComponent<UnitAnimationController>();
-                _unitAnimationController.InitializeUnitAnimatonController();
-            }
-
-            LaunchUnit();*/
-        }
-    }
-
     /// <summary>
     /// Set up the chosen unit on pickup.
     /// </summary>
@@ -175,14 +95,14 @@ public class UnitManager : MonoBehaviour
         {
             // cache references:
             _gameManager = FindAnyObjectByType<GameManager>();
-            unitDestination = new Vector3(_gameManager.GetEnemyBaseLine(_playerID), transform.position.y, transform.position.z); // new
+            //unitDestination = new Vector3(_gameManager.GetEnemyBaseLine(_playerID), transform.position.y, transform.position.z); // new
             //unitDestination = _gameManager.GetEnemyCastleLocation(_playerID); // old // call this later, if need be (when entering enemy deployment)
 
             // asign playerAffiliation: 
             switch (_playerID)
             {
-                case 0: // this is a piece of environment, either player can farm it:
-                    myPlayerAffiliation = 0;
+                case 0: // environment:
+                    myPlayerAffiliation = _playerID;
                     break;
 
                 case 1: // placed by player 1:
@@ -199,6 +119,10 @@ public class UnitManager : MonoBehaviour
                     myPlayerAffiliation = _playerID;
                     break;
 
+                case 3: // neutral units and buildings:
+                    myPlayerAffiliation = _playerID;
+                    break;
+
                 default: // error!
                     Debug.LogError("ERROR: This object does not have a legal ID assigned!", this);
                     break;
@@ -214,7 +138,6 @@ public class UnitManager : MonoBehaviour
             }
 
             // cache components and initialize them:
-            // check first if there is an animator to begin with:
             if (GetComponent<Animator>()) // this has to happen before other scripts are initializing!
             {
                 unitAnimator = GetComponent<Animator>();
@@ -226,6 +149,12 @@ public class UnitManager : MonoBehaviour
             }
             if (GetComponent<UnitMovement>())
             {
+                // if this unit is neutral, don't get a destination:
+                if (!IsNeutral())
+                {
+                    unitDestination = new Vector3(_gameManager.GetEnemyBaseLine(_playerID), transform.position.y, transform.position.z); // new
+                }
+
                 _unitMovement = GetComponent<UnitMovement>();
                 _unitMovement.InitializeUnitMovement();
             }
@@ -252,7 +181,8 @@ public class UnitManager : MonoBehaviour
                 _unitDetection.InitializeUnitDetection();
             }
 
-            if (CompareTag("HQ"))
+            // launch buildings that were deployed at the start immediatly:
+            if (unitType == UnitDataSO.UnitType.Building)
             {
                 LaunchUnit();
             }
@@ -261,6 +191,21 @@ public class UnitManager : MonoBehaviour
         {
             Debug.LogError("ERROR: Unit without UnitDataSO detected!", this);
             return;
+        }
+    }
+
+    /// <summary>
+    /// Check if this unit is either environment or neutral.
+    /// </summary>
+    /// <returns></returns>
+    private bool IsNeutral()
+    {
+        if(myPlayerAffiliation == 0 || myPlayerAffiliation == 3)
+        {
+            return true;
+        }else 
+        {
+            return false;
         }
     }
 
@@ -290,6 +235,12 @@ public class UnitManager : MonoBehaviour
         weaponType =  weaponData.weaponType;
 
         baseDeploymentCost = unitData.deploymentCost + weaponData.deploymentCost + armorData.deploymentCost;
+        baseRewardValue = unitData.monetaryReward + weaponData.deploymentCost + armorData.deploymentCost;
+        /*if (IsNeutral())
+        {
+            // assign new value and ensure the rewarding of the full sum:
+            baseDeploymentCost = unitData.valueWhenNeutral * _gameManager.goldRewardFactor;
+        }*/
         baseCarryCapacity = unitData.carryCapacity;
 
         // health:
@@ -313,7 +264,7 @@ public class UnitManager : MonoBehaviour
         baseChargeImpactForce = unitData.chargeImpactForce; 
 
         // basic combat:
-        baseDamage = weaponData.damage;
+        baseWeaponDamage = weaponData.damage;
         baseAttackSpeed = weaponData.attackSpeed;
         baseAttackRange = weaponData.attackRange;
         baseArmorPenetrationValue = weaponData.armorPenetrationValue;
@@ -374,12 +325,20 @@ public class UnitManager : MonoBehaviour
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -397,12 +356,20 @@ public class UnitManager : MonoBehaviour
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -420,12 +387,20 @@ public class UnitManager : MonoBehaviour
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -443,12 +418,20 @@ public class UnitManager : MonoBehaviour
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -466,12 +449,20 @@ public class UnitManager : MonoBehaviour
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -483,18 +474,26 @@ public class UnitManager : MonoBehaviour
 
             case UnitDataSO.UnitType.Building:
                 
-                _unitMovement.StartMovement();
+                _unitMovement.StartMovement(); // why?
                 _unitHealth.LaunchHealthBar();
                 _unitDetection.StartScanningForEnemies();
 
                 switch (myPlayerAffiliation)
                 {
-                    case 1:
+                    case 0: // environment
+                        // TBD...
+                        break;
+
+                    case 1: // player 1
                         // add friendly units to the cameras follow-list:
                         _cameraController.AddUnitToFollow(this.transform);
                         break;
 
-                    case 2:
+                    case 2: // player 2
+                        // TBD...
+                        break;
+
+                    case 3: // neutral
                         // TBD...
                         break;
 
@@ -516,7 +515,7 @@ public class UnitManager : MonoBehaviour
     /// Called by UnitHealth. This function rewards gold for the kill, updates the camera-follow.
     /// NOTE: This does NOT destroy the unit (as we want the animation to finish playing).
     /// </summary>
-    public void SignOffThisUnit()
+    public void DisableUnfollowAndDisconnectUnit() // this needs to take into account WHO killed me!
     {
         // mark this unit as deactivated:
         isActive = false;
@@ -530,18 +529,18 @@ public class UnitManager : MonoBehaviour
         {
             _unitCombat.DeactivateCombat();
         }
-
+        if(_cameraController != null)
+        {
+            _cameraController.RemoveUnitToFollow(this.transform);
+        }
+        /*
         // reward the victor 1/4 of the killed units deployment cost:
         switch (myPlayerAffiliation)
         {
             case 1:
                 FindAnyObjectByType<GoldManager>().AddGold(2, GetComponent<UnitManager>().baseDeploymentCost / 4.0f);
 
-                // tell camera not to consider this unit for following anymore:
-                //if (!CompareTag("HQ")) // we should probably rather have the cam jump here...
-                //{
-                    _cameraController.RemoveUnitToFollow(this.transform);
-                //}
+                _cameraController.RemoveUnitToFollow(this.transform);
                 break;
 
             case 2:
@@ -549,288 +548,61 @@ public class UnitManager : MonoBehaviour
                 //Debug.Log("player 1 (you) should have received: " + GetComponent<UnitManager>().baseDeploymentCost / 4.0f + " gold.");
                 break;
 
+            case 3:
+                FindAnyObjectByType<GoldManager>().AddGold(1, GetComponent<UnitManager>().baseDeploymentCost / 4.0f);
+                //Debug.Log("player 1 (you) should have received: " + GetComponent<UnitManager>().baseDeploymentCost / 4.0f + " gold.");
+                break;
+
             default:
                 break;
-        }
+        }*/
+
+        DeactivateAllComponents();
 
         // end the game, if this was an HQ:
         if (CompareTag("HQ"))
         {
-            FindAnyObjectByType<EndOfGame>().RoundFinished(manualPlayerID);
+            FindAnyObjectByType<EndOfGame>().RoundFinished(myPlayerAffiliation);
         }
-
-        // destroy this unit:
-        //Debug.Log("destroying: " + this.gameObject.name);
-        //Destroy(this.gameObject);
     }
 
     /// <summary>
     /// Called by <see cref="UnitHealth"/> when a unit gets killed, so the corpse can remain on the 
-    /// battlefield until turnt off.
+    /// battlefield until turnt off. This is required to manage the indivvidual behaviors.
     /// </summary>
-    public void DeactivateAllComponents()
+    public void DeactivateAllComponents() 
     {
         if(GetComponent<Collider>() != null && GetComponent<Collider>().enabled)
         {
-            Destroy(GetComponent<Collider>());
+            //Destroy(GetComponent<Collider>());
+            GetComponent<Collider>().enabled = false;
         }
 
         if(GetComponent<NavMeshAgent>() != null && GetComponent<NavMeshAgent>().enabled)
         {
-            Destroy(GetComponent<NavMeshAgent>());
+            //Destroy(GetComponent<NavMeshAgent>());
+            GetComponent<NavMeshAgent>().enabled = false;
         }
 
         if (GetComponent<UnitMovement>() != null && GetComponent<UnitMovement>().enabled)
         {
-            Destroy(GetComponent<UnitMovement>());
+            //Destroy(GetComponent<UnitMovement>());
+            GetComponent<UnitMovement>().enabled = false;
         }
 
         if (GetComponent<UnitCombat>() != null && GetComponent<UnitCombat>().enabled)
         {
-            Destroy(GetComponent<UnitCombat>());
+            //Destroy(GetComponent<UnitCombat>());
+            GetComponent<UnitCombat>().enabled = false;
         }
-
-        /* // this one actually torpedos the death sequence mid execution:
-        if (GetComponent<UnitHealth>() != null && GetComponent<UnitHealth>().enabled)
-        {
-            Destroy(GetComponent<UnitHealth>());
-        }*/
     }
 
+    /// <summary>
+    /// Called as last step of the <see cref="IEnumerator DeathSequence()"/> in the <see cref="UnitHealth"/>.
+    /// Detstroy the game object at the very end.
+    /// </summary>
     public void DestroyUnit()
     {
         Destroy(this.gameObject);
     }
 }
-
-
-/*using UnityEngine;
-using UnityEngine.AI;
-
-public class UnitManager : MonoBehaviour
-{
-    public enum Race { Human, Orc }
-    public enum UnitType { Infantry, Cavalry, Monster, Building }
-    public enum ClassType { DamageDealer, Tank, Sniper } // DamageDealer > Tank, Tank > Sniper, Sniper > DamageDealer
-
-    [Header("Unit Setup:")]
-    public UnitData unitData;
-    public int playerAffiliation = 0;
-
-    [Space(20)]
-    [Header("Do Not Touch!")]
-    public GameObject myLocation;
-    public bool wasLaunched = false;
-
-    // Cached component references
-    private UnitHealth unitHealth;
-    private UnitMovement unitMovement;
-    private UnitCombat unitCombat;
-
-    private void Awake()
-    {
-        // Cache references to components
-        unitHealth = GetComponent<UnitHealth>();
-        unitMovement = GetComponent<UnitMovement>();
-        unitCombat = GetComponent<UnitCombat>();
-
-        InitializeUnit();
-    }
-
-    private void Start()
-    {
-        if (unitData.unitType == UnitType.Building)
-        {
-            SetupThisUnit(true, this.gameObject);
-            unitHealth.UpdateUnitHealth();
-        }
-    }
-
-    private void InitializeUnit()
-    {
-        // Initialize attributes from unitData
-        if (unitData != null)
-        {
-            unitHealth.SetHealthPoints(unitData.healthPoints);
-            unitMovement.SetMovementSpeed(unitData.movementSpeed);
-            unitCombat.SetCombatStats(unitData.meleeDamage, unitData.rangedDamage);
-        }
-    }
-
-    public void SetupThisUnit(bool _placedByPlayer, GameObject _spawnZoneOfPlacement)
-    {
-        if (unitData.unitType != UnitType.Building)
-        {
-            myLocation = _spawnZoneOfPlacement;
-            playerAffiliation = _placedByPlayer ? 1 : 2;
-
-            unitHealth.teamAffiliation = playerAffiliation;
-
-            unitMovement.UpdateUnitMovement();
-            unitCombat.UpdateUnitCombat();
-            unitHealth.UpdateUnitHealth();
-        }
-        else
-        {
-            Debug.Log($"I am a castle, I have {unitData.healthPoints} and belong to player {playerAffiliation}");
-        }
-    }
-
-    public void ResetThisUnit()
-    {
-        if (unitData.unitType != UnitType.Building && myLocation != null)
-        {
-            myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
-            myLocation = null;
-        }
-    }
-
-    private void OnMouseDown()
-    {
-        if (unitData.unitType != UnitType.Building)
-        {
-            DragNDrop dragNDrop = FindObjectOfType<DragNDrop>();
-            if (dragNDrop != null && dragNDrop.carriedObject == null)
-            {
-                dragNDrop.PickUpAgain(this.gameObject);
-                ResetThisUnit();
-            }
-        }
-    }
-}*/
-
-// this worked:
-/*
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
-
-/// <summary>
-/// This script sits on ever object in the scene with a healthpool.
-/// </summary>
-public class UnitManager : MonoBehaviour
-{
-    public enum Race { Human, Orc }
-    public enum UnitType { Building, Infantry, Cavalry }
-    public enum ClassType { DamageDealer, Tank, Sniper } // DamageDealer > Tank, Tank > Sniper, Sniper > DamageDealer
-
-    [Header("Unit Setup:")]
-    public string unitName = "default unit";
-    public Race race = Race.Human;
-    public UnitType unitType = UnitType.Infantry;
-    public ClassType classType = ClassType.DamageDealer; // DD > armored, armored > ranged, ranged > DD
-    public int myClassID;
-    public int playerAffiliation = 0;
-    public int deploymentCost = 1;
-    
-    [Space(10)]
-    public float healthPoints = 1.0f;
-    public float armorValue = 0.0f;
-    public float movementSpeed = 1.0f;
-    public float spottingRange = 5.0f;
-    
-    [Space(10)]
-    public float meleeArmorPenetrationRating = 0.0f;
-    public float meleeAttackRange = 0.5f;
-    public float meleeAttackSpeed = 1.0f;
-    public float meleeDamage = 1.0f;
-    
-    [Space(10)]
-    public float rangedArmorPenetrationRating = 0.0f;
-    public float rangedAttackRange = 0.0f;
-    public float rangedAttackSpeed = 0.0f;
-    public float rangedDamage = 0.0f;
-
-    [Space(20)]
-    [Header("Do Not Touch!")]
-    public GameObject myLocation;
-    public bool wasLaunched = false;
-
-    private void Start()
-    {
-        // check if unit is a headquaters
-        if (unitType == UnitType.Building)
-        {
-            SetupThisUnit(true, this.gameObject);
-            //GetComponent<UnitHealth>().UpdateUnitHealth();
-        }
-    }
-
-    /// <summary>
-    /// Tell the unit it was placed. int = 1 is the players team, int = 2 is the AI's team.
-    /// </summary>
-    /// <param name="_teamID"></param>
-    public void SetupThisUnit(bool _placedByPlayer, GameObject _spawnZoneOfPlacement)
-    {
-        // check if unit is a headquaters
-        if(unitType != UnitType.Building)
-        {
-            myLocation = _spawnZoneOfPlacement;
-
-            if (_placedByPlayer)
-            {
-                playerAffiliation = 1;
-            }
-            else
-            {
-                playerAffiliation = 2;
-            }
-
-            // this is both for kill-rewards and camera control (for players):
-            GetComponent<UnitHealth>().teamAffiliation = playerAffiliation;
-
-            // transform my class type into an ID:
-            switch (classType)
-            {
-                case ClassType.DamageDealer:
-                    myClassID = 0;
-                    break;
-
-                case ClassType.Tank:
-                    myClassID = 1;
-                    break;
-
-                case ClassType.Sniper:
-                    myClassID = 2;
-                    break;
-            }
-
-            GetComponent<UnitMovement>().UpdateUnitMovement();
-            //GetComponent<UnitCombat>().UpdateUnitCombat();
-            //GetComponent<UnitHealth>().UpdateUnitHealth();
-        }
-        else
-        {
-            Debug.Log("I am a castle, I have " + healthPoints + " and of player " + playerAffiliation);
-        }
-    }
-
-    
-    public void ResetThisUnit()
-    {
-        // check if unit is a headquaters
-        if (unitType != UnitType.Building)
-        {
-            myLocation.GetComponent<SpawnZone>().VacateDeploymentTile();
-            myLocation = null;
-        }
-    }
-
-    /// <summary>
-    /// Allow player to pick this placed unit back up.
-    /// </summary>
-    private void OnMouseDown()
-    {
-        // check if unit is a headquaters
-        if (unitType != UnitType.Building)
-        {
-            if (FindObjectOfType<DragNDrop>().carriedObject == null)
-            {
-                FindObjectOfType<DragNDrop>().PickUpAgain(this.gameObject);
-
-                ResetThisUnit();
-            }
-        }
-    }
-}*/

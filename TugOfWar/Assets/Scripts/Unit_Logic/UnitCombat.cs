@@ -11,6 +11,7 @@ public class UnitCombat : MonoBehaviour
     WeaponDataSO.WeaponType _myWeaponType;
     UnitDataSO.UnitType _myUnitType;
     bool _isBuilding = false;
+    int _myPlayerAffiliation;
     //GameObject _targetEnemy;
 
     // animation stuff:
@@ -39,13 +40,7 @@ public class UnitCombat : MonoBehaviour
     {
         // cache components:
         _unitManager = GetComponent<UnitManager>();
-
-        // check first if there is an animator to begin with:
-            /*if (GetComponent<Animator>())
-            {
-                _unitAnimator = _unitManager.unitAnimator;
-                _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
-            }*/
+        _myPlayerAffiliation = _unitManager.myPlayerAffiliation;
 
         if (GetComponent<UnitAnimationController>())
         {
@@ -53,12 +48,14 @@ public class UnitCombat : MonoBehaviour
         }
 
         // setup variables:
+
+        /* // this happens in the unit manager!
         // if ranged, initialize projectile animations:
         if(_unitManager.weaponType == WeaponDataSO.WeaponType.Bow)
         {
             _myAnimateProjectile = GetComponent<AnimateProjectile>();
             _myAnimateProjectile.InitializeProjectileAnimator();
-        }
+        }*/
 
         _myUnitType = _unitManager.unitType;
         if (_myUnitType == UnitDataSO.UnitType.Building)
@@ -68,12 +65,13 @@ public class UnitCombat : MonoBehaviour
 
         _penetrationValue = _unitManager.baseArmorPenetrationValue;
         _attackRange = _unitManager.baseAttackRange; // is this actually needed here, or just in movement?
-
         _attackSpeed = _unitManager.baseAttackSpeed;
-        _weaponDamageValue = _unitManager.baseDamage;
+        _weaponDamageValue = _unitManager.baseWeaponDamage;
 
         _isActive = true;
     }
+
+    /*
     private float GetAnimationClipLength(string clipName)
     {
         RuntimeAnimatorController ac = _unitAnimator.runtimeAnimatorController;
@@ -87,7 +85,7 @@ public class UnitCombat : MonoBehaviour
         }
         Debug.LogError("Animation clip not found: " + clipName);
         return 0f;
-    }
+    }*/
 
     /// <summary>
     /// Called by EngageTarget from the UnitMovement Script once an enemy is in range.
@@ -128,7 +126,7 @@ public class UnitCombat : MonoBehaviour
             return false;
         }
     }
-
+    /*
     IEnumerator Strike(GameObject _targetEnemyUnit)
     {
         _inCoroutine = true;
@@ -143,8 +141,35 @@ public class UnitCombat : MonoBehaviour
         yield return new WaitForSeconds(_attackSpeed);
 
         _inCoroutine = false;
-    }
+    }*/
+    IEnumerator Strike(GameObject _targetEnemyUnit)
+    {
+        _inCoroutine = true;
 
+        _myAnimationController.AttackAnimation(_targetEnemyUnit, _attackSpeed, _unitManager.weaponType);
+
+        // administer damage: // there should be a distinction for ranged attacks, causing dmg on impact
+        float _calculatedDamage = CalculateEffectiveDamage(_targetEnemyUnit.GetComponent<UnitManager>().unitType);
+        _targetEnemyUnit.GetComponent<UnitHealth>().TakeDamage(_calculatedDamage, _penetrationValue, _myPlayerAffiliation);
+
+        // wait the length of attack-speed before being able to strike again:
+        yield return new WaitForSeconds(_attackSpeed);
+
+        _inCoroutine = false;
+    }
+    float CalculateEffectiveDamage(UnitDataSO.UnitType _targetUnitType)
+    {
+        float _unitTypeInfluence = CombatCalculator.GetUnitTypeInfluence(_myUnitType, _targetUnitType);
+        float _weaponTypeInfluence = CombatCalculator.GetWeaponInfluence(_myWeaponType, _targetUnitType);
+        
+        // base 100% + influences. E.g. 112,5% dmg when slightly advantaged.
+        float _efficiencyMultiplier = 1.0f + _unitTypeInfluence + _weaponTypeInfluence;
+
+        float _effectiveDamage = _weaponDamageValue * _efficiencyMultiplier;
+
+        return _effectiveDamage;
+    }
+    /*
     float CalculateEffectiveDamage(GameObject _targetEnemyUnit)
     {
         float _effectiveDamage = 0.0f;
@@ -162,7 +187,7 @@ public class UnitCombat : MonoBehaviour
         _effectiveDamage = _weaponDamageValue + _weaponTypeInfluence + _unitTypeInfluence;
 
         return _effectiveDamage;
-    }
+    }*/
 
 
     /// <summary>

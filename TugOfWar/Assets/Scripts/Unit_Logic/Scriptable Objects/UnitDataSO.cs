@@ -41,6 +41,9 @@ public class UnitDataSO : ScriptableObject
     public float chargeImpactSplashRadius = 0.0f; // unused...
     public float chargeImpactForce = 0.0f; // unused...
 
+    [Header("Reward when destroyed:")]
+    [Tooltip("This sum gets rewarded for the player who landed the death blow on this unit.")]
+    public float monetaryReward = 0.0f;
 
 
 

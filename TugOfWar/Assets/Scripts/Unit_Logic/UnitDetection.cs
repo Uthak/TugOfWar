@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class UnitDetection : MonoBehaviour
     LayerMask _unitSpottingLayer;
 
     // variables set by the UnitManager:
+    bool _isWorker = false;
     int _thisUnitsPlayerAffiliation = 0;
     float _spottingRange = 0.0f;
     float _myColliderRadius = 0.0f;
@@ -25,6 +27,12 @@ public class UnitDetection : MonoBehaviour
         _thisUnitsPlayerAffiliation = _unitManager.myPlayerAffiliation;
         _spottingRange = _unitManager.baseSpottingRange;
         _myColliderRadius = GetMyBoundaryRadius(GetComponent<Collider>());
+
+        // if this is a peasant with a tool, it's a worker:
+        if(_unitManager.unitType == UnitDataSO.UnitType.Peasant && _unitManager.weaponType == WeaponDataSO.WeaponType.Tool)
+        {
+            _isWorker = true;
+        }
     }
     public void StartScanningForEnemies()
     {
@@ -59,7 +67,7 @@ public class UnitDetection : MonoBehaviour
                 //if (_unitObject.GetComponent<UnitManager>() && _unitObject.GetComponent<UnitManager>().isActive)
                 if (_unitObject.GetComponent<UnitManager>())
                 {
-                    if (_unitObject.GetComponent<UnitManager>().isActive && IsOpponent(_unitObject))
+                    if (_unitObject.GetComponent<UnitManager>().isActive && IsViableTarget(_unitObject))
                     {
                         _spottedEnemyUnits.Add(_unitObject.gameObject);
                     }
@@ -86,7 +94,13 @@ public class UnitDetection : MonoBehaviour
 
                 if (distanceToSpecificTestedUnit < _closestDistance)
                 {
-                    _closestEnemy = _enemy.gameObject;
+                    // only update the closest enemy unit if it's NOT neutral:
+                    if(_closestEnemy == null || !IsNeutral(_enemy))
+                    {
+                        _closestEnemy = _enemy.gameObject;
+                    }
+
+                    //_closestEnemy = _enemy.gameObject;
                     _unitMovement.EnemySpotted(_closestEnemy);
 
                     _closestDistance = distanceToSpecificTestedUnit;
@@ -100,18 +114,45 @@ public class UnitDetection : MonoBehaviour
         }
     }
 
+    private bool IsNeutral(GameObject targetUnit)
+    {
+        if(targetUnit.GetComponent<UnitManager>().myPlayerAffiliation == 1 || targetUnit.GetComponent<UnitManager>().myPlayerAffiliation == 2)
+        {
+            return false;
+        }else
+        {
+            return true;
+        }
+    }
+
     /// <summary>
     /// Check if the unit actually has a team affiliation. Also check if this affiliation is not the same
     /// as the checking units affiliation.
     /// </summary>
     /// <param name="_spottedUnit"></param>
     /// <returns></returns>
-    bool IsOpponent(Collider _spottedUnit)
+    bool IsViableTarget(Collider _spottedUnit)
     {
-        if ((_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation == 1 || _spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation == 2) && _spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != _thisUnitsPlayerAffiliation)
+        // check if spotted target is a combat-unit:
+        if (_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != 0)
+        {
+            // check if it's from the opposing team:
+            if (_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != _thisUnitsPlayerAffiliation)
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+        }
+
+        // if the spotted target isn't a combat unit, check if this unit is a worker:
+        else if (_isWorker)
         {
             return true;
         }
+
+        // any other setup means this is not a viable target:
         else
         {
             return false;

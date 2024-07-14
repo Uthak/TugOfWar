@@ -48,6 +48,7 @@ public class EndOfGame : MonoBehaviour
 
     /// <summary>
     /// Call this function when a round reaches it's conclusion.
+    /// The transmitted playerID is the one of the player who lost the round.
     /// </summary>
     /// <param name="victory"></param>
     //public void RoundFinished(bool victory)

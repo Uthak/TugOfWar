@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// This script manages all the overlaying logic of the game in runtime.
@@ -11,6 +14,9 @@ public class GameManager : MonoBehaviour
     //public static GameManager gameManager { get; private set; }
 
     [Header("Game Manager Setup:")]
+    [Tooltip("Upon destruction a fraction of the deployment cost of a unit is rewarded to the victor. Set the " +
+        "fraction-factor here. NOTE: destroyed neutral units rewards are not affected by this!")]
+    public float goldRewardFactor = 4.0f; // currently NOT used, using the reward tab of the UnitDataSO instead!
     [Tooltip("This is the target objective player 1's units run towards.")]
     public GameObject player1Destination;
     [Tooltip("This is the target objective player 2's units run towards.")]
@@ -24,6 +30,8 @@ public class GameManager : MonoBehaviour
     EnemyArmyManager _NPCArmyManager;
     GoldManager _goldManager;
     LevelBuilder _levelBuilder;
+    ExperienceManager _experienceManager;
+    UpgradeManager _upgradeManager;
 
     float _player1DeploymentBacklineX;
     float _player2DeploymentBacklineX;
@@ -37,12 +45,27 @@ public class GameManager : MonoBehaviour
     // for experimentation: Auto Launch & auto deploy!
     public bool autoLaunchEnabled = false;
     public bool autoDeployEnabled = false;
+    /*
+    [Header("Gold-Infusion-Button Settings:")]
+    //[SerializeField] Button _goldInfusionButton;
+    [SerializeField] float _pl1Tier1GoldInfusion = 50.0f;
+    [SerializeField] float _pl1Tier2GoldInfusion = 100.0f; // t1*2
+    [SerializeField] float _pl1Tier3GoldInfusion = 200.0f; // t2*2
+    private int _pl1CurrentGoldInfusionTier = 0;
+
+    [SerializeField] float _pl2Tier1GoldInfusion = 50.0f;
+    [SerializeField] float _pl2Tier2GoldInfusion = 100.0f; // t1*2
+    [SerializeField] float _pl2Tier3GoldInfusion = 200.0f; // t2*2
+    private int _pl2CurrentGoldInfusionTier = 0;*/
 
     public void EnableAutoLaunch()
     {
         autoLaunchEnabled = true;
     }
 
+    /// <summary>
+    /// The Game Setup commences here.
+    /// </summary>
     private void Awake()
     {
         // currently not being used singleton implementation:
@@ -61,6 +84,29 @@ public class GameManager : MonoBehaviour
         }*/
         #endregion
 
+        // start game setup:
+        _levelBuilder = GetComponent<LevelBuilder>();
+        _levelBuilder.BuildLevel();
+    }
+    /*
+    private void Awake()
+    {
+        // currently not being used singleton implementation:
+        #region Singleton pattern:
+        /*
+        if (gameManager == null)
+        {
+            gameManager = this;
+
+            // optional: Makes this instance persist across scenes
+            //DontDestroyOnLoad(gameObject);
+        }else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
+
         // cache components:
         if (GetComponent<EnemyArmyManager>()) // only present in Single Player
         {
@@ -68,18 +114,49 @@ public class GameManager : MonoBehaviour
         }
         _goldManager = GetComponent<GoldManager>();
         _levelBuilder = GetComponent<LevelBuilder>();
+        _experienceManager = GetComponent<ExperienceManager>();
+
+        // adaptively cache target x-lie for both players:
+        //_player1DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(1);
+        //_player2DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(2);
+    }*/
+    void InitializeGameManager()
+    {
+        // cache components:
+        if (GetComponent<EnemyArmyManager>()) // only present in Single Player
+        {
+            _NPCArmyManager = GetComponent<EnemyArmyManager>();
+        }
+        _goldManager = GetComponent<GoldManager>();
+        //_levelBuilder = GetComponent<LevelBuilder>();
+
+        _experienceManager = GetComponent<ExperienceManager>();
+        _experienceManager.InitializeExperienceManager();
+
+        _upgradeManager = GetComponent<UpgradeManager>();
+        _upgradeManager.InitializeUpgradeManager();
+        // register button events:
+        //_goldInfusionButton.onClick.AddListener(() => ButtonForGoldInfusion(_currentGoldInfusionTier, 1,));
+
+
+        // adaptively cache the respective headquarters:
+        player1Destination = _levelBuilder.GetHeadquarter(2);
+        player2Destination = _levelBuilder.GetHeadquarter(1);
 
         // adaptively cache target x-lie for both players:
         _player1DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(1);
         _player2DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(2);
-    }
 
+
+    }
     /// <summary>
     /// This function is called by <see cref="LevelBuilder"/> when the map is setup. 
     /// Only once that is complete should the AI start deploying units.
     /// </summary>
     public void LevelSetupComplete()
     {
+        InitializeGameManager();
+
         if (_playAgainstAI)
         {
             _NPCArmyManager.DeployAIStartingArmy();
@@ -226,4 +303,91 @@ public class GameManager : MonoBehaviour
         _unlaunchedPlayer2Units.Clear();
         _allUnlaunchedUnits.Clear();
     }
+    /*
+    /// <summary>
+    /// This function is called when the player choses to trade ingame-xp for a immediate gold-infusion. 
+    /// Gold Button in the UI.
+    /// </summary>
+    //public void ButtonForGoldInfusion(int tierLevel,int usingPlayerID, float amtOfGold, int xpCost)
+    public void ButtonForGoldInfusion(int playerID)
+    {
+        float amtOfGold;
+        int xpCost;
+
+        switch (playerID)
+        {
+            case 1:
+                switch (_pl1CurrentGoldInfusionTier)
+                {
+                    case 0:
+                        amtOfGold = _pl1Tier1GoldInfusion;
+                        xpCost = 1;
+                        break;
+                    case 1:
+                        amtOfGold = _pl1Tier2GoldInfusion;
+                        xpCost = 1;
+                        break;
+                    case 2:
+                        amtOfGold = _pl1Tier3GoldInfusion;
+                        xpCost = 1;
+                        break;
+
+                    default:
+                        amtOfGold = 0.0f;
+                        xpCost = 0;
+                        Debug.LogError("ERROR: Gold-infusion-button pressed but invalid tier assigned!", this);
+                        return;
+                }
+
+                if (_experienceManager.SufficientXP(playerID, xpCost))
+                {
+                    _experienceManager.SpendExperience(playerID, xpCost);
+                    _goldManager.AddGold(playerID, amtOfGold);
+                }else
+                {
+                    Debug.Log("Player " + playerID + "Tried to get money fast, but you don't have the required experience!", this);
+                }
+                break;
+
+            case 2:
+                switch (_pl2CurrentGoldInfusionTier)
+                {
+                    case 0:
+                        amtOfGold = _pl2Tier1GoldInfusion;
+                        xpCost = 1;
+                        break;
+                    case 1:
+                        amtOfGold = _pl2Tier2GoldInfusion;
+                        xpCost = 1;
+                        break;
+                    case 2:
+                        amtOfGold = _pl2Tier3GoldInfusion;
+                        xpCost = 1;
+                        break;
+
+                    default:
+                        amtOfGold = 0.0f;
+                        xpCost = 0;
+                        Debug.LogError("ERROR: Gold-infusion-button pressed but invalid tier assigned!", this);
+                        return;
+                }
+
+                if (_experienceManager.SufficientXP(playerID, xpCost))
+                {
+                    _experienceManager.SpendExperience(playerID, xpCost);
+                    _goldManager.AddGold(playerID, amtOfGold);
+                }else
+                {
+                    Debug.Log("Player " + playerID + "Tried to get money fast, but you don't have the required experience!", this);
+                }
+                break;
+        }
+    }*/
+
+    /*
+    void OnDisable()
+    {
+        //un-register button events:
+        _goldInfusionButton.onClick.RemoveAllListeners();
+    }*/
 }

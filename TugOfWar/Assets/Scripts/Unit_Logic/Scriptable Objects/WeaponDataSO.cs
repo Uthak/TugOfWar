@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 [CreateAssetMenu(fileName = "[Weapon]_DataSheet", menuName = "Weapon Data Card", order = 51)]
 public class WeaponDataSO : ScriptableObject
@@ -12,7 +13,6 @@ public class WeaponDataSO : ScriptableObject
     public string weaponName = "[Weapon Name]";
     public WeaponGrip weaponGrip;
     public WeaponType weaponType;
-    public bool shieldOffhand = false;
 
     // base item stats:
     [Tooltip("cost: 1 per point")]
@@ -25,8 +25,8 @@ public class WeaponDataSO : ScriptableObject
     [Tooltip("cost: 2 per point")]
     public float attackRange = 0.5f;
 
-    [Space(10)]
     // advanced item stats:
+    [Space(10)]
     [Tooltip("cost: 1 per point")]
     public float armorPenetrationValue = 0.0f;
     
@@ -42,9 +42,10 @@ public class WeaponDataSO : ScriptableObject
     public float bashForceFactor = 0.0f;  // unused...// a massiv club will add bashiness over a brittle twig...
 
     [Header("Shield Offhand:")]
+    public bool shieldOffhand = false;
     [Tooltip("cost: 4 per point")]
     public float armorValue = 0.0f;
-
-    // deployment cost:
     public float deploymentCost = 0.0f;
+
+    [TextArea(3, 10)][SerializeField] string _comment;
 }

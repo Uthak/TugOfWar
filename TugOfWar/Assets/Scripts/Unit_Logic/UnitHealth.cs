@@ -13,7 +13,10 @@ public class UnitHealth : MonoBehaviour
 
     //bool _isActive = false;
 
-    float _armorValue = 0.0f;
+    bool _isAlive = true;
+    float _myArmorValue = 0.0f;
+    float _goldRewardFactor = 0.0f;
+    float _myRewardValue = 0.0f;
 
     ArmorDataSO.ArmorType _armorType;
 
@@ -24,7 +27,8 @@ public class UnitHealth : MonoBehaviour
 
     // to manage this units health bar:
     HealthBarManager _healthBarManager;
-
+    GoldManager _goldManager;
+    ExperienceManager _experienceManager;
     GameObject _myHealthBar;
 
 
@@ -35,15 +39,22 @@ public class UnitHealth : MonoBehaviour
     {
         // cache component references:
         _unitManager = GetComponent<UnitManager>();
+        _goldManager = FindAnyObjectByType<GoldManager>();
         //_healthBar = GetComponent<UnitHealthBar>();
         _healthBarManager = FindAnyObjectByType<HealthBarManager>();
+        _experienceManager = FindAnyObjectByType<ExperienceManager>();
 
         // asign & populate variables:
         baseHealthPoints = _unitManager.baseHealthPoints;
         currentHealthPoints = baseHealthPoints;
-        _armorValue = _unitManager.baseArmorValue;
+        _myArmorValue = _unitManager.baseArmorValue;
         mySize = _unitManager.baseSize;
         _armorType = _unitManager.armorType; // currently not used...
+
+        // calculate my value when killed:
+        _goldRewardFactor = FindAnyObjectByType<GameManager>().goldRewardFactor; // currently not used!
+        //_myRewardValue = _unitManager.baseDeploymentCost / _goldRewardFactor;
+        _myRewardValue = _unitManager.baseRewardValue;
 
         // NOTE: the unit health bar is initialized and managed by hte HealthBarManager,
         // a managing component of the Game Manager.
@@ -84,13 +95,13 @@ public class UnitHealth : MonoBehaviour
     /// </summary>
     /// <param name="_rawIncomingDamage"></param>
     /// <param name="_penetrationValueOfAttack"></param>
-    public void TakeDamage(float _rawIncomingDamage, float _penetrationValueOfAttack)
+    public void TakeDamage(float _rawIncomingDamage, float _penetrationValueOfAttack, int idOfAttacker)
     {
         // animate damage taken:
         _myUnitAnimationController.TakeDamageAnimation();
 
         // calculate the armor efficiency to get the effective damage of this attack:
-        float _armorEfficiency = CombatCalculator.CalculateArmorEfficiency(_armorValue, _penetrationValueOfAttack);
+        float _armorEfficiency = CombatCalculator.CalculateArmorEfficiency(_myArmorValue, _penetrationValueOfAttack);
         //float _effectiveDamage = _rawIncomingDamage * (1 - CalculateArmorEfficiency(_penetrationValueOfAttack));
         float _effectiveDamage = _rawIncomingDamage * (1 - _armorEfficiency);
 
@@ -103,13 +114,11 @@ public class UnitHealth : MonoBehaviour
         //Debug.Log("I, " + this.gameObject.name + " took damage and have this much: " + currentHealthPoints + " left");
 
 
-        if (currentHealthPoints <= 0.0f)
+        if (currentHealthPoints <= 0.0f && _isAlive)
         {
-            //Die();
-            //RemoveUnit();
-            Debug.Log("1");
+            _isAlive = false;
 
-            StartCoroutine(DeathSequence());
+            StartCoroutine(DeathSequence(idOfAttacker));
         }
     }
 
@@ -138,13 +147,13 @@ public class UnitHealth : MonoBehaviour
 
         return _blockedDamageFraction;
     }*/
-    
+    /*
     void Die()
     {
         // the death-coroutine is handled by the Unit AnimationController
         
         //_myUnitAnimationController.DeathAnimation();
-    }
+    }*/
     /*
     IEnumerator Die()
     {
@@ -155,29 +164,19 @@ public class UnitHealth : MonoBehaviour
 
     }*/
 
-
+    /*
     public void RemoveUnit()
     {
         _healthBarManager.UnregisterUnit(this);
 
         _unitManager.SignOffThisUnit();
-    }
+    }*/
 
-    public IEnumerator DeathSequence()
+    public IEnumerator DeathSequence(int idOfAttacker)
     {
-        //Debug.Log("2");
-
-        _healthBarManager.UnregisterUnit(this);
-        //Debug.Log("3");
-
-        _unitManager.SignOffThisUnit();
-        //Debug.Log("4");
-
-        _unitManager.DeactivateAllComponents();
-        //Debug.Log("5");
-
+        // currently disabled, could be interesting to use for performance-settings! 
         #region Destroy Unit immediatly after Death Animation:
-        // Use a callback to handle the animation length
+        // use a callback to handle the animation length:
         bool isLengthRetrieved = false;
         float lengthOfDeathAnimation = 0f;
 
@@ -187,18 +186,28 @@ public class UnitHealth : MonoBehaviour
             isLengthRetrieved = true;
         });
 
-        // Wait until the length is retrieved
+        // wait until the length is retrieved:
         yield return new WaitUntil(() => isLengthRetrieved);
 
-        // Wait for the length of the death animation
-        //Debug.Log("death anim length: " + lengthOfDeathAnimation);
+        // wait for the length of the death animation:
         yield return new WaitForSeconds(lengthOfDeathAnimation);
         #endregion
 
-        yield return new WaitForSeconds(60.0f);
-        //Debug.Log("6");
+        // reward xp to the killer:
+        _experienceManager.GainExperience(idOfAttacker, _unitManager.baseDeploymentCost);
 
-        // get rid of the body:
+        // reward money to the killer:
+        _goldManager.AddGold(idOfAttacker, _myRewardValue);
+
+        // turn off health bar:
+        _healthBarManager.UnregisterUnit(this);
+
+        // shut down all functions:
+        _unitManager.DisableUnfollowAndDisconnectUnit();
+
+        yield return new WaitForSeconds(60.0f); // this time should be managed by performance-settings!
+
+        // delete unit entirely, if desired:
         _unitManager.DestroyUnit();
     }
 
