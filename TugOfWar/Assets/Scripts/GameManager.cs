@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     // private variables:
     EnemyArmyManager _NPCArmyManager;
     GoldManager _goldManager;
-    LevelBuilder _levelBuilder;
+    LevelArchitect _levelArchitect; // manages level creation
     ExperienceManager _experienceManager;
     UpgradeManager _upgradeManager;
 
@@ -45,18 +45,6 @@ public class GameManager : MonoBehaviour
     // for experimentation: Auto Launch & auto deploy!
     public bool autoLaunchEnabled = false;
     public bool autoDeployEnabled = false;
-    /*
-    [Header("Gold-Infusion-Button Settings:")]
-    //[SerializeField] Button _goldInfusionButton;
-    [SerializeField] float _pl1Tier1GoldInfusion = 50.0f;
-    [SerializeField] float _pl1Tier2GoldInfusion = 100.0f; // t1*2
-    [SerializeField] float _pl1Tier3GoldInfusion = 200.0f; // t2*2
-    private int _pl1CurrentGoldInfusionTier = 0;
-
-    [SerializeField] float _pl2Tier1GoldInfusion = 50.0f;
-    [SerializeField] float _pl2Tier2GoldInfusion = 100.0f; // t1*2
-    [SerializeField] float _pl2Tier3GoldInfusion = 200.0f; // t2*2
-    private int _pl2CurrentGoldInfusionTier = 0;*/
 
     public void EnableAutoLaunch()
     {
@@ -85,41 +73,10 @@ public class GameManager : MonoBehaviour
         #endregion
 
         // start game setup:
-        _levelBuilder = GetComponent<LevelBuilder>();
-        _levelBuilder.BuildLevel();
+        _levelArchitect = GetComponent<LevelArchitect>();
+        _levelArchitect.BuildLevel();
     }
-    /*
-    private void Awake()
-    {
-        // currently not being used singleton implementation:
-        #region Singleton pattern:
-        /*
-        if (gameManager == null)
-        {
-            gameManager = this;
 
-            // optional: Makes this instance persist across scenes
-            //DontDestroyOnLoad(gameObject);
-        }else
-        {
-            Destroy(gameObject);
-            return;
-        }
-        #endregion
-
-        // cache components:
-        if (GetComponent<EnemyArmyManager>()) // only present in Single Player
-        {
-            _NPCArmyManager = GetComponent<EnemyArmyManager>();
-        }
-        _goldManager = GetComponent<GoldManager>();
-        _levelBuilder = GetComponent<LevelBuilder>();
-        _experienceManager = GetComponent<ExperienceManager>();
-
-        // adaptively cache target x-lie for both players:
-        //_player1DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(1);
-        //_player2DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(2);
-    }*/
     void InitializeGameManager()
     {
         // cache components:
@@ -138,19 +95,28 @@ public class GameManager : MonoBehaviour
         // register button events:
         //_goldInfusionButton.onClick.AddListener(() => ButtonForGoldInfusion(_currentGoldInfusionTier, 1,));
 
-
         // adaptively cache the respective headquarters:
-        player1Destination = _levelBuilder.GetHeadquarter(2);
-        player2Destination = _levelBuilder.GetHeadquarter(1);
+        player1Destination = _levelArchitect.baseConfig.player1HQ; // this is wrong, but works, the var is falsly assigned!
+        player2Destination = _levelArchitect.baseConfig.player2HQ; // this is wrong, but works, the var is falsly assigned!
+
+        //TEMPORARY using hq instead of base line:
+        // adaptively cache target x-lie for both players:
+        /*
+        _player1DeploymentBacklineX = player1Destination.transform.position.x;
+        _player2DeploymentBacklineX = player2Destination.transform.position.x;*/
+        
+        // adaptively cache the respective headquarters:
+        player1Destination = _levelArchitect.GetHeadquarter(2);
+        player2Destination = _levelArchitect.GetHeadquarter(1);
+        
 
         // adaptively cache target x-lie for both players:
-        _player1DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(1);
-        _player2DeploymentBacklineX = _levelBuilder.GetDeploymentBacklineX(2);
-
-
+        _player1DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(1);
+        _player2DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(2);
+        
     }
     /// <summary>
-    /// This function is called by <see cref="LevelBuilder"/> when the map is setup. 
+    /// This function is called by <see cref="LevelArchitect"/> when the map is setup. 
     /// Only once that is complete should the AI start deploying units.
     /// </summary>
     public void LevelSetupComplete()
@@ -232,7 +198,7 @@ public class GameManager : MonoBehaviour
         {
             case 1: // player 1:
                 // reset player 1 deployment zone: (the only human player at this time)
-                _levelBuilder.ResetDeploymentZone();
+                _levelArchitect.ResetDeploymentZone();
 
                 // loop through the unlaunched units of player 1 and launch them:
                 foreach (UnitManager _unit in _unlaunchedPlayer1Units)

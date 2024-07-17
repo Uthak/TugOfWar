@@ -21,7 +21,7 @@ public class SpawnZone : MonoBehaviour
     /// 0 = Neutral, 1 = Team 1, 2 = Team 2.
     /// </summary>
     /// <param name="_zoneID"></param>
-    public void SetupSpawnZone(int _zoneID)
+    public void InitializeSpawnZone(int _zoneID)
     {
         switch(_zoneID)
         {

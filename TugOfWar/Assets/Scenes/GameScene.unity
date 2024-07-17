@@ -12567,6 +12567,10 @@ GameObject:
   - component: {fileID: 1517335317}
   - component: {fileID: 1517335318}
   - component: {fileID: 1517335319}
+  - component: {fileID: 1517335323}
+  - component: {fileID: 1517335322}
+  - component: {fileID: 1517335321}
+  - component: {fileID: 1517335320}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -12619,35 +12623,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c804de5173ed47e4da1d0d818d68361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnZoneParent: {fileID: 1329228301}
-  _obstacleParent: {fileID: 1112206683}
-  spawnZone:
-  - {fileID: 2723931364712448250, guid: c8bde0517ebc8ba4c9f78e12a1fb6df0, type: 3}
-  _numberOfTerrainInplayer1Zone: 0
-  _numberOfTerrainInplayer2Zone: 0
-  _numberOfTerrainInNeutralZone: 20
-  _arrayOfObstacles:
-  - {fileID: 7005139070846796138, guid: 7418cd6ff2c7f854b96e1f897af7055e, type: 3}
-  - {fileID: 7005139070846796138, guid: 2cd25e2ea55eac04d92a2db31e1cbdd6, type: 3}
-  - {fileID: 7005139070846796138, guid: 61f9717eb6f958346b49cc1a2ce9d1b2, type: 3}
-  team2DeploymentZoneTiles: []
-  usedTeam2DeploymentZoneTiles: []
-  _playerOneHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
-    type: 3}
-  _playerTwoHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
-    type: 3}
-  _p1NrOfTowers: 2
-  _playerOneGuardTower: {fileID: 8341824745782758821, guid: 6521258f1aad8264ca967c0a78adba43,
-    type: 3}
-  _playerTwoGuardTower: {fileID: 8341824745782758821, guid: 6521258f1aad8264ca967c0a78adba43,
-    type: 3}
-  _p2NrOfTowers: 2
-  _randomlyPlacedNeutralTowers: 0
-  _neutralTower: {fileID: 8341824745782758821, guid: 4f8e6d195e6a19a4c84ed95da79fb475,
-    type: 3}
-  _playerOneUnitsParent: {fileID: 441564384}
-  _playerTwoUnitsParent: {fileID: 1428981592}
-  _neutralUnitsParent: {fileID: 1809397152}
+  mapConfig:
+    _spawnZoneParent: {fileID: 1329228301}
+    _spawnZone: {fileID: 2723931364712448250, guid: c8bde0517ebc8ba4c9f78e12a1fb6df0,
+      type: 3}
+    team1DeploymentZoneTiles: []
+    team1UsedDeploymentZoneTiles: []
+    team2DeploymentZoneTiles: []
+    usedTeam2DeploymentZoneTiles: []
+    neutralDeploymentZoneTiles: []
+    usedNeutralDeploymentZoneTiles: []
+  _obstacleConfig:
+    _obstacleParent: {fileID: 1112206683}
+    _obstaclesInPlayer1Zone: 0
+    _obstaclesInPlayer2Zone: 0
+    _obstaclesInNeutralZone: 20
+    _arrayOfObstacles:
+    - {fileID: 7005139070846796138, guid: 7418cd6ff2c7f854b96e1f897af7055e, type: 3}
+    - {fileID: 7005139070846796138, guid: 2cd25e2ea55eac04d92a2db31e1cbdd6, type: 3}
+    - {fileID: 7005139070846796138, guid: 61f9717eb6f958346b49cc1a2ce9d1b2, type: 3}
+  baseConfig:
+    _playerOneUnitsParent: {fileID: 441564384}
+    _playerOneHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
+      type: 3}
+    _playerOneGuardTower: {fileID: 8341824745782758821, guid: 6521258f1aad8264ca967c0a78adba43,
+      type: 3}
+    _p1NrOfTowers: 2
+    _playerTwoUnitsParent: {fileID: 1428981592}
+    _playerTwoHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
+      type: 3}
+    _playerTwoGuardTower: {fileID: 8341824745782758821, guid: 6521258f1aad8264ca967c0a78adba43,
+      type: 3}
+    _p2NrOfTowers: 2
+    player1HQ: {fileID: 0}
+    player2HQ: {fileID: 0}
+  _neutralObjectConfig:
+    _neutralUnitsParent: {fileID: 1809397152}
+    _neutralTower: {fileID: 8341824745782758821, guid: 4f8e6d195e6a19a4c84ed95da79fb475,
+      type: 3}
+    _randomlyPlacedNeutralTowers: 0
 --- !u!114 &1517335308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12869,6 +12883,54 @@ MonoBehaviour:
   _pl2Tier1GoldInfusion: 50
   _pl2Tier2GoldInfusion: 100
   _pl2Tier3GoldInfusion: 200
+--- !u!114 &1517335320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517335303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80fb1e038812eb4d874034eac992247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1517335321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517335303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa7a8f9ecad74140a87962b216aa19b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1517335322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517335303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4132d971961019244b6d281c92ebbd2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1517335323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517335303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c50b015906599743a7e2606c7d90587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1531291377
 GameObject:
   m_ObjectHideFlags: 0

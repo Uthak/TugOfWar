@@ -30,7 +30,7 @@ public class UnitManager : MonoBehaviour
     private DragNDrop _dragNDrop;
     private CameraController _cameraController;
     private GameManager _gameManager;
-    private LevelBuilder _levelBuilder;
+    private LevelArchitect _levelBuilder;
 
     // this statline is used by all other component to get relevant profile information
     #region Public Unit Information and Components:
@@ -112,7 +112,7 @@ public class UnitManager : MonoBehaviour
 
                     _cameraController = FindAnyObjectByType<CameraController>();
 
-                    _levelBuilder = FindAnyObjectByType<LevelBuilder>();
+                    _levelBuilder = FindAnyObjectByType<LevelArchitect>();
                     break;
 
                 case 2: // placed by player 2:

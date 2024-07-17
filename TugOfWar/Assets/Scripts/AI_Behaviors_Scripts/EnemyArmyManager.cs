@@ -49,8 +49,11 @@ public class EnemyArmyManager : MonoBehaviour
     }
     void GetDeploymentArea()
     {
-        _team2DeploymentZoneTiles = GetComponent<LevelBuilder>().team2DeploymentZoneTiles;
-        _usedTeam2DeploymentZoneTiles = GetComponent<LevelBuilder>().usedTeam2DeploymentZoneTiles;
+        //_team2DeploymentZoneTiles = GetComponent<LevelArchitect>().team2DeploymentZoneTiles;
+        //_usedTeam2DeploymentZoneTiles = GetComponent<LevelArchitect>().usedTeam2DeploymentZoneTiles;
+
+        _team2DeploymentZoneTiles = GetComponent<LevelArchitect>().mapConfig.team2DeploymentZoneTiles;
+        _usedTeam2DeploymentZoneTiles = GetComponent<LevelArchitect>().mapConfig.usedTeam2DeploymentZoneTiles;
     }
 
     public void StartContineousDeployment()
