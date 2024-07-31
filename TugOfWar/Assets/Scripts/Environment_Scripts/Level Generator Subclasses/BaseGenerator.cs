@@ -4,147 +4,30 @@ using UnityEngine;
 
 public class BaseGenerator : MonoBehaviour
 {
+    LevelArchitect _levelArchitect;
     MapConfig _mapConfig;
     BaseConfig _baseConfig;
 
     public void InitializeBaseGenerator(MapConfig mapConfig, BaseConfig baseConfig)
     {
+        _levelArchitect = FindAnyObjectByType<LevelArchitect>();
         _mapConfig = mapConfig; 
         _baseConfig = baseConfig;
     }
 
-    public void PlaceBases()
+    public void GenerateBases()
     {
         CreateHeadquarter(1);
         CreateHeadquarter(2);
 
         CreateGuardTowers(1);
         CreateGuardTowers(2);
+
+        _levelArchitect.UpdateMapConfig(_mapConfig);
     }
 
 
-
-    /*
-    [SerializeField] Transform _spawnZoneParent;
-    [SerializeField] Transform _obstacleParent;
-    public GameObject[] spawnZone; // may no need to be an array --> only one type of spawn zone currently
-
-    // Define the size of the grid
-    private const int _gridWidth = 60; // was 60
-    private const int _gridDepth = 20; // was 20
-
-    // Define the size and position of the red team (default: player) deployment zone
-    private const int _player1DeploymentZoneWidth = 6;
-    private const int _player1DeploymentZoneDepth = _gridDepth;
-    private const int _player1DeploymentZone_X_offset = 0; // was 2 // this sets an offset of the play-grid to the outer perimeter
-    private const int _player1DeploymentZone_Z_offset = 0; // was 2 // this sets an offset of the play-grid to the outer perimeter
-
-    // Define the size and position of the blue team (default: AI) deployment zone
-    private const int _neutralZoneWidth = _gridWidth - _player1DeploymentZoneWidth - _player2DeploymentZoneWidth;
-    private const int _neutralZoneDepth = _gridDepth;
-    private const int _neutralLandZone_X_offset = _player1DeploymentZone_X_offset + _player1DeploymentZoneWidth; // mid-field adjacent to redTeamDeploymentZone: 
-    private const int _neutralZone_Z_offset = 0; // was 2 // this sets an offset of the play-grid to the outer perimeter
-
-    // Define the size and position of the blue team (default: AI) deployment zone
-    private const int _player2DeploymentZoneWidth = 6;
-    private const int _player2DeploymentZoneDepth = _gridDepth;
-    private const int _player2DeploymentZone_X_offset = _player1DeploymentZone_X_offset + _player1DeploymentZoneWidth + _neutralZoneWidth; // right-field adjacent to noMansLandZone: 
-    private const int _player2DeploymentZone_Z_offset = 0; // was 2
-
-    // used for placing obstacles in the various Zones:
-    [SerializeField] int _obstaclesInPlayer1Zone = 0;
-    [SerializeField] int _obstaclesInPlayer2Zone = 0;
-    [SerializeField] int _obstaclesInNeutralZone = 0;
-    [Space(10)]
-    [SerializeField] GameObject[] _arrayOfObstacles;
-
-
-    // all of this should be handled over a getter method! -F
-    List<GameObject> _team1DeploymentZoneTiles = new List<GameObject>();
-    public List<GameObject> team2DeploymentZoneTiles = new List<GameObject>(); // public so the AI can access this to get its deployment zone
-    List<GameObject> _neutralDeploymentZoneTiles = new List<GameObject>();
-
-    List<Transform> _team1UsedDeploymentZoneTiles = new List<Transform>();
-    public List<Transform> usedTeam2DeploymentZoneTiles = new List<Transform>(); // public so the AI can access this to get its deployment zone
-    List<Transform> _usedNeutralDeploymentZoneTiles = new List<Transform>();
-
-    [Header("Default Constructs and Buildings:")]
-    [SerializeField] GameObject _playerOneHeadquarter;
-    [SerializeField] GameObject _playerTwoHeadquarter;
-    [SerializeField] int _p1NrOfTowers = 2;
-
-    [Space(5)]
-    [SerializeField] GameObject _playerOneGuardTower;
-    [SerializeField] GameObject _playerTwoGuardTower;
-    [SerializeField] int _p2NrOfTowers = 2;
-
-    [Space(5)]
-    [SerializeField] bool _randomlyPlacedNeutralTowers = true;
-    [SerializeField] GameObject _neutralTower;
-
-    [Space(5)]
-    [SerializeField] Transform _playerOneUnitsParent;
-    [SerializeField] Transform _playerTwoUnitsParent;
-    [SerializeField] Transform _neutralUnitsParent;
-
-    // private variables:
-    GameObject _player1HQ;
-    GameObject _player2HQ;*/
-    /*
-    // create World:
-    public void BuildLevel()
-    {
-        // Loop through each row of the grid
-        for (int z = 0; z < _gridDepth; z++)
-        {
-            // Loop through each column of the grid
-            for (int x = 0; x < _gridWidth; x++)
-            {
-                // Instantiate a new grid square prefab at the current position
-                Vector3 _position = new Vector3(x + .5f, 0, z + .5f); // adding +.5f to adjust for size of spawnzone offset:
-                GameObject _instantiatedSpawnZone = Instantiate(spawnZone[Random.Range(0, spawnZone.Length)], _position, Quaternion.identity, _spawnZoneParent);
-
-                // If the current position is within the red teams deployment zone, color it green
-                if (InsideNeutralZone(_position))
-                {
-                    _instantiatedSpawnZone.GetComponent<SpawnZone>().InitializeSpawnZone(0);
-                    _neutralDeploymentZoneTiles.Add(_instantiatedSpawnZone);
-                }
-                if (InsidePlayer1Zone(_position))
-                {
-                    _instantiatedSpawnZone.GetComponent<SpawnZone>().InitializeSpawnZone(1);
-                    _team1DeploymentZoneTiles.Add(_instantiatedSpawnZone);
-                }
-                if (InsidePlayer2Zone(_position))
-                {
-                    _instantiatedSpawnZone.GetComponent<SpawnZone>().InitializeSpawnZone(2);
-                    team2DeploymentZoneTiles.Add(_instantiatedSpawnZone);
-                }
-            }
-        }
-
-        // place the various starting-buildings in the map:
-        CreateHeadquarters();
-        CreateGuardTowers();
-        if (_randomlyPlacedNeutralTowers)
-        {
-            CreateRandomNeutralTowers();
-        }
-        else
-        {
-            CreateNeutralTowers();
-        }
-
-        // create obstacles once mandatory buildings have been placed:
-        CreateObstaclesInTeam1DeploymentArea();
-        CreateObstaclesInTeam2DeploymentArea();
-        CreateObstaclesInNeutralZone();
-
-        // tell the GameManager that the level is setup, this way the AI can place its first wave:
-        GetComponent<GameManager>().LevelSetupComplete();
-    }*/
-
-    #region Create Map Buildings:
+    #region Create Base HQ's:
     private void CreateHeadquarter(int playerID)
     {
         float halfSizeOfHQ;
@@ -154,7 +37,7 @@ public class BaseGenerator : MonoBehaviour
 
         switch (playerID)
         {
-            case 0:
+            case 0: // environment
                 break;
 
             case 1: // player 1:
@@ -179,82 +62,68 @@ public class BaseGenerator : MonoBehaviour
                 _baseConfig.player2HQ.GetComponent<UnitManager>().InitializeUnit(2);
                 break;
 
-            case 3:
+            case 3: // neutral
                 break;
         }
-            
-        /*
-        // place the HQ's:
-        float halfSizeOfHQ = GetObjectSize(_playerOneHeadquarter.GetComponent<Collider>());
 
-        // player 1:
-        float xPositionPlayerOne = _gridWidth - _gridWidth + halfSizeOfHQ; // e.g. 0 base line
-        float zPositionPlayerOne = _gridDepth / 2.0f;
-        Vector3 hqPosPlayerOne = new Vector3(xPosHQ, 0, zPosHQ);
-        _player1HQ = Instantiate(_playerOneHeadquarter, hqPos, Quaternion.Euler(0, 90, 0), _playerOneUnitsParent);
-        */
-        // player 2:
-        /*
-        float xPositionPlayerTwo = _gridWidth - halfSizeOfHQ; // e.g. 60 base line
-        float zPositionPlayerTwo = _gridDepth / 2.0f;
-        Vector3 hqPosPlayerTwo = new Vector3(xPositionPlayerTwo, 0, zPositionPlayerTwo);
-        _player2HQ = Instantiate(_playerTwoHeadquarter, hqPosPlayerTwo, Quaternion.Euler(0, -90, 0), _playerTwoUnitsParent);
-
-        // initialize them to be game ready:
-        _player1HQ.GetComponent<UnitManager>().InitializeUnit(1);
-        _player2HQ.GetComponent<UnitManager>().InitializeUnit(2);
-
-        Debug.Log("CONTROL: Both HQ's have been placed and connected!");*/
+        Debug.Log("CONTROL: Both HQ's have been placed and connected!");
     }
 
+    #region Create Base Towers:
     private void CreateGuardTowers(int playerID)
     {
+        float towerZPosition;
+        
+        // calculate space between the desired nr of towers along the deployment-zones perimeter:
+        //float gridSectionDepth = (float)_gridDepth / ((float)_p1NrOfTowers + 1.0f);
+        //float gridSectionDepth = (float)_mapConfig.gridDepth / ((float)_baseConfig.p1NrOfTowers + 1.0f);
+
         switch (playerID)
         {
-            case 0:
+            case 0: // environment
                 break;
 
-            case 1:
+            case 1: // player 1
+                float p1HalfSizeOfTower = GetObjectSize(_baseConfig.playerOneGuardTower.GetComponent<Collider>());
+                towerZPosition = (float)_mapConfig.gridDepth / ((float)_baseConfig.p1NrOfTowers + 1.0f);
+
+                for (int i = 0; i < _baseConfig.p1NrOfTowers; i++)
+                {
+                    //float xPos = _mapConfig.gridWidth - _mapConfig.gridWidth + _player1DeploymentZoneWidth + p1HalfSizeOfTower;
+                    float xPos = _mapConfig.gridWidth - _mapConfig.gridWidth + _mapConfig.player1DeploymentZoneWidth + p1HalfSizeOfTower;
+                    float zPos = towerZPosition * (1 + i);
+                    Vector3 towerPosPlayerOne = new Vector3(xPos, 0, zPos);
+                    GameObject tower = Instantiate(_baseConfig.playerOneGuardTower, towerPosPlayerOne, Quaternion.Euler(0, 90, 0), _baseConfig.playerOneUnitsParent);
+                    tower.GetComponent<UnitManager>().InitializeUnit(1);
+                }
+
+                // shouldnt need a reset!
+                //towerZPosition = (float)_gridDepth / ((float)_p2NrOfTowers + 1.0f);
                 break;
 
-            case 2:
+            case 2: // player 2
+                float p2HalfSizeOfTower = GetObjectSize(_baseConfig.playerTwoGuardTower.GetComponent<Collider>());
+                towerZPosition = (float)_mapConfig.gridDepth / ((float)_baseConfig.p2NrOfTowers + 1.0f);
+
+                for (int i = 0; i < _baseConfig.p2NrOfTowers; i++)
+                {
+                    float xPos = _mapConfig.gridWidth - _mapConfig.player2DeploymentZoneWidth - p2HalfSizeOfTower;
+                    float zPos = towerZPosition * (1 + i);
+                    Vector3 towerPosPlayerTwo = new Vector3(xPos, 0, zPos);
+                    GameObject tower = Instantiate(_baseConfig.playerTwoGuardTower, towerPosPlayerTwo, Quaternion.Euler(0, -90, 0), _baseConfig.playerTwoUnitsParent);
+                    tower.GetComponent<UnitManager>().InitializeUnit(2);
+                }
+                // shouldnt need a reset!
+                //towerZPosition = (float)_gridDepth / ((float)_p2NrOfTowers + 1.0f);
                 break;
 
-            case 3:
+            case 3: // neutral AI 
                 break;
         }
-        /*
-        // place the bases guard towers:
-        float p1HalfSizeOfTower = GetObjectSize(_playerOneGuardTower.GetComponent<Collider>());
-        float p2HalfSizeOfTower = GetObjectSize(_playerTwoGuardTower.GetComponent<Collider>());
 
-        // calculate space between the desired nr of towers along the deployment-zones perimeter:
-        float gridSectionDepth = (float)_gridDepth / ((float)_p1NrOfTowers + 1.0f);
-
-        // create player 1 towers:
-        for (int i = 0; i < _p1NrOfTowers; i++)
-        {
-            float xPos = _gridWidth - _gridWidth + _player1DeploymentZoneWidth + p1HalfSizeOfTower;
-            float zPos = gridSectionDepth * (1 + i);
-            Vector3 towerPosPlayerOne = new Vector3(xPos, 0, zPos);
-            GameObject tower = Instantiate(_playerOneGuardTower, towerPosPlayerOne, Quaternion.Euler(0, 90, 0), _playerOneUnitsParent);
-            tower.GetComponent<UnitManager>().InitializeUnit(1);
-        }
-
-        gridSectionDepth = (float)_gridDepth / ((float)_p2NrOfTowers + 1.0f);
-
-        // create player 2 towers:
-        for (int i = 0; i < _p2NrOfTowers; i++)
-        {
-            float xPos = _gridWidth - _player2DeploymentZoneWidth - p2HalfSizeOfTower;
-            float zPos = gridSectionDepth * (1 + i);
-            Vector3 towerPosPlayerTwo = new Vector3(xPos, 0, zPos);
-            GameObject tower = Instantiate(_playerTwoGuardTower, towerPosPlayerTwo, Quaternion.Euler(0, -90, 0), _playerTwoUnitsParent);
-            tower.GetComponent<UnitManager>().InitializeUnit(2);
-        }
-
-        Debug.Log("CONTROL: Both players towers have been placed and connected");*/
+        Debug.Log("CONTROL: Both players towers have been placed and connected");
     }
+    #endregion
 
     /*
     private void CreateRandomNeutralTowers()

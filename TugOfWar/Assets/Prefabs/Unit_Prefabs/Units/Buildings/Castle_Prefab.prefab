@@ -658,6 +658,7 @@ MonoBehaviour:
   armorType: 0
   weaponType: 0
   baseDeploymentCost: 0
+  baseRewardValue: 0
   baseCarryCapacity: 0
   baseHealthPoints: 0
   baseArmorValue: 0
@@ -682,7 +683,6 @@ MonoBehaviour:
   baseSplashDamage: 0
   baseBashChance: 0
   baseBashForce: 0
-  manualPlayerID: 0
 --- !u!114 &8367016895275161127
 MonoBehaviour:
   m_ObjectHideFlags: 0

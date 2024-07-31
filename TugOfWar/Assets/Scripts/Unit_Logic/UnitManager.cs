@@ -88,6 +88,8 @@ public class UnitManager : MonoBehaviour
 
     /// <summary>
     /// Set up the chosen unit on pickup.
+    /// MAJOR FLAW: currently the desitnation is setup when picking up a unit, instead of when being placed in the map. <-------------------
+    /// HOWEVER: since im getting rid of drag n drop this should become a non-issue as initialization happens on placement in the future! <------------------
     /// </summary>
     public void InitializeUnit(int _playerID)
     {

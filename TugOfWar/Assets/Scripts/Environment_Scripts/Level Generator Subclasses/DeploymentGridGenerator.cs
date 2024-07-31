@@ -87,7 +87,7 @@ public class DeploymentGridGenerator : MonoBehaviour
         //UpdateDeploymentZoneData();
 
         // report back when DeploymentGrid is setup:
-        GetComponent<LevelArchitect>().GridSetupComplete(_mapConfig);
+        GetComponent<LevelArchitect>().UpdateMapConfig(_mapConfig);
     }
 
 

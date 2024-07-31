@@ -61,6 +61,10 @@ public class UnitMovement : MonoBehaviour
 
         // TESTING:
         //Debug.Log("my, "+ this.gameObject.name + " collider radius: " + _myColliderRadius, this.gameObject);
+        if (_thisUnitsPlayerAffiliation == 1)
+        {
+            Debug.Log("my destination coord: " + _destinationLocation, this);
+        }
     }
 
     /// <summary>

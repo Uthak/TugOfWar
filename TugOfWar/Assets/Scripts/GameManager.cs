@@ -18,9 +18,9 @@ public class GameManager : MonoBehaviour
         "fraction-factor here. NOTE: destroyed neutral units rewards are not affected by this!")]
     public float goldRewardFactor = 4.0f; // currently NOT used, using the reward tab of the UnitDataSO instead!
     [Tooltip("This is the target objective player 1's units run towards.")]
-    public GameObject player1Destination;
+    public GameObject player2HQ;
     [Tooltip("This is the target objective player 2's units run towards.")]
-    public GameObject player2Destination;
+    public GameObject player1HQ;
 
     [Space(10)]
     [Tooltip("This should be checked if playing against an AI-opponent.")]
@@ -51,8 +51,9 @@ public class GameManager : MonoBehaviour
         autoLaunchEnabled = true;
     }
 
+
     /// <summary>
-    /// The Game Setup commences here.
+    /// Everything starts here. First method of the scene. Here all Scripts are initialized and executed.
     /// </summary>
     private void Awake()
     {
@@ -77,6 +78,9 @@ public class GameManager : MonoBehaviour
         _levelArchitect.BuildLevel();
     }
 
+    /// <summary>
+    /// This gets called from the <see cref="LevelSetupComplete"/> method after the <see cref="LevelArchitect"/> is finished building the map.
+    /// </summary>
     void InitializeGameManager()
     {
         // cache components:
@@ -85,26 +89,32 @@ public class GameManager : MonoBehaviour
             _NPCArmyManager = GetComponent<EnemyArmyManager>();
         }
         _goldManager = GetComponent<GoldManager>();
-        //_levelBuilder = GetComponent<LevelBuilder>();
 
         _experienceManager = GetComponent<ExperienceManager>();
         _experienceManager.InitializeExperienceManager();
 
         _upgradeManager = GetComponent<UpgradeManager>();
         _upgradeManager.InitializeUpgradeManager();
-        // register button events:
-        //_goldInfusionButton.onClick.AddListener(() => ButtonForGoldInfusion(_currentGoldInfusionTier, 1,));
+
+
 
         // adaptively cache the respective headquarters:
-        player1Destination = _levelArchitect.baseConfig.player1HQ; // this is wrong, but works, the var is falsly assigned!
-        player2Destination = _levelArchitect.baseConfig.player2HQ; // this is wrong, but works, the var is falsly assigned!
+        player1HQ = _levelArchitect.baseConfig.player1HQ;
+        player2HQ = _levelArchitect.baseConfig.player2HQ;
 
-        //TEMPORARY using hq instead of base line:
         // adaptively cache target x-lie for both players:
-        /*
-        _player1DeploymentBacklineX = player1Destination.transform.position.x;
-        _player2DeploymentBacklineX = player2Destination.transform.position.x;*/
+        _player1DeploymentBacklineX = player1HQ.transform.position.x;
+        _player2DeploymentBacklineX = player2HQ.transform.position.x;
+
+        //Debug.Log("pl")
+
+        // adaptively cache the respective headquarters:
+        //player1Destination = _levelArchitect.baseConfig.player1HQ;
+        //player2Destination = _levelArchitect.baseConfig.player2HQ;
+
+
         
+        /*
         // adaptively cache the respective headquarters:
         player1Destination = _levelArchitect.GetHeadquarter(2);
         player2Destination = _levelArchitect.GetHeadquarter(1);
@@ -113,7 +123,7 @@ public class GameManager : MonoBehaviour
         // adaptively cache target x-lie for both players:
         _player1DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(1);
         _player2DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(2);
-        
+        */
     }
     /// <summary>
     /// This function is called by <see cref="LevelArchitect"/> when the map is setup. 
@@ -157,10 +167,10 @@ public class GameManager : MonoBehaviour
         switch (_playerID)
         {
             case 1:
-                return player1Destination.transform; // this throws error when HQ is destroyed
+                return player2HQ.transform; // this throws error when HQ is destroyed
 
             case 2:
-                return player2Destination.transform; // this throws error when HQ is destroyed
+                return player1HQ.transform; // this throws error when HQ is destroyed
 
             default:
                 Debug.LogError("ERROR: A unit-destination was requested, but invalid player-ID given!", this);

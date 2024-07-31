@@ -52,7 +52,7 @@ public class MapConfig
     public List<GameObject> team2DeploymentZoneTiles = new List<GameObject>();
     public List<Transform> usedTeam2DeploymentZoneTiles = new List<Transform>();
 
-    // neurtral:
+    // neutral:
     public int neutralZoneWidth => _neutralZoneWidth;
     public int neutralZoneDepth => _neutralZoneDepth;
     public int neutralZone_X_offset => _neutralZone_X_offset;
@@ -82,13 +82,13 @@ public class ObstacleConfig
 public class BaseConfig
 {
     [SerializeField] private Transform _playerOneUnitsParent;
-    [SerializeField] private GameObject _playerOneHeadquarter;
-    [SerializeField] private GameObject _playerOneGuardTower;
+    [SerializeField] private GameObject _playerOneHeadquarter; // holds the type of hq to be generated for player 1
+    [SerializeField] private GameObject _playerOneGuardTower; // holds the type of tower to be generated for player 1
     [SerializeField] private int _p1NrOfTowers = 2;
 
     [SerializeField] private Transform _playerTwoUnitsParent;
-    [SerializeField] private GameObject _playerTwoHeadquarter;
-    [SerializeField] private GameObject _playerTwoGuardTower;
+    [SerializeField] private GameObject _playerTwoHeadquarter; // holds the type of hq to be generated for player 2
+    [SerializeField] private GameObject _playerTwoGuardTower; // holds the type of tower to be generated for player 2
     [SerializeField] private int _p2NrOfTowers = 2;
 
     public Transform playerOneUnitsParent => _playerOneUnitsParent;
@@ -109,11 +109,13 @@ public class NeutralObjectConfig
 {
     [SerializeField] private Transform _neutralUnitsParent;
     [SerializeField] private GameObject _neutralTower;
-    [SerializeField] private bool _randomlyPlacedNeutralTowers = false;
+    [SerializeField] private int _nrOfNeutralTowers = 3;
+    [SerializeField] private bool _randomNeutralTowers = false;
 
     public Transform neutralUnitsParent => _neutralUnitsParent;
     public GameObject neutralTower => _neutralTower;
-    public bool randomlyPlacedNeutralTowers => _randomlyPlacedNeutralTowers;
+    public int nrOfNeutralTowers => _nrOfNeutralTowers; 
+    public bool randomNeutralTowers => _randomNeutralTowers;
 }
 
 /*
@@ -265,10 +267,10 @@ public class LevelArchitect : MonoBehaviour
         _deploymentGridGenerator.GenerateDeploymentZoneGrid();
 
         _baseGenerator.InitializeBaseGenerator(mapConfig, baseConfig);
-        _baseGenerator.PlaceBases();
+        _baseGenerator.GenerateBases();
 
-        //_neutralObjectGenerator.InitializeNeutralObjectGenerator(_mapConfig, _neutralObjectConfig);
-        _neutralObjectGenerator.PlaceNeutralObjects();
+        _neutralObjectGenerator.InitializeNeutralObjectGenerator(mapConfig, _neutralObjectConfig);
+        _neutralObjectGenerator.CreateNeutralObjects();
 
         //_obstacleGenerator.InitializeObstacleGenerator(_mapConfig, _obstacleConfig);
         _obstacleGenerator.SpawnObstacles();
@@ -282,7 +284,7 @@ public class LevelArchitect : MonoBehaviour
     /// The DeploymentZoneData gets modified and updated by the DeploymentGridGenerator.
     /// </summary>
     /// <param name="deploymentZoneData"></param>
-    public void GridSetupComplete(MapConfig updatedMapConfig)
+    public void UpdateMapConfig(MapConfig updatedMapConfig)
     {
         mapConfig = updatedMapConfig;
         //_deploymentZoneData = deploymentZoneData;
