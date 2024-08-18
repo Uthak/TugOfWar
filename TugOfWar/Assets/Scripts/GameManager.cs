@@ -75,7 +75,8 @@ public class GameManager : MonoBehaviour
 
         // start game setup:
         _levelArchitect = GetComponent<LevelArchitect>();
-        _levelArchitect.BuildLevel();
+        _levelArchitect.InitializeLevelArchitect();
+        _levelArchitect.GenerateLevel();
     }
 
     /// <summary>
@@ -208,7 +209,7 @@ public class GameManager : MonoBehaviour
         {
             case 1: // player 1:
                 // reset player 1 deployment zone: (the only human player at this time)
-                _levelArchitect.ResetDeploymentZone();
+                _levelArchitect.ResetDeploymentZone(_playerID);
 
                 // loop through the unlaunched units of player 1 and launch them:
                 foreach (UnitManager _unit in _unlaunchedPlayer1Units)

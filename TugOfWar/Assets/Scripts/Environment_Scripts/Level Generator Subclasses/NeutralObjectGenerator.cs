@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Create all neutral buildings and objects in the scene. This gets managed and called upon by <see cref="LevelArchitect"/>.
+/// </summary>
 public class NeutralObjectGenerator : MonoBehaviour
 {
     [SerializeField] bool _debug = false;
@@ -9,6 +12,12 @@ public class NeutralObjectGenerator : MonoBehaviour
     MapConfig _mapConfig;
     NeutralObjectConfig _neutralObjectConfig;
 
+
+    /// <summary>
+    /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
+    /// </summary>
+    /// <param name="mapConfig"></param>
+    /// <param name="neutralObjectConfig"></param>
     public void InitializeNeutralObjectGenerator(MapConfig mapConfig, NeutralObjectConfig neutralObjectConfig)
     {
         if (_debug)
@@ -20,16 +29,25 @@ public class NeutralObjectGenerator : MonoBehaviour
         _neutralObjectConfig = neutralObjectConfig; 
     }
 
+
     /// <summary>
-    /// This gets called by <see cref="LevelArchitect.BuildLevel"/>. This gets called before obstacles are placed.
+    /// This gets called by <see cref="LevelArchitect.GenerateLevel"/>. This gets called before obstacles are placed.
     /// This method will create all neutral objects in the scene: buildings, units and other objects if applicable.
     /// </summary>
-    public void CreateNeutralObjects()
+    public void GenerateNeutralObjects()
     {
         // call methods to generate various neutral buildings, units and objects as desired:
         CreateNeutralTowers(_neutralObjectConfig.randomNeutralTowers);
+
+        // report back when done:
+        GetComponent<LevelArchitect>().UpdateMapConfig(_mapConfig);
     }
 
+
+    /// <summary>
+    /// Instantiate a given number of neutral towers either following a pattern or randomly in the maps neutral zone.
+    /// </summary> 
+    /// <param name="randomPlacement"></param>
     void CreateNeutralTowers(bool randomPlacement)
     {
         #region Instructions:
@@ -72,6 +90,9 @@ public class NeutralObjectGenerator : MonoBehaviour
                     float rngRotation = Random.Range(0, 360);
                     GameObject instantiatedNeutralTower = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
                     instantiatedNeutralTower.GetComponent<UnitManager>().InitializeUnit(3);
+
+                    // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
+                    // curently disabled as grid is not being used.
                 }
                 break;
 
@@ -88,6 +109,9 @@ public class NeutralObjectGenerator : MonoBehaviour
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+
+                        // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
+                        // curently disabled as grid is not being used.
                     }
                 }
                 else if (nrOfNeutralTowers == 3) // special case for exactly 3 towers:
@@ -102,6 +126,9 @@ public class NeutralObjectGenerator : MonoBehaviour
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+
+                        // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
+                        // curently disabled as grid is not being used.
                     }
                 }
                 else // any other number of towers:
@@ -114,11 +141,15 @@ public class NeutralObjectGenerator : MonoBehaviour
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+
+                        // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
+                        // curently disabled as grid is not being used.
                     }
                 }
                 break;
         }
     }
+
 
     /// <summary>
     /// Get the radius of any circular colliders or half the lenght of the z-side of a square collider.

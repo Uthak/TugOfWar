@@ -9329,7 +9329,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1112206683}
   m_Layer: 0
-  m_Name: Environment_Parent
+  m_Name: Obstacle_Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12633,15 +12633,14 @@ MonoBehaviour:
     usedTeam2DeploymentZoneTiles: []
     neutralDeploymentZoneTiles: []
     usedNeutralDeploymentZoneTiles: []
-  _obstacleConfig:
+  obstacleConfig:
     _obstacleParent: {fileID: 1112206683}
     _obstaclesInPlayer1Zone: 0
     _obstaclesInPlayer2Zone: 0
-    _obstaclesInNeutralZone: 20
-    _arrayOfObstacles:
-    - {fileID: 7005139070846796138, guid: 7418cd6ff2c7f854b96e1f897af7055e, type: 3}
+    _obstaclesInNeutralZone: 15
+    _arrayOfTrees:
     - {fileID: 7005139070846796138, guid: 2cd25e2ea55eac04d92a2db31e1cbdd6, type: 3}
-    - {fileID: 7005139070846796138, guid: 61f9717eb6f958346b49cc1a2ce9d1b2, type: 3}
+    _arrayOfStones: []
   baseConfig:
     _playerOneUnitsParent: {fileID: 441564384}
     _playerOneHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
@@ -12657,11 +12656,11 @@ MonoBehaviour:
     _p2NrOfTowers: 2
     player1HQ: {fileID: 0}
     player2HQ: {fileID: 0}
-  _neutralObjectConfig:
+  neutralObjectConfig:
     _neutralUnitsParent: {fileID: 1809397152}
     _neutralTower: {fileID: 8341824745782758821, guid: 4f8e6d195e6a19a4c84ed95da79fb475,
       type: 3}
-    _nrOfNeutralTowers: 0
+    _nrOfNeutralTowers: 3
     _randomNeutralTowers: 0
 --- !u!114 &1517335308
 MonoBehaviour:
@@ -12909,6 +12908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa7a8f9ecad74140a87962b216aa19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
 --- !u!114 &1517335322
 MonoBehaviour:
   m_ObjectHideFlags: 0
