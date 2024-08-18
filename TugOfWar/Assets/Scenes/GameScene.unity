@@ -12554,7 +12554,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1517335304}
   - component: {fileID: 1517335308}
-  - component: {fileID: 1517335307}
   - component: {fileID: 1517335306}
   - component: {fileID: 1517335309}
   - component: {fileID: 1517335310}
@@ -12567,6 +12566,7 @@ GameObject:
   - component: {fileID: 1517335317}
   - component: {fileID: 1517335318}
   - component: {fileID: 1517335319}
+  - component: {fileID: 1517335307}
   - component: {fileID: 1517335323}
   - component: {fileID: 1517335322}
   - component: {fileID: 1517335321}
