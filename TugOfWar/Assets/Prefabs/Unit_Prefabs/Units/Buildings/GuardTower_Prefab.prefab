@@ -706,46 +706,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614bb877dfb45a14694866df69c5de54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: GuardTower
-  myPlayerAffiliation: 0
+  unitData: {fileID: 11400000, guid: 653eb67e0be53bc428d5bcb4da9bbb2a, type: 2}
+  unitProfile:
+    unitData: {fileID: 0}
+    armorData: {fileID: 0}
+    mainWeaponData: {fileID: 0}
+    secondaryWeaponData: {fileID: 0}
+    unitName: '[no name]'
+    deploymentCost: 0
+    rewardValue: 0
+    carryCapacity: 0
+    healthPoints: 0
+    armorValue: 0
+    walkingSpeed: 0
+    runningSpeed: 0
+    chargingSpeed: 0
+    size: 0
+    chargeImpactDamage: 0
+    chargeImpactSplashRadius: 0
+    chargeImpactForce: 0
+    detectionRange: 0
+    alarmRange: 0
+    weaponDamage: 0
+    attackSpeed: 0
+    attackRange: 0
+    armorPenetrationValue: 0
+    toHitChance: 0
+    criticalHitChance: 0
+    splashRadius: 0
+    splashDamage: 0
+    bashChance: 0
+    bashForce: 0
+  unitHealth: {fileID: 0}
+  _unitAnimator: {fileID: 0}
+  unitAnimationOverrideController: {fileID: 0}
+  myPlayerID: 0
   isActive: 1
   isDead: 0
-  unitData: {fileID: 11400000, guid: 653eb67e0be53bc428d5bcb4da9bbb2a, type: 2}
-  armorData: {fileID: 11400000, guid: 6e29cb1b420697f428c11ede29e13d92, type: 2}
-  weaponData: {fileID: 11400000, guid: 89389fa7962004d48b93ca5a72319958, type: 2}
-  _reportThisUnitsStatline: 0
-  unitAnimator: {fileID: 0}
-  unitAnimationOverrideController: {fileID: 0}
-  race: 0
-  unitType: 5
-  armorType: 0
-  weaponType: 0
-  baseDeploymentCost: 0
-  baseCarryCapacity: 0
-  baseHealthPoints: 0
-  baseArmorValue: 0
   unitDestination: {x: 0, y: 0, z: 0}
-  walkingSpeed: 0
-  runningSpeed: 0
-  chargingSpeed: 0
-  baseSize: 0
-  baseChargeSpeedMultiplier: 0
-  baseChargeImpactDamage: 0
-  baseChargeImpactSplashRadius: 0
-  baseChargeImpactForce: 0
-  baseSpottingRange: 0
-  baseAlarmRange: 0
-  baseWeaponDamage: 0
-  baseAttackSpeed: 0
-  baseAttackRange: 0
-  baseArmorPenetrationValue: 0
-  baseToHitChance: 0
-  baseCriticalHitChance: 0
-  baseSplashRadius: 0
-  baseSplashDamage: 0
-  baseBashChance: 0
-  baseBashForce: 0
-  manualPlayerID: 0
 --- !u!114 &8367016895275161127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,7 +758,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseHealthPoints: 0
   currentHealthPoints: 0
-  mySize: 0
 --- !u!208 &4075625672713539937
 NavMeshObstacle:
   m_ObjectHideFlags: 0

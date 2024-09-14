@@ -15,20 +15,22 @@ MonoBehaviour:
   unitName: Soldier_Tier1
   race: 0
   unitType: 1
-  canBeManuallyPlaced: 1
   size: 1
-  chargeImmunity: 0
+  canBePlacedManually: 1
+  armorData: {fileID: 11400000, guid: ceff7003102106b459ff0bb4dafaff5e, type: 2}
+  mainHandItemData: {fileID: 11400000, guid: 87cba5f507723e543afcab169fd21b43, type: 2}
+  secondaryItemData: {fileID: 11400000, guid: 9be4eee9c9eb3434e90b339cb396ebf5, type: 2}
   deploymentCost: 10
+  carryCapacity: 0
+  rewardForDestruction: 2.5
   healthPoints: 20
   walkingSpeed: 1
   runningSpeed: 2
   chargingSpeed: 3
-  spottingRange: 8
+  detectionRange: 5
   alarmRange: 0
   toHitSkill: 0
   toCritSkill: 0
-  carryCapacity: 0
   chargeImpactDamage: 0
   chargeImpactSplashRadius: 0
   chargeImpactForce: 0
-  monetaryReward: 2

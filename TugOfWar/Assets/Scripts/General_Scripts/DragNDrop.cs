@@ -64,7 +64,7 @@ public class DragNDrop : MonoBehaviour
     /// <returns></returns>
     bool SufficientRessources()
     {
-        if (GetComponent<GoldManager>().SufficientGold(1, carriedObject.GetComponent<UnitManager>().baseDeploymentCost))
+        if (GetComponent<GoldManager>().SufficientGold(1, carriedObject.GetComponent<UnitManager>().unitProfile.deploymentCost))
         {
             return true;
         }else 
@@ -115,7 +115,7 @@ public class DragNDrop : MonoBehaviour
         carriedObject.GetComponent<UnitManager>().DeployThisUnit(1, _targetLocation);
 
         // pay for the unit at hand:
-        GetComponent<GoldManager>().SubtractGold(1, carriedObject.GetComponent<UnitManager>().baseDeploymentCost);
+        GetComponent<GoldManager>().SubtractGold(1, carriedObject.GetComponent<UnitManager>().unitProfile.deploymentCost);
 
         #region experiment: Auto Launch
         if (FindAnyObjectByType<GameManager>().autoLaunchEnabled)
@@ -167,6 +167,6 @@ public class DragNDrop : MonoBehaviour
         carriedObject = _unit;
 
         // get refund for the picked-up unit (playerID is 1, as only player can do this):
-        GetComponent<GoldManager>().AddGold(1, carriedObject.GetComponent<UnitManager>().baseDeploymentCost);
+        GetComponent<GoldManager>().AddGold(1, carriedObject.GetComponent<UnitManager>().unitProfile.deploymentCost);
     }
 }

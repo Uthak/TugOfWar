@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using static UnitEnumManager;
 
 
 /// <summary>
@@ -28,7 +29,7 @@ public class HealthBarManager : MonoBehaviour
 
     // private variables:
     private Camera _mainCamera;
-    private List<UnitHealth> _listOfUnitHealthComponents = new List<UnitHealth>();
+    private List<UnitManager> _listOfUnitManagerComponents = new List<UnitManager>();
     private List<GameObject> _activeUnitHealthbars = new List<GameObject>();
 
     void OnEnable()
@@ -47,27 +48,21 @@ public class HealthBarManager : MonoBehaviour
         }
     }
 
-    /*
-    void Start()
-    {
-        _mainCamera = Camera.main;
-    }*/
-
     // keep all health bars facing the camera:
     void Update()
     {
         if (_mainCamera == null) return;
 
-        foreach (UnitHealth _unitHealth in _listOfUnitHealthComponents)
+        foreach (UnitManager _unitManager in _listOfUnitManagerComponents)
         {
-            if (_unitHealth != null && _unitHealth.gameObject.activeInHierarchy)
+            if (_unitManager != null && _unitManager.gameObject.activeInHierarchy)
             {
-                GameObject healthBar = GetHealthBarForUnit(_unitHealth);
+                GameObject healthBar = GetHealthBarForUnit(_unitManager);
 
                 if (healthBar != null)
                 {
-                    UpdateHealthBarPosition(_unitHealth, healthBar);
-                    UpdateHealthBarValue(_unitHealth, healthBar); // IMPROVEMENT: call this from each UnitHealth
+                    UpdateHealthBarPosition(_unitManager, healthBar);
+                    UpdateHealthBarValue(_unitManager, healthBar); // IMPROVEMENT: call this from each UnitHealth
                 }
             }
         }
@@ -80,31 +75,31 @@ public class HealthBarManager : MonoBehaviour
         }
     }
 
-    private GameObject GetHealthBarForUnit(UnitHealth _unitHealth)
+    private GameObject GetHealthBarForUnit(UnitManager _unitManager)
     {
         if (_debugLogs)
         {
-            Debug.Log($"Finding health bar for unit: {_unitHealth.gameObject.name}");
+            Debug.Log($"Finding health bar for unit: {_unitManager.gameObject.name}");
         }
 
-        GameObject healthBar = _activeUnitHealthbars.Find(hb => hb.GetComponent<HealthBar>().unitHealthReference == _unitHealth);
+        GameObject healthBar = _activeUnitHealthbars.Find(hb => hb.GetComponent<HealthBar>().unitManagerReference == _unitManager);
 
         if (healthBar == null)
         {
             if (_debugLogs)
             {
-                Debug.Log($"Creating new health bar for unit: {_unitHealth.gameObject.name}");
+                Debug.Log($"Creating new health bar for unit: {_unitManager.gameObject.name}");
             }
 
             healthBar = Instantiate(healthBarPrefab, unitHealthBarsParent);
 
             // tell the respective UnitHealth-component, which is it's health bar:
-            _unitHealth.GiveHealthBarToUnitHealthScript(healthBar); // currently not being used!
+            _unitManager.unitHealth.GiveHealthBarToUnitHealthScript(healthBar); // currently not being used!
 
             var healthBarComponent = healthBar.GetComponent<HealthBar>();
             if (healthBarComponent != null)
             {
-                healthBarComponent.InitializeHealthBar(_unitHealth);
+                healthBarComponent.InitializeHealthBar(_unitManager);
                 _activeUnitHealthbars.Add(healthBar);
             }else
             {
@@ -113,19 +108,24 @@ public class HealthBarManager : MonoBehaviour
                 return null;
             }
 
-            switch (_unitHealth.GetComponent<UnitManager>().baseSize)
+            switch (_unitManager.GetComponent<UnitManager>().unitProfile.size)
             {
-                case 0: // dwarf or goblin:
+                case Size.small:
                     break;
-                case 1: // regular infantry size:
+
+                case Size.humanoid:
                     break;
-                case 2: // regular cavalry size:
+
+                case Size.cavalry:
                     break;
-                case 3: // monster:
+
+                case Size.monster:
                     break;
-                case 4: // monstrous cavalry:
+
+                case Size.monstrousCavalry:
                     break;
-                case 5: // titan or HQ:
+
+                case Size.giant:
                     healthBar.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 45);
                     break;
             }
@@ -133,34 +133,34 @@ public class HealthBarManager : MonoBehaviour
         return healthBar;
     }
 
-    private void UpdateHealthBarPosition(UnitHealth _unitHealth, GameObject _healthBar)
+    private void UpdateHealthBarPosition(UnitManager _unitManager, GameObject _healthBar)
     {
         float _healthBarHeight = 0.0f;
 
         // adjust each health bars floating height to it's respective unit:
-        switch (_unitHealth.mySize)
+        switch (_unitManager.unitProfile.unitData.size)
         {
-            case 0:
+            case Size.small:
                 _healthBarHeight = _smallUnitHeight;
                 break;
 
-            case 1:
+            case Size.humanoid:
                 _healthBarHeight = _mediumUnitHeight;
                 break;
 
-            case 2:
+            case Size.cavalry:
                 _healthBarHeight = _largeUnitHeight;
                 break;
 
-            case 3:
+            case Size.monster:
                 _healthBarHeight = _veryLargeUnitHeight;
                 break;
 
-            case 4:
+            case Size.monstrousCavalry:
                 _healthBarHeight = _extremelyLargeUnitHeight;
                 break;
 
-            case 5:
+            case Size.giant:
                 _healthBarHeight = _titanicUnitHeight;
                 break;
 
@@ -169,7 +169,7 @@ public class HealthBarManager : MonoBehaviour
                 break;
         }
 
-        Vector3 worldPosition = _unitHealth.transform.position + Vector3.up * _healthBarHeight; // Adjust the height as needed
+        Vector3 worldPosition = _unitManager.transform.position + Vector3.up * _healthBarHeight; // Adjust the height as needed
         Vector3 screenPosition = _mainCamera.WorldToScreenPoint(worldPosition);
 
         RectTransform healthBarRectTransform = _healthBar.GetComponent<RectTransform>();
@@ -186,38 +186,40 @@ public class HealthBarManager : MonoBehaviour
     }
 
     // instead of calling this in an update, being called by the respective UnitHealth-script may be better...
-    private void UpdateHealthBarValue(UnitHealth _unitHealth, GameObject healthBar)
+    private void UpdateHealthBarValue(UnitManager _unitManager, GameObject healthBar)
     {
         Slider slider = healthBar.GetComponentInChildren<Slider>();
 
         if (slider != null)
         {
-            slider.value = _unitHealth.currentHealthPoints;
+            slider.value = _unitManager.unitHealth.currentHealthPoints;
         }else
         {
             Debug.LogError("ERROR: Slider component not found on health bar.");
         }
     }
 
-    public void RegisterUnit(UnitHealth _unitHealth)
+
+    public void RegisterUnit(UnitManager _unitManager)
     {
         if (_debugLogs)
         {
-            Debug.Log($"Registering unit: {_unitHealth.gameObject.name}");
+            Debug.Log($"Registering unit: {_unitManager.gameObject.name}");
         }
 
-        _listOfUnitHealthComponents.Add(_unitHealth);
+        _listOfUnitManagerComponents.Add(_unitManager);
     }
 
-    public void UnregisterUnit(UnitHealth _unitHealth)
+    public void UnregisterUnit(UnitManager _unitManager)
     {
         if (_debugLogs)
         {
-            Debug.Log($"Unregistering unit: {_unitHealth.gameObject.name}");
+            Debug.Log($"Unregistering unit: {_unitManager.gameObject.name}");
         }
 
-        _listOfUnitHealthComponents.Remove(_unitHealth);
-        GameObject _healthBar = _activeUnitHealthbars.Find(hb => hb.GetComponent<HealthBar>().unitHealthReference == _unitHealth);
+        _listOfUnitManagerComponents.Remove(_unitManager);
+        
+        GameObject _healthBar = _activeUnitHealthbars.Find(hb => hb.GetComponent<HealthBar>().unitManagerReference == _unitManager);
 
         if (_healthBar != null)
         {

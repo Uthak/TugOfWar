@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 8167784671345597084}
   - component: {fileID: 5667850807363185661}
   - component: {fileID: 6784748916299464539}
+  - component: {fileID: 4445620337625067669}
   - component: {fileID: 3728326764799825372}
   - component: {fileID: 7998167055682902747}
-  - component: {fileID: 4445620337625067669}
   m_Layer: 3
   m_Name: Human_Swordman_Prefab_Tier_1
   m_TagString: Untagged
@@ -75,47 +75,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614bb877dfb45a14694866df69c5de54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: default unit
-  myPlayerAffiliation: 0
-  isActive: 0
-  isDead: 0
   unitData: {fileID: 11400000, guid: cbecf393a20a1484cbcc6130f7253be7, type: 2}
-  armorData: {fileID: 11400000, guid: ceff7003102106b459ff0bb4dafaff5e, type: 2}
-  weaponData: {fileID: 11400000, guid: 87cba5f507723e543afcab169fd21b43, type: 2}
-  _reportThisUnitsStatline: 0
+  unitProfile:
+    unitData: {fileID: 0}
+    race: 0
+    unitType: 0
+    size: 0
+    mainItemType: 0
+    mainItemGrip: 0
+    secondaryItemType: 0
+    secondaryItemGrip: 0
+    unitName: '[no name]'
+    deploymentCost: 0
+    rewardValue: 0
+    canAttackTerrain: 0
+    carryCapacity: 0
+    canBePlacedManually: 0
+    healthPoints: 0
+    armorValue: 0
+    walkingSpeed: 0
+    runningSpeed: 0
+    chargingSpeed: 0
+    chargeImpactDamage: 0
+    chargeImpactSplashRadius: 0
+    chargeImpactForce: 0
+    detectionRange: 0
+    alarmRange: 0
+    weaponDamage: 0
+    attackSpeed: 0
+    attackRange: 0
+    armorPenetrationValue: 0
+    toHitChance: 0
+    criticalHitChance: 0
+    splashRadius: 0
+    splashDamage: 0
+    bashChance: 0
+    bashForce: 0
+  unitHealth: {fileID: 0}
   unitAnimator: {fileID: 0}
   unitAnimationOverrideController: {fileID: 22100000, guid: 7b8a4150fac7c8f43a28dd5d4af8f345,
     type: 2}
-  race: 0
-  unitType: 1
-  armorType: 0
-  weaponType: 0
-  baseDeploymentCost: 0
-  baseCarryCapacity: 0
-  baseHealthPoints: 0
-  baseArmorValue: 0
-  unitDestination: {x: 0, y: 0, z: 0}
-  walkingSpeed: 0
-  runningSpeed: 0
-  chargingSpeed: 0
-  baseSize: 0
-  baseChargeSpeedMultiplier: 0
-  baseChargeImpactDamage: 0
-  baseChargeImpactSplashRadius: 0
-  baseChargeImpactForce: 0
-  baseSpottingRange: 0
-  baseAlarmRange: 0
-  baseWeaponDamage: 0
-  baseAttackSpeed: 0
-  baseAttackRange: 0
-  baseArmorPenetrationValue: 0
-  baseToHitChance: 0
-  baseCriticalHitChance: 0
-  baseSplashRadius: 0
-  baseSplashDamage: 0
-  baseBashChance: 0
-  baseBashForce: 0
-  manualPlayerID: 0
+  myPlayerID: 0
+  isActive: 0
+  isDead: 0
+  immediateUnitDestination: {x: 0, y: 0, z: 0}
 --- !u!114 &4763042782068356028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +157,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseHealthPoints: 0
   currentHealthPoints: 0
-  mySize: 0
 --- !u!114 &6784748916299464539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +172,18 @@ MonoBehaviour:
   _nrOfAttackAnimations: 3
   _nrOfDeathAnimations: 2
   inCombat: 0
+--- !u!114 &4445620337625067669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732547557541199410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73545a9ffd62ada458f3ec6b2256f45d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &3728326764799825372
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -215,18 +229,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4445620337625067669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732547557541199410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73545a9ffd62ada458f3ec6b2256f45d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3360880377487834804
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -324,6 +326,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WK_Light_Infantry_A
+      objectReference: {fileID: 0}
+    - target: {fileID: 7918981313826021795, guid: a56dfc257ad60804fa9870fefe4c41b8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7918981313826021801, guid: a56dfc257ad60804fa9870fefe4c41b8,
         type: 3}

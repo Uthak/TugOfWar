@@ -15,20 +15,22 @@ MonoBehaviour:
   unitName: Guard Tower
   race: 0
   unitType: 5
-  canBeManuallyPlaced: 0
   size: 2
-  chargeImmunity: 0
+  canBePlacedManually: 0
+  armorData: {fileID: 11400000, guid: 6e29cb1b420697f428c11ede29e13d92, type: 2}
+  mainHandItemData: {fileID: 11400000, guid: 89389fa7962004d48b93ca5a72319958, type: 2}
+  secondaryItemData: {fileID: 11400000, guid: 321f64c32b43cda43b40159605144148, type: 2}
   deploymentCost: 0
+  carryCapacity: 0
+  rewardForDestruction: 0
   healthPoints: 15
   walkingSpeed: 0
   runningSpeed: 0
   chargingSpeed: 0
-  spottingRange: 15
+  detectionRange: 5
   alarmRange: 0
   toHitSkill: 0
   toCritSkill: 0
-  carryCapacity: 0
   chargeImpactDamage: 0
   chargeImpactSplashRadius: 0
   chargeImpactForce: 0
-  monetaryReward: 100

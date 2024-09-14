@@ -12,20 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 335e231af3d05ce4690625adf494c71e, type: 3}
   m_Name: Tier1Bow_CastleWeapon_DataSheet
   m_EditorClassIdentifier: 
-  weaponName: Tier 1 Bows
-  weaponGrip: 0
-  weaponType: 7
+  itemName: '[Weapon Name]'
+  itemGrip: 1
+  itemType: 7
   damage: 1
   attackSpeed: 1
   attackRange: 8
   armorPenetrationValue: 0
-  toHitFactor: 0
-  criticalHitFactor: 0
+  hitChance: 0
+  critChance: 0
   splashRadius: 0
   splashDamage: 0
   bashChance: 0
   bashForceFactor: 0
-  shieldOffhand: 0
+  canAttackTerrain: 0
+  shielded: 0
   armorValue: 0
   deploymentCost: 0
+  reward: 0
   _comment: 

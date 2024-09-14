@@ -6,6 +6,7 @@ using UnityEngine;
 public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
     public GameObject itemToPickUpHere;
+    public GameObject unitModell; // reference to the modell of this unit, used by the UnitPlacement-class to sample the unit over legal deployment zones
 
     private DragNDrop _dragNDrop;
 
@@ -18,6 +19,7 @@ public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         _dragNDrop = FindAnyObjectByType<DragNDrop>();
     }
+
     void Update()
     {
         if (mouse_over)

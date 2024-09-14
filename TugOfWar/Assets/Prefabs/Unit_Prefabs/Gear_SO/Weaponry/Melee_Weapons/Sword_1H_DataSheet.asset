@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 335e231af3d05ce4690625adf494c71e, type: 3}
   m_Name: Sword_1H_DataSheet
   m_EditorClassIdentifier: 
-  weaponName: Sword_1H_Tier1
-  weaponGrip: 0
-  weaponType: 2
+  itemName: 1H Sword
+  itemGrip: 0
+  itemType: 2
   damage: 1
   attackSpeed: 2.5
   attackRange: 0.5
   armorPenetrationValue: 0
-  toHitFactor: 0
-  criticalHitFactor: 0
+  hitChance: 0
+  critChance: 0
   splashRadius: 0
   splashDamage: 0
   bashChance: 0
   bashForceFactor: 0
-  shieldOffhand: 0
+  canAttackTerrain: 0
+  shielded: 0
   armorValue: 0
   deploymentCost: 0
+  reward: 0
+  _comment: 

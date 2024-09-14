@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnitEnumManager;
+
 
 public class UnitDetection : MonoBehaviour
 {
@@ -10,9 +12,9 @@ public class UnitDetection : MonoBehaviour
     LayerMask _unitSpottingLayer;
 
     // variables set by the UnitManager:
-    bool _isWorker = false;
+    //bool _isWorker = false;
     int _thisUnitsPlayerAffiliation = 0;
-    float _spottingRange = 0.0f;
+    float _detectionRange = 0.0f;
     float _myColliderRadius = 0.0f;
     GameObject _closestEnemy;
 
@@ -24,15 +26,16 @@ public class UnitDetection : MonoBehaviour
         _unitSpottingLayer = LayerMask.GetMask("Units");
 
         // set variables:
-        _thisUnitsPlayerAffiliation = _unitManager.myPlayerAffiliation;
-        _spottingRange = _unitManager.baseSpottingRange;
+        _thisUnitsPlayerAffiliation = _unitManager.myPlayerID;
+        _detectionRange = _unitManager.unitProfile.detectionRange;
         _myColliderRadius = GetMyBoundaryRadius(GetComponent<Collider>());
 
+        /*
         // if this is a peasant with a tool, it's a worker:
-        if(_unitManager.unitType == UnitDataSO.UnitType.Peasant && _unitManager.weaponType == WeaponDataSO.WeaponType.Tool)
+        if(_unitManager.unitProfile.unitType == UnitType.Peasant && _unitManager.unitProfile.mainItemType == ItemType.Tool) // missing offhand factor
         {
             _isWorker = true;
-        }
+        }*/
     }
     public void StartScanningForEnemies()
     {
@@ -55,7 +58,7 @@ public class UnitDetection : MonoBehaviour
     public void CheckForEnemies()
     {
         // use an OverlapSphere to detect all colliders within the detection radius and on the unit layer:
-        Collider[] _detectedUnitObjects = Physics.OverlapSphere(transform.position, _spottingRange + _myColliderRadius, _unitSpottingLayer); // spotting Range should be combined with collider Radius!
+        Collider[] _detectedUnitObjects = Physics.OverlapSphere(transform.position, _detectionRange + _myColliderRadius, _unitSpottingLayer); // spotting Range should be combined with collider Radius!
         List<GameObject> _spottedEnemyUnits = new List<GameObject>();
 
         // if at least one potential unit was detected check if any are actual units and moreso - enemies:
@@ -64,7 +67,6 @@ public class UnitDetection : MonoBehaviour
             foreach (Collider _unitObject in _detectedUnitObjects)
             {
                 // is the spotted unit active (has it been launched yet?):
-                //if (_unitObject.GetComponent<UnitManager>() && _unitObject.GetComponent<UnitManager>().isActive)
                 if (_unitObject.GetComponent<UnitManager>())
                 {
                     if (_unitObject.GetComponent<UnitManager>().isActive && IsViableTarget(_unitObject))
@@ -95,7 +97,7 @@ public class UnitDetection : MonoBehaviour
                 if (distanceToSpecificTestedUnit < _closestDistance)
                 {
                     // only update the closest enemy unit if it's NOT neutral:
-                    if(_closestEnemy == null || !IsNeutral(_enemy))
+                    if (_closestEnemy == null || !_closestEnemy.GetComponent<UnitManager>().isActive || !IsNeutral(_enemy))
                     {
                         _closestEnemy = _enemy.gameObject;
                     }
@@ -116,7 +118,7 @@ public class UnitDetection : MonoBehaviour
 
     private bool IsNeutral(GameObject targetUnit)
     {
-        if(targetUnit.GetComponent<UnitManager>().myPlayerAffiliation == 1 || targetUnit.GetComponent<UnitManager>().myPlayerAffiliation == 2)
+        if(targetUnit.GetComponent<UnitManager>().myPlayerID == 1 || targetUnit.GetComponent<UnitManager>().myPlayerID == 2)
         {
             return false;
         }else
@@ -134,10 +136,10 @@ public class UnitDetection : MonoBehaviour
     bool IsViableTarget(Collider _spottedUnit)
     {
         // check if spotted target is a combat-unit:
-        if (_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != 0)
+        if (_spottedUnit.GetComponent<UnitManager>().myPlayerID != 0)
         {
             // check if it's from the opposing team:
-            if (_spottedUnit.GetComponent<UnitManager>().myPlayerAffiliation != _thisUnitsPlayerAffiliation)
+            if (_spottedUnit.GetComponent<UnitManager>().myPlayerID != _thisUnitsPlayerAffiliation)
             {
                 return true;
             }else
@@ -146,14 +148,11 @@ public class UnitDetection : MonoBehaviour
             }
         }
 
-        // if the spotted target isn't a combat unit, check if this unit is a worker:
-        else if (_isWorker)
+        // if the spotted target isn't a combat unit but terrain, check if this unit may attack terrain:
+        else if (_unitManager.unitProfile.canAttackTerrain)
         {
             return true;
-        }
-
-        // any other setup means this is not a viable target:
-        else
+        }else // any other setup means this is not a viable target:
         {
             return false;
         }

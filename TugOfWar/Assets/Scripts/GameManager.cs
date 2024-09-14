@@ -255,17 +255,17 @@ public class GameManager : MonoBehaviour
         // loop through all new, unlaunched units and filter them by player-ownership:
         foreach (UnitManager _unit in _allUnlaunchedUnits)
         {
-            if (_unit.myPlayerAffiliation == 1)
+            if (_unit.myPlayerID == 1)
             {
                 _unlaunchedPlayer1Units.Add(_unit);
             }
-            else if (_unit.myPlayerAffiliation == 2)
+            else if (_unit.myPlayerID == 2)
             {
                 _unlaunchedPlayer2Units.Add(_unit);
             }
             else
             {
-                Debug.LogError("ERROR: Unit with wrong player-affiliation detected!", _unit);
+                Debug.LogError("ERROR: Unit with incorrect player-affiliation detected!", _unit);
                 return;
             }
         }

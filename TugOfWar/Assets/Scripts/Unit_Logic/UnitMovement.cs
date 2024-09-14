@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnitEnumManager;
 
 public class UnitMovement : MonoBehaviour
 {
@@ -9,14 +10,12 @@ public class UnitMovement : MonoBehaviour
     NavMeshAgent _navMeshAgent;
     UnitAnimationController _unitAnimationController;
 
-    //LayerMask _unitSpottingLayer;
     Vector3 _destinationLocation;
     bool _isActive = false;
     bool _isBuilding = false;
 
     // variables set by the UnitManager:
     int _thisUnitsPlayerAffiliation = 0;
-    //float _spottingRange = 0.0f;
     float _attackRange = 0.0f;
     float _myColliderRadius = 0.0f;
 
@@ -35,15 +34,15 @@ public class UnitMovement : MonoBehaviour
         _unitManager = GetComponent<UnitManager>();
         _unitAnimationController = GetComponent<UnitAnimationController>();
 
-        if (_unitManager.unitType != UnitDataSO.UnitType.Building)
+        if (_unitManager.unitProfile.unitType != UnitType.Building)
         {
             // buildings do not have a NavMeshAgent:
             _navMeshAgent = GetComponent<NavMeshAgent>();
 
-            _walkingSpeed = _unitManager.walkingSpeed;
-            _runningSpeed = _unitManager.runningSpeed;
-            _chargingSpeed = _unitManager.chargingSpeed;
-            _destinationLocation = _unitManager.unitDestination;
+            _walkingSpeed = _unitManager.unitProfile.walkingSpeed;
+            _runningSpeed = _unitManager.unitProfile.runningSpeed;
+            _chargingSpeed = _unitManager.unitProfile.chargingSpeed;
+            //_destinationLocation = _unitManager.immediateUnitDestination;
             //_destinationLocation = _unitManager.unitDestination.position; // old - no longer using a transform
         }
         else
@@ -53,18 +52,18 @@ public class UnitMovement : MonoBehaviour
 
         // set variables:
         //_unitSpottingLayer = LayerMask.GetMask("Units"); // detection!
-        _thisUnitsPlayerAffiliation = _unitManager.myPlayerAffiliation;  // detection!
+        _thisUnitsPlayerAffiliation = _unitManager.myPlayerID;  // detection!
 
         //_spottingRange = _unitManager.baseSpottingRange; // detection!
-        _attackRange = _unitManager.baseAttackRange;
+        _attackRange = _unitManager.unitProfile.attackRange;
         _myColliderRadius = GetRadius(GetComponent<Collider>());
 
         // TESTING:
         //Debug.Log("my, "+ this.gameObject.name + " collider radius: " + _myColliderRadius, this.gameObject);
-        if (_thisUnitsPlayerAffiliation == 1)
+        /*if (_thisUnitsPlayerAffiliation == 1)
         {
             Debug.Log("my destination coord: " + _destinationLocation, this);
-        }
+        }*/
     }
 
     /// <summary>
@@ -73,6 +72,8 @@ public class UnitMovement : MonoBehaviour
     public void StartMovement()
     {
         _isActive = true;
+
+        _destinationLocation = _unitManager.immediateUnitDestination;
 
         if (!_isBuilding)
         {

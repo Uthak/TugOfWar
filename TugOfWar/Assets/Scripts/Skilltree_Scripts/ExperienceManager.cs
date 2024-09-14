@@ -63,18 +63,18 @@ public class ExperienceManager : MonoBehaviour
     }
     void UpdateExperienceBar(int playerID)
     {
-        Debug.Log("4");
+        //Debug.Log("4");
         switch (playerID)
         {
             case 1:
                 _player1ExperienceBar.maxValue = _player1XPThreshold;
-                Debug.Log("5");
+                //Debug.Log("5");
 
                 _player1ExperienceBar.value = _currentXPplayer1;
-                Debug.Log("6");
+                //Debug.Log("6");
 
                 _TESTcurrentXP.text = _currentXPplayer1.ToString();
-                Debug.Log("7");
+                //Debug.Log("7");
 
                 break;
 
@@ -146,7 +146,7 @@ public class ExperienceManager : MonoBehaviour
                 // update xp-bar:
                 UpdateExperienceBar(receivingPlayerID);
 
-                Debug.Log("2");
+                //Debug.Log("2");
 
                 break;
 
@@ -165,7 +165,7 @@ public class ExperienceManager : MonoBehaviour
                     // update xp-counter:
                     UpdateExperiencePointCounter(receivingPlayerID);
                 }
-                Debug.Log("3");
+                //Debug.Log("3");
                 // update xp-bar:
                 UpdateExperienceBar(receivingPlayerID);
 

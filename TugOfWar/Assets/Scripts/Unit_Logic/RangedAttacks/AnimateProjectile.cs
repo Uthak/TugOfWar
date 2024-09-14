@@ -17,7 +17,7 @@ public class AnimateProjectile : MonoBehaviour
     public void InitializeProjectileAnimator()
     {
         _projectilePool = FindAnyObjectByType<ProjectilePool>();
-        _weaponRange = GetComponent<UnitManager>().baseAttackRange;
+        _weaponRange = GetComponent<UnitManager>().unitProfile.attackRange;
 
         Debug.Log("bow range: " + _weaponRange);
     }

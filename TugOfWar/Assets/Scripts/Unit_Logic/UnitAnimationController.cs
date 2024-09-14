@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnitEnumManager;
+
 
 /// <summary>
 /// This class handles all unit animations and is called by all other scripts on a 
@@ -32,7 +34,7 @@ public class UnitAnimationController : MonoBehaviour
         // check first if there is an animator to begin with:
         if (GetComponent<Animator>())
         {
-            _unitAnimator = _unitManager.unitAnimator;
+            _unitAnimator = GetComponent<Animator>();
             _unitAnimatorOverrideController = _unitManager.unitAnimationOverrideController;
         }else
         {
@@ -70,7 +72,7 @@ public class UnitAnimationController : MonoBehaviour
         _unitAnimator.SetBool("inCombat", false);
     }
 
-    public void AttackAnimation(GameObject enemyUnit ,float attackSpeed, WeaponDataSO.WeaponType weaponType)
+    public void AttackAnimation(GameObject enemyUnit ,float attackSpeed, ItemType weaponType)
     {
         // if the attackspeed is faster than the animation speed up the animation to match:
         /*if (attackSpeed < _attackAnimationDuration)
@@ -87,7 +89,7 @@ public class UnitAnimationController : MonoBehaviour
         StartCoroutine(AttackAnimationLength());
 
         // if ranged, fire a projectile:
-        if (weaponType == WeaponDataSO.WeaponType.Bow)
+        if (weaponType == ItemType.Bow)
         {
             _myProjectileAnimator.AnimateArrow(enemyUnit);
             //_myProjectileAnimator.AnimateArrow(enemyUnit.transform.position); // this will fire an object at the floor underneath a unit at a specific time:

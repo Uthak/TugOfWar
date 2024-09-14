@@ -4970,6 +4970,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemToPickUpHere: {fileID: 1732547557541199410, guid: 265a9c89d0fcfb448aba57af1c53f269,
     type: 3}
+  unitModell: {fileID: 0}
 --- !u!114 &555854366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12560,17 +12561,17 @@ GameObject:
   - component: {fileID: 1517335311}
   - component: {fileID: 1517335312}
   - component: {fileID: 1517335313}
-  - component: {fileID: 1517335314}
   - component: {fileID: 1517335315}
   - component: {fileID: 1517335316}
   - component: {fileID: 1517335317}
-  - component: {fileID: 1517335318}
-  - component: {fileID: 1517335319}
   - component: {fileID: 1517335307}
   - component: {fileID: 1517335323}
   - component: {fileID: 1517335322}
   - component: {fileID: 1517335321}
   - component: {fileID: 1517335320}
+  - component: {fileID: 1517335314}
+  - component: {fileID: 1517335318}
+  - component: {fileID: 1517335319}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -12647,7 +12648,7 @@ MonoBehaviour:
       type: 3}
     _playerOneGuardTower: {fileID: 8341824745782758821, guid: 6521258f1aad8264ca967c0a78adba43,
       type: 3}
-    _p1NrOfTowers: 2
+    _p1NrOfTowers: 0
     _playerTwoUnitsParent: {fileID: 1428981592}
     _playerTwoHeadquarter: {fileID: 8341824745782758821, guid: d029b43c31774fa4884214df4a1af42a,
       type: 3}
@@ -12660,7 +12661,7 @@ MonoBehaviour:
     _neutralUnitsParent: {fileID: 1809397152}
     _neutralTower: {fileID: 8341824745782758821, guid: 4f8e6d195e6a19a4c84ed95da79fb475,
       type: 3}
-    _nrOfNeutralTowers: 3
+    _nrOfNeutralTowers: 1
     _randomNeutralTowers: 0
 --- !u!114 &1517335308
 MonoBehaviour:
@@ -12850,7 +12851,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517335303}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8eba41cc0b24b9c4c94c4bdee67912ee, type: 3}
   m_Name: 
@@ -12871,7 +12872,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517335303}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8b617995450c7148b44fef325407c50, type: 3}
   m_Name: 
@@ -15004,6 +15005,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemToPickUpHere: {fileID: 1732547557541199410, guid: 81011454e2b11d341adecd7a894cd981,
     type: 3}
+  unitModell: {fileID: 0}
 --- !u!114 &1776640599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15497,6 +15499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemToPickUpHere: {fileID: 1732547557541199410, guid: bfd1eccd0488905449b9a65ab447a230,
     type: 3}
+  unitModell: {fileID: 0}
 --- !u!114 &1875737519
 MonoBehaviour:
   m_ObjectHideFlags: 0

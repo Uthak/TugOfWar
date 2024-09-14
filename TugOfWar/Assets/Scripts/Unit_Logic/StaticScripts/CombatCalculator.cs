@@ -1,4 +1,5 @@
 using UnityEngine; // Assuming you are using Unity for Mathf.Clamp
+using static UnitEnumManager;
 
 public class CombatCalculator
 {
@@ -14,52 +15,52 @@ public class CombatCalculator
     /// <param name="_myWeaponType"></param>
     /// <param name="_targetUnitType"></param>
     /// <returns></returns>
-    public static float GetWeaponInfluence(WeaponDataSO.WeaponType _myWeaponType ,UnitDataSO.UnitType _targetUnitType)
+    public static float GetWeaponInfluence(ItemType _myWeaponType ,UnitType _targetUnitType)
     {
         float _weaponEfficiency = 0.0f;
 
         switch (_targetUnitType)
         {
-            case UnitDataSO.UnitType.Peasant: // I'm attacking this unit...
+            case UnitType.Peasant: // I'm attacking this unit...
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed: // ...using this weapon!
+                    case ItemType.Unarmed: // ...using this weapon!
                         return CombatCalculator.noDamage;
                         //return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
@@ -67,46 +68,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Soldier:
+            case UnitType.Soldier:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
+                        _weaponEfficiency = CombatCalculator.normal;
+                        return _weaponEfficiency;
+                            
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
-                        _weaponEfficiency = CombatCalculator.normal;
-                        return _weaponEfficiency;
-
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
-
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                            
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
@@ -114,46 +115,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.LightCavalry:
+            case UnitType.LightCavalry:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
@@ -161,46 +162,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.HeavyCavalry:
+            case UnitType.HeavyCavalry:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.good; // maces can dent in or puncture armor
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
@@ -208,46 +209,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Warmachine:
+            case UnitType.Warmachine:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.bad; // arrows wont do much to an artillery-piece
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.good;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.normal;
                         return _weaponEfficiency;
 
@@ -255,46 +256,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Building:
+            case UnitType.Building:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.bad;
                         return _weaponEfficiency;
 
@@ -302,46 +303,46 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Environment:
+            case UnitType.Environment:
                 switch (_myWeaponType)
                 {
-                    case WeaponDataSO.WeaponType.Unarmed:
+                    case ItemType.Unarmed:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Tool:
+                    case ItemType.Tool:
                         _weaponEfficiency = CombatCalculator.optimal;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Sword:
+                    case ItemType.Sword:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Axe:
+                    case ItemType.Axe:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Mace:
+                    case ItemType.Mace:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Spear:
+                    case ItemType.Spear:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Lance:
+                    case ItemType.Lance:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Bow:
+                    case ItemType.Bow:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.Warmachine:
+                    case ItemType.Warmachine:
                         _weaponEfficiency = CombatCalculator.good;
                         return _weaponEfficiency;
 
-                    case WeaponDataSO.WeaponType.MagicalAttack:
+                    case ItemType.MagicalAttack:
                         _weaponEfficiency = CombatCalculator.noDamage;
                         return _weaponEfficiency;
 
@@ -360,40 +361,40 @@ public class CombatCalculator
     /// <param name="_myWeaponType"></param>
     /// <param name="_targetUnitType"></param>
     /// <returns></returns>
-    public static float GetUnitTypeInfluence(UnitDataSO.UnitType _myUnitType, UnitDataSO.UnitType _targetUnitType)
+    public static float GetUnitTypeInfluence(UnitType _myUnitType, UnitType _targetUnitType)
     {
         float _unitTypeEfficiency = 0.0f;
 
         switch (_targetUnitType)
         {
-            case UnitDataSO.UnitType.Peasant: // my target is a peasant...
+            case UnitType.Peasant: // my target is a peasant...
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant: // ... and I'm a peasant.
+                    case UnitType.Peasant: // ... and I'm a peasant.
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.optimal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -401,34 +402,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Soldier:
+            case UnitType.Soldier:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -436,34 +437,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.LightCavalry:
+            case UnitType.LightCavalry:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -471,34 +472,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.HeavyCavalry:
+            case UnitType.HeavyCavalry:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.normal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -506,34 +507,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Warmachine:
+            case UnitType.Warmachine:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -541,34 +542,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Building:
+            case UnitType.Building:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.optimal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.bad;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
@@ -576,34 +577,34 @@ public class CombatCalculator
                         return CombatCalculator.noDamage;
                 }
 
-            case UnitDataSO.UnitType.Environment:
+            case UnitType.Environment:
                 switch (_myUnitType)
                 {
-                    case UnitDataSO.UnitType.Peasant:
+                    case UnitType.Peasant:
                         _unitTypeEfficiency = CombatCalculator.optimal;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Soldier:
+                    case UnitType.Soldier:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.LightCavalry:
+                    case UnitType.LightCavalry:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.HeavyCavalry:
+                    case UnitType.HeavyCavalry:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Warmachine:
+                    case UnitType.Warmachine:
                         _unitTypeEfficiency = CombatCalculator.good;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Building:
+                    case UnitType.Building:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 
-                    case UnitDataSO.UnitType.Environment:
+                    case UnitType.Environment:
                         _unitTypeEfficiency = CombatCalculator.noDamage;
                         return _unitTypeEfficiency;
 

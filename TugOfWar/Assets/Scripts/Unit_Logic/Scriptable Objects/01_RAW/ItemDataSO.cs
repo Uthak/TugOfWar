@@ -1,18 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using static UnitEnumManager;
 
 [CreateAssetMenu(fileName = "[Weapon]_DataSheet", menuName = "Weapon Data Card", order = 51)]
-public class WeaponDataSO : ScriptableObject
+public class ItemDataSO : ScriptableObject
 {
-    public enum WeaponGrip { OneHanded, TwoHanded }
-    public enum WeaponType { Unarmed, Tool, Sword, Axe, Mace, Spear, Lance, Bow, Warmachine, MagicalAttack }
-
-    [Header("Weapon Profile:")]
-    public string weaponName = "[Weapon Name]";
-    public WeaponGrip weaponGrip;
-    public WeaponType weaponType;
+    [Header("Item Profile:")]
+    public string itemName = "[Weapon Name]";
+    public ItemGrip itemGrip; // unused...
+    public ItemType itemType; // used to determine attack-efficiency:
 
     // base item stats:
     [Tooltip("cost: 1 per point")]
@@ -30,8 +27,8 @@ public class WeaponDataSO : ScriptableObject
     [Tooltip("cost: 1 per point")]
     public float armorPenetrationValue = 0.0f;
     
-    public float toHitFactor = 0.0f; // unused...
-    public float criticalHitFactor = 0.0f; // unused...
+    public float hitChance = 0.0f; // unused...
+    public float critChance = 0.0f; // unused...
 
     // splash:
     public float splashRadius = 0.0f; // unused...
@@ -41,11 +38,15 @@ public class WeaponDataSO : ScriptableObject
     public float bashChance = 0.0f; // unused...
     public float bashForceFactor = 0.0f;  // unused...// a massiv club will add bashiness over a brittle twig...
 
+    // interaction with terrain:
+    public bool canAttackTerrain = false; // e.g. tools, certain warmachines, some magic, etc. allow to attack terrain.
+
     [Header("Shield Offhand:")]
-    public bool shieldOffhand = false;
+    public bool shielded = false; // unused...
     [Tooltip("cost: 4 per point")]
-    public float armorValue = 0.0f;
-    public float deploymentCost = 0.0f;
+    public float armorValue = 0.0f; // unused...
+    public float deploymentCost = 0.0f; // unused...
+    public float reward = 0.0f; // unused...
 
     [TextArea(3, 10)][SerializeField] string _comment;
 }

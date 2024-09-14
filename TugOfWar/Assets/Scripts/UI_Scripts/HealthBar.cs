@@ -3,11 +3,34 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
+    // This is a reference to the corresponding UnitManager attached to this prefab instance
+    public UnitManager unitManagerReference;
+
+    public void InitializeHealthBar(UnitManager _unitManager)
+    {
+        unitManagerReference = _unitManager;
+        UnitHealth unitHealthReference = unitManagerReference.unitHealth;
+
+        Slider slider = GetComponentInChildren<Slider>();
+
+        if (slider != null && unitHealthReference != null)
+        {
+            slider.maxValue = unitHealthReference.baseHealthPoints;
+            slider.value = unitHealthReference.baseHealthPoints;
+        }
+        else
+        {
+            Debug.LogError("Slider or UnitHealth component not found.");
+        }
+    }
+
+    /*
     // this is a reference to the corresponding unit attached to this prefab instance:
     public UnitHealth unitHealthReference;
 
-    public void InitializeHealthBar(UnitHealth _unitHealth/*,float _startingHealth*/)
+    public void InitializeHealthBar(UnitHealth _unitHealth,float _startingHealth)
     {
+        
         unitHealthReference = _unitHealth;
         Slider slider = GetComponentInChildren<Slider>();
         // old:
@@ -23,8 +46,8 @@ public class HealthBar : MonoBehaviour
         else
         {
             Debug.LogError("Slider component not found in health bar prefab.");
-        }
-    }
+        }*/
+}
 
     //old :
     /*public UnitHealthBar unitHealthBar;
@@ -48,4 +71,4 @@ public class HealthBar : MonoBehaviour
             Debug.LogError("Slider component not found in health bar prefab.");
         }
     }*/
-}
+//}

@@ -114,7 +114,7 @@ public class EnemyArmyManager : MonoBehaviour
             _instantiatedUnit.GetComponent<UnitManager>().DeployThisUnit(2, _rngLocation);
 
             // pay for the unit:
-            GetComponent<GoldManager>().SubtractGold(2, _instantiatedUnit.GetComponent<UnitManager>().baseDeploymentCost);
+            GetComponent<GoldManager>().SubtractGold(2, _instantiatedUnit.GetComponent<UnitManager>().unitProfile.deploymentCost);
         }
         else
         {
