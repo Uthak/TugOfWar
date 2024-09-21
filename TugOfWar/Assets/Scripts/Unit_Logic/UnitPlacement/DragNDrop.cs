@@ -154,7 +154,7 @@ public class DragNDrop : MonoBehaviour
         //carriedObject = Instantiate(_unit, _mousePosition, Quaternion.identity, _player1UnitParent);
 
         // setup the picked up units profile:
-        carriedObject.GetComponent<UnitManager>().InitializeUnit(1);
+        //carriedObject.GetComponent<UnitManager>().InitializeUnit(1); // commented as depreciated, now handled in UnitPlacement and considering the footprint
     }
 
     /// <summary>

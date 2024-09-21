@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnitEnumManager;
@@ -31,6 +33,8 @@ public class UnitProfile
     public bool canAttackTerrain = false; // used to allow units to attack terrain features
     public float carryCapacity = 0.0f; // currently unused
     public bool canBePlacedManually = false;
+    public int footprintWidth = 0;
+    public int footprintDepth = 0;
 
     // health:
     public float healthPoints = 0.0f;
@@ -74,6 +78,7 @@ public class UnitManager : MonoBehaviour
     [Header("Unit Setup:")]
     public UnitDataSO unitData; // referenced to compile profile, shouldn't be used after
     public UnitProfile unitProfile; // compiled runtime profile to be used ingame
+    
 
     // cached component references:
     public UnitHealth unitHealth;
@@ -93,7 +98,8 @@ public class UnitManager : MonoBehaviour
     public Vector3 enemyHeadquartersLocation; // set when placed; once in the enemy deployment zone, they divert towards the enemy HQ
 
     // private variables:
-    private GameObject _mySpawnZoneOfPlacement;
+    //private GameObject _myOccupiedSpawnZones;
+    List<SpawnZone> _myOccupiedSpawnZones = new List<SpawnZone>();
     private float _secondaryWeaponMultiplier;
 
 
@@ -107,7 +113,7 @@ public class UnitManager : MonoBehaviour
     /// <summary>
     /// When placing unit in the world, it gets initialized. Called by <see cref="GameManager"/> //the REF: UnitPlacement-script.
     /// </summary>
-    public void InitializeUnit(int _playerID)
+    public void InitializeUnit(int _playerID /*GameObject _spawnZoneOfPlacement*/ /*List<SpawnZone> occupiedZones*/)
     {
         // check if unit is set up correctly:
         if (!CheckCorrectUnitSetup())
@@ -127,6 +133,7 @@ public class UnitManager : MonoBehaviour
 
         // populate the unit profile:
         CompileUnitProfile();
+        Debug.Log("3. foot w " + unitProfile.footprintWidth + " and footde " + unitProfile.footprintDepth);
 
         // set player-ID:
         myPlayerID = _playerID;
@@ -156,12 +163,68 @@ public class UnitManager : MonoBehaviour
             GetComponent<AnimateProjectile>().InitializeProjectileAnimator();
         }
 
+        //former DeployThisUnit-method:
+        // if this is an actual unit, register it's location: 
+        /*if (unitProfile.canBePlacedManually && !isActive)
+        {
+            _myOccupiedSpawnZones = _spawnZoneOfPlacement;
+        }*/
+        /*
+        if (!isActive)
+        {
+            //_myOccupiedSpawnZones = _spawnZoneOfPlacement;
+            foreach(var zone in occupiedZones)
+            {
+                _myOccupiedSpawnZones.Add(zone);
+            }
+        }*/
+
+        if (unitProfile.unitType != UnitType.Building)
+        {
+            switch (_playerID)
+            {
+                case 0: // environment
+                    // TBD...
+                    return;
+
+                case 1: // player 1
+                    immediateUnitDestination = new Vector3(_gameManager.player2HQ.transform.position.x, 0, transform.position.z);
+                    enemyHeadquartersLocation = _gameManager.player2HQ.transform.position;
+
+                    return;
+
+                case 2: // player 2
+                    immediateUnitDestination = new Vector3(_gameManager.player1HQ.transform.position.x, 0, transform.position.z);
+                    enemyHeadquartersLocation = _gameManager.player1HQ.transform.position;
+                    return;
+
+                case 3: // neutral
+                    // TBD...
+                    return;
+            }
+        }
+
+
         // launch units that weren't deployed, but existed from the beginning (e.g. HQ's, etc.):
         if (!unitProfile.canBePlacedManually)
         {
             LaunchUnit();
         }
     }
+
+
+    public void UpdateZonesDeployedByUnit(List<SpawnZone> occupiedZones)
+    {
+        if (!isActive)
+        {
+            //_myOccupiedSpawnZones = _spawnZoneOfPlacement;
+            foreach (var zone in occupiedZones)
+            {
+                _myOccupiedSpawnZones.Add(zone);
+            }
+        }
+    }
+
 
     /// <summary>
     /// This function is called when the unit is picked up from a selecor-icon or 
@@ -173,7 +236,7 @@ public class UnitManager : MonoBehaviour
         // if this is an actual unit, register it's location: 
         if (unitProfile.canBePlacedManually && !isActive)
         {
-            _mySpawnZoneOfPlacement = _spawnZoneOfPlacement;
+            //_myOccupiedSpawnZones = _spawnZoneOfPlacement; // depreciated; now part of initialization
         }
 
         if(unitProfile.unitType != UnitType.Building)
@@ -226,7 +289,12 @@ public class UnitManager : MonoBehaviour
         unitProfile.rewardValue = unitData.rewardForDestruction /*+  unitData.armorData.reward + unitData.mainWeaponData.reward + unitData.secondaryWeaponData.reward*/;
         unitProfile.carryCapacity = unitData.carryCapacity; // currently unused
         unitProfile.canBePlacedManually = unitData.canBePlacedManually;
-        
+        unitProfile.footprintWidth = unitData.footPrint.footprintWidth;
+        unitProfile.footprintDepth = unitData.footPrint.footprintDepth;
+
+        Debug.Log("1. foot w " + unitProfile.footprintWidth + " and footde " + unitProfile.footprintDepth);
+
+
         // check if this unit is able to attack terrain-features:
         if (unitData.mainHandItemData.canAttackTerrain || unitData.secondaryItemData.canAttackTerrain)
         {
@@ -283,10 +351,15 @@ public class UnitManager : MonoBehaviour
     void ResetThisUnit()
     {
         // tell the occupied SpawnZone that the placed unit got picked up again:
-        _mySpawnZoneOfPlacement.GetComponent<SpawnZone>().VacateDeploymentTile();
+        //_myOccupiedSpawnZones.GetComponent<SpawnZone>().VacateDeploymentTile();
+        foreach(var zone in _myOccupiedSpawnZones)
+        {
+            zone.GetComponent<SpawnZone>().VacateDeploymentTile();
+        }
+
 
         // tell this unit that it has no longer an assigned location/SpawnZone:
-        _mySpawnZoneOfPlacement = null;
+        _myOccupiedSpawnZones = null; // unsure if this will empty out the list as desired?!
     }
 
 

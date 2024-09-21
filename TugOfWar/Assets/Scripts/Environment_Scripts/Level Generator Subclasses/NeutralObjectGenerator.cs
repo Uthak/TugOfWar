@@ -12,6 +12,7 @@ public class NeutralObjectGenerator : MonoBehaviour
     MapConfig _mapConfig;
     NeutralObjectConfig _neutralObjectConfig;
 
+    [SerializeField] private LayerMask spawnZoneLayerMask; // LayerMask for deployment zones
 
     /// <summary>
     /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
@@ -89,7 +90,12 @@ public class NeutralObjectGenerator : MonoBehaviour
                     Vector3 neutralTowerPos = new Vector3(xPos, 0, zPos);
                     float rngRotation = Random.Range(0, 360);
                     GameObject instantiatedNeutralTower = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
+
+
+                    //instantiatedNeutralTower.GetComponent<UnitManager>().InitializeUnit(3);
+                    //instantiatedNeutralTower.GetComponent<UnitManager>().InitializeUnit(3, FindOccupyAndReturnDeploymentZones(instantiatedNeutralTower));
                     instantiatedNeutralTower.GetComponent<UnitManager>().InitializeUnit(3);
+                    instantiatedNeutralTower.GetComponent<UnitManager>().UpdateZonesDeployedByUnit(FindOccupyAndReturnDeploymentZones(instantiatedNeutralTower));
 
                     // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
                     // curently disabled as grid is not being used.
@@ -108,7 +114,11 @@ public class NeutralObjectGenerator : MonoBehaviour
                         Vector3 neutralTowerPos = new Vector3(xPos, 0, zPos);
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
+
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3, FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        neutralTowerInstance.GetComponent<UnitManager>().UpdateZonesDeployedByUnit(FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
 
                         // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
                         // curently disabled as grid is not being used.
@@ -125,7 +135,11 @@ public class NeutralObjectGenerator : MonoBehaviour
                         Vector3 neutralTowerPos = new Vector3(xPos, 0, zPos);
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
+
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3, FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        neutralTowerInstance.GetComponent<UnitManager>().UpdateZonesDeployedByUnit(FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
 
                         // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
                         // curently disabled as grid is not being used.
@@ -140,7 +154,11 @@ public class NeutralObjectGenerator : MonoBehaviour
                         Vector3 neutralTowerPos = new Vector3(xPos, 0, zPos);
                         float rngRotation = Random.Range(0, 360);
                         GameObject neutralTowerInstance = Instantiate(neutralTower, neutralTowerPos, Quaternion.Euler(0, rngRotation, 0), _neutralObjectConfig.neutralUnitsParent);
+
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        //neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3, FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
                         neutralTowerInstance.GetComponent<UnitManager>().InitializeUnit(3);
+                        neutralTowerInstance.GetComponent<UnitManager>().UpdateZonesDeployedByUnit(FindOccupyAndReturnDeploymentZones(neutralTowerInstance));
 
                         // add occupied area in neutral zone to occupied list in MapConfig to be sent back to LevelArchitect later.
                         // curently disabled as grid is not being used.
@@ -150,6 +168,23 @@ public class NeutralObjectGenerator : MonoBehaviour
         }
     }
 
+    private List<SpawnZone> FindOccupyAndReturnDeploymentZones(GameObject unitOrStructure)
+    {
+        List<SpawnZone> occupiedZones = new List<SpawnZone>();
+        Collider[] hitColliders = Physics.OverlapBox(unitOrStructure.transform.position, unitOrStructure.GetComponent<Collider>().bounds.extents);
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            SpawnZone spawnZone = hitCollider.GetComponent<SpawnZone>();
+            if (spawnZone != null)
+            {
+                spawnZone.OccupyDeploymentTile(); // Mark the zone as occupied
+                occupiedZones.Add(spawnZone);
+            }
+        }
+
+        return occupiedZones;
+    }
 
     /// <summary>
     /// Get the radius of any circular colliders or half the lenght of the z-side of a square collider.

@@ -23,4 +23,8 @@ public class UnitEnumManager
 
     [Tooltip("ItemType influences the combat-effectiveness of units. It interacts with UnitTypes and armor.")]
     public enum ItemType { Unarmed, Tool, Sword, Axe, Mace, Spear, Lance, Bow, Warmachine, MagicalAttack, Shield }
+
+
+    [Tooltip("The placement-state indicates which colors/materials the active sample unit should have.")]
+    public enum SampleUnitMaterial { Default, Valid, Invalid } // default is currently not used.
 }

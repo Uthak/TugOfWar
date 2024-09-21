@@ -1,6 +1,14 @@
 using UnityEngine;
 using static UnitEnumManager;
 
+
+[System.Serializable]
+public class UnitFootprint // one could argue this should be part of the enum "Size"; keeping it separate may allow funny stuff later!
+{
+    public int footprintWidth = 1;  // Number of tiles wide
+    public int footprintDepth = 1;  // Number of tiles deep
+}
+
 [CreateAssetMenu(fileName = "[Unit]_DataSheet", menuName = "Unit Data Card", order = 51)]
 public class UnitDataSO : ScriptableObject
 {
@@ -9,6 +17,7 @@ public class UnitDataSO : ScriptableObject
     public Race race; // unused...
     public UnitType unitType;
     public Size size;
+    public UnitFootprint footPrint;
     [Tooltip("HQ's and environment objects e.g. cannot be manually placed. For now. " +
         "NOTE: Some buildings, like towers, could potentially be placed and picked up again.")]
     public bool canBePlacedManually = true;

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c22b574bd50f54aa2c200a0b7fc2bd, type: 3}
+  m_Name: TEST LARGE_Soldier_DataSheet 1
+  m_EditorClassIdentifier: 
+  unitName: TST
+  race: 0
+  unitType: 1
+  size: 1
+  footPrint:
+    footprintWidth: 2
+    footprintDepth: 2
+  canBePlacedManually: 1
+  armorData: {fileID: 11400000, guid: ceff7003102106b459ff0bb4dafaff5e, type: 2}
+  mainHandItemData: {fileID: 11400000, guid: 87cba5f507723e543afcab169fd21b43, type: 2}
+  secondaryItemData: {fileID: 11400000, guid: 9be4eee9c9eb3434e90b339cb396ebf5, type: 2}
+  deploymentCost: 10
+  carryCapacity: 0
+  rewardForDestruction: 2.5
+  healthPoints: 20
+  walkingSpeed: 1
+  runningSpeed: 2
+  chargingSpeed: 3
+  detectionRange: 5
+  alarmRange: 0
+  toHitSkill: 0
+  toCritSkill: 0
+  chargeImpactDamage: 0
+  chargeImpactSplashRadius: 0
+  chargeImpactForce: 0

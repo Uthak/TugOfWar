@@ -3,7 +3,41 @@ using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine;
 
-public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
+public class TroopSelectorIcon : MonoBehaviour
+{
+    public GameObject unitToPickUpHere; // Reference to the unit prefab this button selects
+
+    public void OnButtonClick()
+    {
+        //Debug.Log("1");
+
+        // Tell the pool manager to prepare the pool for this unit type
+        UnitPoolManager.Instance.RequestPoolForUnit(unitToPickUpHere);
+        ///Debug.Log("2");
+
+        // Tell the UnitPlacement system that this unit is selected
+        UnitPlacement.unitPlacementSingleton.SelectUnit(unitToPickUpHere);
+        //Debug.Log("3");
+
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        //Debug.Log("1");
+
+        // Tell the pool manager to prepare the pool for this unit type
+        UnitPoolManager.Instance.RequestPoolForUnit(unitToPickUpHere);
+        //Debug.Log("2");
+
+        // Tell the UnitPlacement system that this unit is selected
+        UnitPlacement.unitPlacementSingleton.SelectUnit(unitToPickUpHere);
+        //Debug.Log("3");
+    }
+}
+
+
+    /*
+     * public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
     public GameObject itemToPickUpHere;
     public GameObject unitModell; // reference to the modell of this unit, used by the UnitPlacement-class to sample the unit over legal deployment zones
@@ -47,4 +81,4 @@ public class TroopSelectorIcon : MonoBehaviour, IPointerEnterHandler, IPointerEx
             _dragNDrop.CreateUnit(itemToPickUpHere);
         }
     }
-}
+}*/

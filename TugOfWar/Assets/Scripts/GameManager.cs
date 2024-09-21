@@ -11,12 +11,9 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     // Singleton instance
-    //public static GameManager gameManager { get; private set; }
+    public static GameManager gameManager { get; private set; }
 
     [Header("Game Manager Setup:")]
-    [Tooltip("Upon destruction a fraction of the deployment cost of a unit is rewarded to the victor. Set the " +
-        "fraction-factor here. NOTE: destroyed neutral units rewards are not affected by this!")]
-    public float goldRewardFactor = 4.0f; // currently NOT used, using the reward tab of the UnitDataSO instead!
     [Tooltip("This is the target objective player 1's units run towards.")]
     public GameObject player2HQ;
     [Tooltip("This is the target objective player 2's units run towards.")]
@@ -30,8 +27,9 @@ public class GameManager : MonoBehaviour
     EnemyArmyManager _NPCArmyManager;
     GoldManager _goldManager;
     LevelArchitect _levelArchitect; // manages level creation
-    ExperienceManager _experienceManager;
-    UpgradeManager _upgradeManager;
+    ExperienceManager _experienceManager; // unused
+    UpgradeManager _upgradeManager; // unused
+    UnitPlacement _unitPlacement;
 
     float _player1DeploymentBacklineX;
     float _player2DeploymentBacklineX;
@@ -57,20 +55,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // currently not being used singleton implementation:
+        // singleton implementation:
         #region Singleton pattern:
-        /*
         if (gameManager == null)
         {
             gameManager = this;
-
-            // optional: Makes this instance persist across scenes
-            //DontDestroyOnLoad(gameObject);
         }else
         {
             Destroy(gameObject);
             return;
-        }*/
+        }
         #endregion
 
         // start game setup:
@@ -97,8 +91,6 @@ public class GameManager : MonoBehaviour
         _upgradeManager = GetComponent<UpgradeManager>();
         _upgradeManager.InitializeUpgradeManager();
 
-
-
         // adaptively cache the respective headquarters:
         player1HQ = _levelArchitect.baseConfig.player1HQ;
         player2HQ = _levelArchitect.baseConfig.player2HQ;
@@ -107,24 +99,8 @@ public class GameManager : MonoBehaviour
         _player1DeploymentBacklineX = player1HQ.transform.position.x;
         _player2DeploymentBacklineX = player2HQ.transform.position.x;
 
-        //Debug.Log("pl")
-
-        // adaptively cache the respective headquarters:
-        //player1Destination = _levelArchitect.baseConfig.player1HQ;
-        //player2Destination = _levelArchitect.baseConfig.player2HQ;
-
-
-        
-        /*
-        // adaptively cache the respective headquarters:
-        player1Destination = _levelArchitect.GetHeadquarter(2);
-        player2Destination = _levelArchitect.GetHeadquarter(1);
-        
-
-        // adaptively cache target x-lie for both players:
-        _player1DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(1);
-        _player2DeploymentBacklineX = _levelArchitect.GetDeploymentBacklineX(2);
-        */
+        _unitPlacement = GetComponent<UnitPlacement>();
+        _unitPlacement.InitializeUnitPlacement();
     }
     /// <summary>
     /// This function is called by <see cref="LevelArchitect"/> when the map is setup. 

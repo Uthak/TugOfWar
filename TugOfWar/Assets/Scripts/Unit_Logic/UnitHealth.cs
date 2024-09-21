@@ -52,7 +52,7 @@ public class UnitHealth : MonoBehaviour
         _armorType = _unitManager.unitData.armorData.armorType; // currently not used...
 
         // calculate my value when killed:
-        _goldRewardFactor = FindAnyObjectByType<GameManager>().goldRewardFactor; // currently not used!
+        //_goldRewardFactor = FindAnyObjectByType<GameManager>().goldRewardFactor; // currently not used!
         _myRewardValue = _unitManager.unitProfile.rewardValue;
 
         // NOTE: the unit health bar is initialized and managed by hte HealthBarManager,
