@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class DeploymentGridGenerator : MonoBehaviour
 {
+    // debugging:
+    [SerializeField] bool _debugThisClass = false; // this is serializable so that cou can debug distinct classes instead of everything!
+
     private MapConfig _mapConfig;
 
 
@@ -14,9 +17,20 @@ public class DeploymentGridGenerator : MonoBehaviour
     /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
     /// </summary>
     /// <param name="mapConfig"></param>
-    public void InitializeDeploymentGridGenerator(MapConfig mapConfig)
+    public void InitializeDeploymentGridGenerator(MapConfig mapConfig, bool debug)
     {
+        if (!_debugThisClass)
+        {
+            _debugThisClass = debug;
+        }
+
         _mapConfig = mapConfig;
+
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogClassInitialization();
+        }
     }
 
 

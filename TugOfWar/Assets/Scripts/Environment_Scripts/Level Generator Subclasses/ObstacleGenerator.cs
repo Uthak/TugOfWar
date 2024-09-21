@@ -7,26 +7,33 @@ using UnityEngine;
 /// </summary>
 public class ObstacleGenerator : MonoBehaviour
 {
-    [SerializeField] bool _debug = false;
+    // debugging:
+    [SerializeField] bool _debugThisClass = false; // this is serializable so that cou can debug distinct classes instead of everything!
+
 
     MapConfig _mapConfig;
     ObstacleConfig _obstacleConfig;
-
 
     /// <summary>
     /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
     /// </summary>
     /// <param name="mapConfig"></param>
     /// <param name="obstacleConfig"></param>
-    public void InitializeObstacleGenerator(MapConfig mapConfig, ObstacleConfig obstacleConfig)
+    public void InitializeObstacleGenerator(MapConfig mapConfig, ObstacleConfig obstacleConfig, bool debug)
     {
-        if (_debug)
+        if (!_debugThisClass)
         {
-            Debug.Log($"DEBUG: NeutralObjectGenerator debugging active", this);
+            _debugThisClass = debug;
         }
 
         _mapConfig = mapConfig;
         _obstacleConfig = obstacleConfig;
+
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogClassInitialization();
+        }
     }
 
 

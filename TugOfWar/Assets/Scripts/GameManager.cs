@@ -10,6 +10,8 @@ using UnityEngine.UI;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] bool _debugApplication = false;
+
     // Singleton instance
     public static GameManager gameManager { get; private set; }
 
@@ -27,8 +29,8 @@ public class GameManager : MonoBehaviour
     EnemyArmyManager _NPCArmyManager;
     GoldManager _goldManager;
     LevelArchitect _levelArchitect; // manages level creation
-    ExperienceManager _experienceManager; // unused
-    UpgradeManager _upgradeManager; // unused
+    //ExperienceManager _experienceManager; // unused
+    //UpgradeManager _upgradeManager; // unused
     UnitPlacement _unitPlacement;
 
     float _player1DeploymentBacklineX;
@@ -55,7 +57,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // singleton implementation:
+        // set singleton:
         #region Singleton pattern:
         if (gameManager == null)
         {
@@ -67,9 +69,15 @@ public class GameManager : MonoBehaviour
         }
         #endregion
 
+        // debug:
+        if (_debugApplication)
+        {
+            Debug.Log("<b><color=green>Debugging Application</color></b>");
+        }
+
         // start game setup:
         _levelArchitect = GetComponent<LevelArchitect>();
-        _levelArchitect.InitializeLevelArchitect();
+        _levelArchitect.InitializeLevelArchitect(_debugApplication);
         _levelArchitect.GenerateLevel();
     }
 
@@ -85,11 +93,12 @@ public class GameManager : MonoBehaviour
         }
         _goldManager = GetComponent<GoldManager>();
 
+        /*
         _experienceManager = GetComponent<ExperienceManager>();
         _experienceManager.InitializeExperienceManager();
 
         _upgradeManager = GetComponent<UpgradeManager>();
-        _upgradeManager.InitializeUpgradeManager();
+        _upgradeManager.InitializeUpgradeManager();*/
 
         // adaptively cache the respective headquarters:
         player1HQ = _levelArchitect.baseConfig.player1HQ;
@@ -100,7 +109,7 @@ public class GameManager : MonoBehaviour
         _player2DeploymentBacklineX = player2HQ.transform.position.x;
 
         _unitPlacement = GetComponent<UnitPlacement>();
-        _unitPlacement.InitializeUnitPlacement();
+        _unitPlacement.InitializeUnitPlacement(_debugApplication);
     }
     /// <summary>
     /// This function is called by <see cref="LevelArchitect"/> when the map is setup. 

@@ -12892,6 +12892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c804de5173ed47e4da1d0d818d68361d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debugThisClass: 0
   mapConfig:
     _spawnZoneParent: {fileID: 1329228301}
     _spawnZone: {fileID: 2723931364712448250, guid: c8bde0517ebc8ba4c9f78e12a1fb6df0,
@@ -12943,6 +12944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f29cd3e71f4254496b373b5f2deafc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debugApplication: 1
   player2HQ: {fileID: 0}
   player1HQ: {fileID: 0}
   _playAgainstAI: 1
@@ -13166,7 +13168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80fb1e038812eb4d874034eac992247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debug: 0
+  _debugThisClass: 0
   spawnZoneLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -13182,7 +13184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa7a8f9ecad74140a87962b216aa19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debug: 0
+  _debugThisClass: 0
 --- !u!114 &1517335322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13195,6 +13197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4132d971961019244b6d281c92ebbd2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debugThisClass: 0
   spawnZoneLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -13210,6 +13213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c50b015906599743a7e2606c7d90587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debugThisClass: 0
 --- !u!114 &1517335324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13235,6 +13239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9d9ca1039492c4e9e672c717bc61e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debugThisClass: 0
   _player1UnitParent: {fileID: 441564384}
   _offsetOnMap: 1
   _uiLayerMask:

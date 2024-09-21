@@ -137,6 +137,9 @@ public class NeutralObjectConfig
 /// </summary>
 public class LevelArchitect : MonoBehaviour
 {
+    // debugging:
+    [SerializeField] bool _debugThisClass = false; // this is serializable so that cou can debug distinct classes instead of everything!
+
     [Header("Level Architect Setup:")]
     public MapConfig mapConfig;
     public ObstacleConfig obstacleConfig;
@@ -152,13 +155,24 @@ public class LevelArchitect : MonoBehaviour
     /// <summary>
     /// Setup this script. Called by <see cref="GameManager.Awake"/>.
     /// </summary>
-    public void InitializeLevelArchitect()
+    public void InitializeLevelArchitect(bool debug)
     {
+        if (!_debugThisClass)
+        {
+            _debugThisClass = debug;
+        }
+
         // cache script references & dependencies:
         _deploymentGridGenerator = GetComponent<DeploymentGridGenerator>();
         _baseGenerator = GetComponent<BaseGenerator>();
         _neutralObjectGenerator = GetComponent<NeutralObjectGenerator>();
         _obstacleGenerator = GetComponent<ObstacleGenerator>();
+
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogClassInitialization();
+        }
     }
 
     /// <summary>
@@ -166,20 +180,27 @@ public class LevelArchitect : MonoBehaviour
     /// </summary>
     public void GenerateLevel()
     {
-        _deploymentGridGenerator.InitializeDeploymentGridGenerator(mapConfig);
+        _deploymentGridGenerator.InitializeDeploymentGridGenerator(mapConfig, _debugThisClass);
         _deploymentGridGenerator.GenerateDeploymentZoneGrid();
 
-        _baseGenerator.InitializeBaseGenerator(mapConfig, baseConfig);
+        _baseGenerator.InitializeBaseGenerator(mapConfig, baseConfig, _debugThisClass);
         _baseGenerator.GenerateBases();
 
-        _neutralObjectGenerator.InitializeNeutralObjectGenerator(mapConfig, neutralObjectConfig);
+        _neutralObjectGenerator.InitializeNeutralObjectGenerator(mapConfig, neutralObjectConfig, _debugThisClass);
         _neutralObjectGenerator.GenerateNeutralObjects();
 
-        _obstacleGenerator.InitializeObstacleGenerator(mapConfig, obstacleConfig);
+        _obstacleGenerator.InitializeObstacleGenerator(mapConfig, obstacleConfig, _debugThisClass);
         _obstacleGenerator.GenerateObstacles();
+        
 
         // tell the GameManager that the level is setup, this way the AI can place its first wave:
         GetComponent<GameManager>().LevelSetupComplete();
+        
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogMethodExecution();
+        }
     }
 
 

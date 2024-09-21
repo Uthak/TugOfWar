@@ -7,24 +7,37 @@ using UnityEngine;
 /// </summary>
 public class BaseGenerator : MonoBehaviour
 {
+    // debugging:
+    [SerializeField] bool _debugThisClass = false; // this is serializable so that cou can debug distinct classes instead of everything!
+
+    [Header("BaseGenerator Setup:")]
     LevelArchitect _levelArchitect;
     MapConfig _mapConfig;
     BaseConfig _baseConfig;
 
     [SerializeField] private LayerMask spawnZoneLayerMask; // LayerMask for deployment zones
-    //[SerializeField] private float overlapCheckRadius = 10f; // Adjust the radius based on your setup
-
 
     /// <summary>
     /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
     /// </summary>
     /// <param name="mapConfig"></param>
     /// <param name="baseConfig"></param>
-    public void InitializeBaseGenerator(MapConfig mapConfig, BaseConfig baseConfig)
+    public void InitializeBaseGenerator(MapConfig mapConfig, BaseConfig baseConfig, bool debug)
     {
+        if (!_debugThisClass)
+        {
+            _debugThisClass = debug;
+        }
+
         _levelArchitect = FindAnyObjectByType<LevelArchitect>();
         _mapConfig = mapConfig; 
         _baseConfig = baseConfig;
+
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogClassInitialization();
+        }
     }
 
 

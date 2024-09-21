@@ -7,27 +7,36 @@ using UnityEngine;
 /// </summary>
 public class NeutralObjectGenerator : MonoBehaviour
 {
-    [SerializeField] bool _debug = false;
+    // debugging:
+    [SerializeField] bool _debugThisClass = false; // this is serializable so that cou can debug distinct classes instead of everything!
 
+    [Header("NeutralObjectGenerator Setup:")]
     MapConfig _mapConfig;
     NeutralObjectConfig _neutralObjectConfig;
 
     [SerializeField] private LayerMask spawnZoneLayerMask; // LayerMask for deployment zones
+
 
     /// <summary>
     /// Setup this script. Called by <see cref="LevelArchitect.GenerateLevel"/>.
     /// </summary>
     /// <param name="mapConfig"></param>
     /// <param name="neutralObjectConfig"></param>
-    public void InitializeNeutralObjectGenerator(MapConfig mapConfig, NeutralObjectConfig neutralObjectConfig)
+    public void InitializeNeutralObjectGenerator(MapConfig mapConfig, NeutralObjectConfig neutralObjectConfig, bool debug)
     {
-        if (_debug)
+        if (!_debugThisClass)
         {
-            Debug.Log($"DEBUG: NeutralObjectGenerator debugging active", this);
+            _debugThisClass = debug;
         }
 
         _mapConfig = mapConfig;
-        _neutralObjectConfig = neutralObjectConfig; 
+        _neutralObjectConfig = neutralObjectConfig;
+
+        // debug:
+        if (_debugThisClass)
+        {
+            ApplicationDebugger.LogClassInitialization();
+        }
     }
 
 
@@ -73,7 +82,7 @@ public class NeutralObjectGenerator : MonoBehaviour
         float zPos;
 
         // FOR TESTING:
-        if (_debug)
+        if (_debugThisClass)
         {
             Debug.Log($"DEBUG: singleHorizontalFieldSegment {singleHorizontalFieldSegment}, centerFieldWidth {centerFieldWidth}, " +
             $"horizontalDistanceBetweenTowers {horizontalDistanceBetweenTowers}, starting xPos {xPos}, " +
